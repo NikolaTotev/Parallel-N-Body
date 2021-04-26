@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Barnes-Hut-Algorithm", "Barnes-Hut-Algorithm\Barnes-Hut-Algorithm.csproj", "{8655F0D6-3A3C-45DA-8924-9D69E375592A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Barnes-Hut-GUI", "Barnes-Hut-GUI\Barnes-Hut-GUI.csproj", "{A78ADC89-E49C-413B-8699-4E3BB8608C10}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8655F0D6-3A3C-45DA-8924-9D69E375592A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8655F0D6-3A3C-45DA-8924-9D69E375592A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8655F0D6-3A3C-45DA-8924-9D69E375592A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8655F0D6-3A3C-45DA-8924-9D69E375592A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A78ADC89-E49C-413B-8699-4E3BB8608C10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A78ADC89-E49C-413B-8699-4E3BB8608C10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A78ADC89-E49C-413B-8699-4E3BB8608C10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A78ADC89-E49C-413B-8699-4E3BB8608C10}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2E16E354-BE8A-4519-ABEA-90CD8FBFE062}
+	EndGlobalSection
+EndGlobal
