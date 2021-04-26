@@ -14,10 +14,12 @@ namespace Barnes_Hut_GUI
             SE, NE, SW, NW
         }
         List<Particle> nodeParticles;
-        public float BottomLeftCorner { get; }
-        public float RightTopCorner { get; }
-        public float TotalMass { get; }
-        public Point CenterOfMass { get; }
+        public Point BottomLeftCorner { get; set; }
+        public Point TopRightCorner { get; set; }
+        public float TotalMass { get; set; }
+        public Point CenterOfMass { get; set; }
+
+        public float SideLength { get; }
 
         public Node SeChild { get; set; }
         public Node NeChild { get; set; }
@@ -28,13 +30,30 @@ namespace Barnes_Hut_GUI
         public bool IsInternal { get; set; }
         public bool IsRoot { get; set; }
 
+        public Node(Point trc, Point blc)
+        {
+            TopRightCorner = trc;
+            BottomLeftCorner = blc;
+        }
+
         //Function is called if there is more than 1 child in the node;
         void partitionNode()
         {
-            SeChild = new Node();
-            NeChild = new Node();
-            NwChild = new Node();
-            SwChild = new Node();
+            Point SETopRight  = new Point(TopRightCorner.X, TopRightCorner.Y/2);
+            Point SEBottomLeft = new Point(TopRightCorner.X/2, BottomLeftCorner.Y);
+            SeChild = new Node(SETopRight, SEBottomLeft);
+
+            Point NETopRight = new Point(TopRightCorner.X, TopRightCorner.Y);
+            Point NEBottomLeft = new Point(TopRightCorner.X / 2, TopRightCorner.Y/2);
+            NeChild = new Node(NETopRight, NEBottomLeft);
+
+            Point NWTopRight = new Point(TopRightCorner.X/2, TopRightCorner.Y);
+            Point NWBottomLeft = new Point(BottomLeftCorner.X, TopRightCorner.Y/2);
+            NwChild = new Node(NWTopRight, NWBottomLeft);
+
+            Point SWTopRight = new Point(TopRightCorner.X/2, TopRightCorner.Y / 2);
+            Point SWBottomLeft = new Point(BottomLeftCorner.X, BottomLeftCorner.Y);
+            SwChild = new Node(SWTopRight, SWBottomLeft);
             parentQuadrant firstParticleQuadrant = determineQuadrant(nodeParticles[0]);
             AddParticleToChild(firstParticleQuadrant, nodeParticles[0]);
 
