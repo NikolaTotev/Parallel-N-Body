@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace Barnes_Hut_GUI
 {
     class Particle
-    {s
-        public Point CenterPoint { get; }
+    {
+        public Point CenterPoint { get; set; }
         public float Mass { get; }
         public Color ParticleColor { get; }
     }
