@@ -30,6 +30,8 @@ namespace Barnes_Hut_GUI
         public bool IsInternal { get; set; }
         public bool IsRoot { get; set; }
 
+        public bool IsPartitioned { get; set; }
+
         public Node(Point trc, Point blc)
         {
             TopRightCorner = trc;
@@ -88,14 +90,15 @@ namespace Barnes_Hut_GUI
             nodeParticles.Add(particleToAdd);
             IsLeaf = true;
 
-            if (nodeParticles.Count > 1)
+            if (nodeParticles.Count > 1 && !IsPartitioned)
             {
                 partitionNode();
                 IsInternal = true;
                 IsLeaf = false;
+                IsPartitioned = true;
             }
 
-            if (IsInternal)
+            if (IsInternal && IsPartitioned)
             {
                 parentQuadrant particleQuadrant = determineQuadrant(particleToAdd);
                 AddParticleToChild(particleQuadrant, particleToAdd);
@@ -108,27 +111,27 @@ namespace Barnes_Hut_GUI
 
             if (particle.CenterPoint.X >= TopRightCorner.X / 2)
             {
-                if (particle.CenterPoint.Y <= TopRightCorner.Y / 2)
-                {
-                    quadrant = parentQuadrant.SE;
-                }
-
-                if (particle.CenterPoint.Y > TopRightCorner.Y / 2)
+                if (particle.CenterPoint.Y <= BottomLeftCorner.Y / 2)
                 {
                     quadrant = parentQuadrant.NE;
+                }
+
+                if (particle.CenterPoint.Y > BottomLeftCorner.Y / 2)
+                {
+                    quadrant = parentQuadrant.SE;
                 }
             }
 
             if (particle.CenterPoint.X < TopRightCorner.X / 2)
             {
-                if (particle.CenterPoint.Y <= TopRightCorner.Y / 2)
-                {
-                    quadrant = parentQuadrant.SW;
-                }
-
-                if (particle.CenterPoint.Y > TopRightCorner.Y / 2)
+                if (particle.CenterPoint.Y <= BottomLeftCorner.Y / 2)
                 {
                     quadrant = parentQuadrant.NW;
+                }
+
+                if (particle.CenterPoint.Y > BottomLeftCorner.Y / 2)
+                {
+                    quadrant = parentQuadrant.SW;
                 }
             }
             return quadrant;

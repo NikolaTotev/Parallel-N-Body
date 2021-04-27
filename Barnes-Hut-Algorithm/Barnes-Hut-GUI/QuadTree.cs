@@ -15,8 +15,8 @@ namespace Barnes_Hut_GUI
 
         public QuadTree()
         {
-            Point bottomLeft = new Point(0, 0);
-            Point topRight = new Point(737, 737);
+            Point bottomLeft = new Point(0, 737);
+            Point topRight = new Point(737, 0);
             RootNode = new Node(topRight, bottomLeft);
             RootNode.IsRoot = true;
             AllParticles = new List<Particle>();
@@ -33,19 +33,17 @@ namespace Barnes_Hut_GUI
 
             if (nextNode.IsLeaf)
             {
+                currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.TopRightCorner.X - nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y - nextNode.BottomLeftCorner.Y);
                 return;
             }
-            else
-            {
-                currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.TopRightCorner.X - nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y - nextNode.BottomLeftCorner.Y);
-            }
 
-            currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.TopRightCorner.X-nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y - nextNode.BottomLeftCorner.Y);
+            currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.TopRightCorner.X - nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y - nextNode.BottomLeftCorner.Y);
 
             Traverse(nextNode.SeChild, currenctGraphics, rectPen);
             Traverse(nextNode.NeChild, currenctGraphics, rectPen);
             Traverse(nextNode.NwChild, currenctGraphics, rectPen);
             Traverse(nextNode.SwChild, currenctGraphics, rectPen);
+
         }
 
 
@@ -60,11 +58,20 @@ namespace Barnes_Hut_GUI
         public void GenerateParticles(int particleCount)
         {
             Random rand = new Random();
+
+            List<Point> testPoints = new List<Point>()
+            {
+                new Point(91, 398),
+                new Point(620, 337),
+                new Point(493, 502),
+                new Point(590, 600),
+                new Point(291, 21)
+        };
             for (int i = 0; i < particleCount; i++)
             {
                 Particle newParticle = new Particle();
-                Point particleCenter = new Point(rand.Next(0, 738), rand.Next(0, 738));
-                newParticle.CenterPoint = particleCenter;
+                //Point particleCenter = new Point(rand.Next(0, 738), rand.Next(0, 738));
+                newParticle.CenterPoint = testPoints[i];
                 AllParticles.Add(newParticle);
             }
         }

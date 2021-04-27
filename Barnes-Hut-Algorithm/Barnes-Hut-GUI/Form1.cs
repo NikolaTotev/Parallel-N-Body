@@ -16,6 +16,15 @@ namespace Barnes_Hut_GUI
         private Graphics graphics;
         private Pen particlePen = new Pen(Color.CornflowerBlue);
         private Brush particleBrush = new SolidBrush(Color.CornflowerBlue);
+        List<Brush> Brushes = new List<Brush>()
+        {
+            new SolidBrush(Color.Green),
+            new SolidBrush(Color.Orange),
+            new SolidBrush(Color.BlueViolet),
+            new SolidBrush(Color.Red),
+            new SolidBrush(Color.CornflowerBlue)
+
+        };
 
         public Form1()
         {
@@ -35,10 +44,10 @@ namespace Barnes_Hut_GUI
             int particleCount = int.Parse(tb_ParticleCount.Text);
             mainTree.GenerateParticles(particleCount);
 
-            foreach (Particle particle in mainTree.AllParticles)
+            for (int i = 0; i < particleCount; i++)
             {
-                graphics.FillEllipse(particleBrush, particle.CenterPoint.X, particle.CenterPoint.Y, 5, 5);
-            }
+                graphics.FillEllipse(Brushes[i], mainTree.AllParticles[i].CenterPoint.X, mainTree.AllParticles[i].CenterPoint.Y, 5, 5);            }
+
         }
 
         private void btn_Reset_Click(object sender, EventArgs e)
