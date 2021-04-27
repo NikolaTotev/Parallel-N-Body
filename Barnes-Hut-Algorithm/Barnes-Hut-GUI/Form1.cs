@@ -16,6 +16,12 @@ namespace Barnes_Hut_GUI
         private Graphics graphics;
         private Pen particlePen = new Pen(Color.CornflowerBlue);
         private Brush particleBrush = new SolidBrush(Color.CornflowerBlue);
+        private Brush particleBrushRed = new SolidBrush(Color.Red);
+        private Brush particleBrushYellow = new SolidBrush(Color.Yellow);
+        private int ElipseRadius1 = 3;
+        private int ElipseRadius2 = 2;
+        private float ElipseRadius3 = 0.5f;
+
         List<Brush> Brushes = new List<Brush>()
         {
             new SolidBrush(Color.Green),
@@ -36,7 +42,13 @@ namespace Barnes_Hut_GUI
         private void btn_Partition_Click(object sender, EventArgs e)
         {
             mainTree.ParitionSpace();
-            mainTree.Traverse(mainTree.RootNode,graphics, particlePen);
+            mainTree.Traverse(mainTree.RootNode, graphics, particlePen);
+            for (int i = 0; i < mainTree.AllParticles.Count; i++)
+            {
+                graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1, mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1* 2);
+                graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2, mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
+                graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3, mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
+            }
         }
 
         private void btn_GenerateParticles_Click(object sender, EventArgs e)
@@ -46,7 +58,10 @@ namespace Barnes_Hut_GUI
 
             for (int i = 0; i < particleCount; i++)
             {
-                graphics.FillEllipse(Brushes[i], mainTree.AllParticles[i].CenterPoint.X, mainTree.AllParticles[i].CenterPoint.Y, 5, 5);            }
+               graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X-ElipseRadius1, mainTree.AllParticles[i].CenterPoint.Y- ElipseRadius1, ElipseRadius1*2, ElipseRadius1 * 2);
+               graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X- ElipseRadius2, mainTree.AllParticles[i].CenterPoint.Y- ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
+               graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X- ElipseRadius3, mainTree.AllParticles[i].CenterPoint.Y- ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
+            }
 
         }
 

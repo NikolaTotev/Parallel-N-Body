@@ -13,7 +13,8 @@ namespace Barnes_Hut_GUI
         {
             SE, NE, SW, NW
         }
-        List<Particle> nodeParticles;
+
+        public List<Particle> nodeParticles { get; set; }
         public Point BottomLeftCorner { get; set; }
         public Point TopRightCorner { get; set; }
         public float TotalMass { get; set; }
@@ -36,6 +37,7 @@ namespace Barnes_Hut_GUI
         {
             TopRightCorner = trc;
             BottomLeftCorner = blc;
+            SideLength = TopRightCorner.X - BottomLeftCorner.X;
             nodeParticles = new List<Particle>();
             IsInternal = false;
         }
@@ -44,19 +46,20 @@ namespace Barnes_Hut_GUI
         //Function is called if there is more than 1 child in the node;
         void partitionNode()
         {
-            Point SETopRight = new Point(TopRightCorner.X, TopRightCorner.Y / 2);
-            Point SEBottomLeft = new Point(TopRightCorner.X / 2, BottomLeftCorner.Y);
+            float halfOfSideLength = SideLength / 2;
+            Point SETopRight = new Point(TopRightCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
+            Point SEBottomLeft = new Point((int)halfOfSideLength + BottomLeftCorner.X, BottomLeftCorner.Y);
             SeChild = new Node(SETopRight, SEBottomLeft);
 
             Point NETopRight = new Point(TopRightCorner.X, TopRightCorner.Y);
-            Point NEBottomLeft = new Point(TopRightCorner.X / 2, TopRightCorner.Y / 2);
+            Point NEBottomLeft = new Point((int)halfOfSideLength + BottomLeftCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
             NeChild = new Node(NETopRight, NEBottomLeft);
 
-            Point NWTopRight = new Point(TopRightCorner.X / 2, TopRightCorner.Y);
-            Point NWBottomLeft = new Point(BottomLeftCorner.X, TopRightCorner.Y / 2);
+            Point NWTopRight = new Point((int)halfOfSideLength + BottomLeftCorner.X, TopRightCorner.Y);
+            Point NWBottomLeft = new Point(BottomLeftCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
             NwChild = new Node(NWTopRight, NWBottomLeft);
 
-            Point SWTopRight = new Point(TopRightCorner.X / 2, TopRightCorner.Y / 2);
+            Point SWTopRight = new Point((int)halfOfSideLength + BottomLeftCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
             Point SWBottomLeft = new Point(BottomLeftCorner.X, BottomLeftCorner.Y);
             SwChild = new Node(SWTopRight, SWBottomLeft);
             parentQuadrant firstParticleQuadrant = determineQuadrant(nodeParticles[0]);
@@ -88,7 +91,7 @@ namespace Barnes_Hut_GUI
         public void AddParticle(Particle particleToAdd)
         {
             nodeParticles.Add(particleToAdd);
-            IsLeaf = true;
+            
 
             if (nodeParticles.Count > 1 && !IsPartitioned)
             {
@@ -96,6 +99,10 @@ namespace Barnes_Hut_GUI
                 IsInternal = true;
                 IsLeaf = false;
                 IsPartitioned = true;
+            }
+            else
+            {
+                //IsLeaf = true;
             }
 
             if (IsInternal && IsPartitioned)
@@ -109,29 +116,61 @@ namespace Barnes_Hut_GUI
         {
             parentQuadrant quadrant = parentQuadrant.SE;
 
-            if (particle.CenterPoint.X >= TopRightCorner.X / 2)
+            float halfOfSide = SideLength / 2;
+            int xMiddle = BottomLeftCorner.X + (int)halfOfSide;
+            int yMiddle = TopRightCorner.Y + (int) halfOfSide;
+
+            if (particle.CenterPoint.X >= xMiddle)
             {
-                if (particle.CenterPoint.Y <= BottomLeftCorner.Y / 2)
+                //if (xMiddle - particle.CenterPoint.X <= 3)
+                //{
+                //    particle.CenterPoint = new Point(particle.CenterPoint.X + 3, particle.CenterPoint.Y);
+                //}
+
+                if (particle.CenterPoint.Y <= yMiddle)
                 {
                     quadrant = parentQuadrant.NE;
+                    //if (yMiddle - particle.CenterPoint.Y <= 3)
+                    //{
+                    //    particle.CenterPoint = new Point(particle.CenterPoint.X - 3, particle.CenterPoint.Y);
+                    //}
                 }
 
-                if (particle.CenterPoint.Y > BottomLeftCorner.Y / 2)
+                if (particle.CenterPoint.Y > yMiddle)
                 {
                     quadrant = parentQuadrant.SE;
+                    //if (yMiddle - particle.CenterPoint.Y <= 3)
+                    //{
+                    //    particle.CenterPoint = new Point(particle.CenterPoint.X + 3, particle.CenterPoint.Y);
+                    //}
                 }
+
+               
             }
 
-            if (particle.CenterPoint.X < TopRightCorner.X / 2)
+            if (particle.CenterPoint.X < xMiddle)
             {
-                if (particle.CenterPoint.Y <= BottomLeftCorner.Y / 2)
+                //if (xMiddle - particle.CenterPoint.X <= 3)
+                //{
+                //    particle.CenterPoint = new Point(particle.CenterPoint.X - 3, particle.CenterPoint.Y);
+                //}
+
+                if (particle.CenterPoint.Y <= yMiddle)
                 {
                     quadrant = parentQuadrant.NW;
+                    //if (yMiddle - particle.CenterPoint.Y <= 3)
+                    //{
+                    //    particle.CenterPoint = new Point(particle.CenterPoint.X - 3, particle.CenterPoint.Y);
+                    //}
                 }
 
-                if (particle.CenterPoint.Y > BottomLeftCorner.Y / 2)
+                if (particle.CenterPoint.Y > yMiddle)
                 {
                     quadrant = parentQuadrant.SW;
+                    //if (yMiddle - particle.CenterPoint.Y <= 3)
+                    //{
+                    //    particle.CenterPoint = new Point(particle.CenterPoint.X + 3, particle.CenterPoint.Y);
+                    //}
                 }
             }
             return quadrant;
