@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace Barnes_Hut_GUI
 {
@@ -18,10 +17,10 @@ namespace Barnes_Hut_GUI
         public List<Particle> nodeParticles { get; set; }
         public Point BottomLeftCorner { get; set; }
         public Point TopRightCorner { get; set; }
-        public double TotalMass { get; set; }
+        public float TotalMass { get; set; }
         public Point CenterOfMass { get; set; }
 
-        public double SideLength { get; }
+        public float SideLength { get; }
 
         public Node SeChild { get; set; }
         public Node NeChild { get; set; }
@@ -36,10 +35,10 @@ namespace Barnes_Hut_GUI
 
         public Point centerOfMass { get; set; }
 
-        public double totalWeight = 0;
+        public float totalWeight = 0;
 
-        public double topCenterOfMassCoefX = 0;
-        public double topCenterOfMassCoefY = 0;
+        public float topCenterOfMassCoefX = 0;
+        public float topCenterOfMassCoefY = 0;
 
         public Node(Point trc, Point blc)
         {
@@ -48,6 +47,7 @@ namespace Barnes_Hut_GUI
             SideLength = TopRightCorner.X - BottomLeftCorner.X;
             nodeParticles = new List<Particle>();
             IsInternal = false;
+            IsLeaf = true;
         }
 
 
@@ -108,10 +108,7 @@ namespace Barnes_Hut_GUI
                 IsLeaf = false;
                 IsPartitioned = true;
             }
-            else
-            {
-                //IsLeaf = true;
-            }
+         
 
             if (IsInternal && IsPartitioned)
             {
@@ -120,11 +117,11 @@ namespace Barnes_Hut_GUI
             }
         }
 
-        public void CalculateCenterOfMass(Particle newPartice)
+        public void CalculateCenterOfMass(Particle newParticle)
         {
-            totalWeight += newPartice.Mass;
-            topCenterOfMassCoefX += (newPartice.CenterPoint.X * newPartice.Mass);
-            topCenterOfMassCoefX += (newPartice.CenterPoint.Y * newPartice.Mass);
+            totalWeight += newParticle.Mass;
+            topCenterOfMassCoefX += (newParticle.CenterPoint.X * newParticle.Mass);
+            topCenterOfMassCoefX += (newParticle.CenterPoint.Y * newParticle.Mass);
 
             double xCOM = topCenterOfMassCoefX / totalWeight;
             double yCOM = topCenterOfMassCoefY / totalWeight;

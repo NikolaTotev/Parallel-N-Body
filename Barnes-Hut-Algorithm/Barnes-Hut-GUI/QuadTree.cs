@@ -56,6 +56,12 @@ namespace Barnes_Hut_GUI
 
         }
 
+        void CalculateForces()
+        {
+            //if d>2s {use center of mass of node}
+            //else go down 1 level
+        }
+
 
         public void ParitionSpace()
         {
