@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Barnes_Hut_GUI
 {
@@ -17,10 +18,10 @@ namespace Barnes_Hut_GUI
         public List<Particle> nodeParticles { get; set; }
         public Point BottomLeftCorner { get; set; }
         public Point TopRightCorner { get; set; }
-        public float TotalMass { get; set; }
+        public double TotalMass { get; set; }
         public Point CenterOfMass { get; set; }
 
-        public float SideLength { get; }
+        public double SideLength { get; }
 
         public Node SeChild { get; set; }
         public Node NeChild { get; set; }
@@ -32,6 +33,13 @@ namespace Barnes_Hut_GUI
         public bool IsRoot { get; set; }
 
         public bool IsPartitioned { get; set; }
+
+        public Point centerOfMass { get; set; }
+
+        public double totalWeight = 0;
+
+        public double topCenterOfMassCoefX = 0;
+        public double topCenterOfMassCoefY = 0;
 
         public Node(Point trc, Point blc)
         {
@@ -46,7 +54,7 @@ namespace Barnes_Hut_GUI
         //Function is called if there is more than 1 child in the node;
         void partitionNode()
         {
-            float halfOfSideLength = SideLength / 2;
+            double halfOfSideLength = SideLength / 2;
             Point SETopRight = new Point(TopRightCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
             Point SEBottomLeft = new Point((int)halfOfSideLength + BottomLeftCorner.X, BottomLeftCorner.Y);
             SeChild = new Node(SETopRight, SEBottomLeft);
@@ -91,7 +99,7 @@ namespace Barnes_Hut_GUI
         public void AddParticle(Particle particleToAdd)
         {
             nodeParticles.Add(particleToAdd);
-            
+            CalculateCenterOfMass(particleToAdd);
 
             if (nodeParticles.Count > 1 && !IsPartitioned)
             {
@@ -112,11 +120,24 @@ namespace Barnes_Hut_GUI
             }
         }
 
+        public void CalculateCenterOfMass(Particle newPartice)
+        {
+            totalWeight += newPartice.Mass;
+            topCenterOfMassCoefX += (newPartice.CenterPoint.X * newPartice.Mass);
+            topCenterOfMassCoefX += (newPartice.CenterPoint.Y * newPartice.Mass);
+
+            double xCOM = topCenterOfMassCoefX / totalWeight;
+            double yCOM = topCenterOfMassCoefY / totalWeight;
+
+            centerOfMass= new Point((int)xCOM, (int)yCOM);
+
+        }
+
         parentQuadrant determineQuadrant(Particle particle)
         {
             parentQuadrant quadrant = parentQuadrant.SE;
 
-            float halfOfSide = SideLength / 2;
+            double halfOfSide = SideLength / 2;
             int xMiddle = BottomLeftCorner.X + (int)halfOfSide;
             int yMiddle = TopRightCorner.Y + (int) halfOfSide;
 
