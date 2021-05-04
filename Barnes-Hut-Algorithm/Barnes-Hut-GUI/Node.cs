@@ -95,7 +95,7 @@ namespace Barnes_Hut_GUI
                     return;
             }
         }
-
+        
         public void AddParticle(Particle particleToAdd)
         {
             nodeParticles.Add(particleToAdd);

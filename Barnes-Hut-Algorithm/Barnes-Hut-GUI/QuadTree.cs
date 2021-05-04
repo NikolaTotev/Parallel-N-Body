@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Math;
 
 namespace Barnes_Hut_GUI
 {
@@ -12,6 +13,7 @@ namespace Barnes_Hut_GUI
         public List<Particle> AllParticles { get; set; }
 
         public Node RootNode { get; set; }
+        private const float G = 9.8f;
 
         public QuadTree()
         {
@@ -33,21 +35,21 @@ namespace Barnes_Hut_GUI
 
             if (nextNode.IsLeaf)
             {
-                currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength); 
+                currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
                 return;
             }
 
             if (nextNode.nodeParticles.Count == 0)
             {
                 currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
-                currenctGraphics.FillRectangle(Brushes.IndianRed, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength-10, nextNode.SideLength-10);
+                currenctGraphics.FillRectangle(Brushes.IndianRed, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength - 10, nextNode.SideLength - 10);
             }
             else
             {
                 currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
             }
 
-            
+
 
             Traverse(nextNode.SeChild, currenctGraphics, rectPen);
             Traverse(nextNode.NeChild, currenctGraphics, rectPen);
@@ -56,12 +58,26 @@ namespace Barnes_Hut_GUI
 
         }
 
-        void CalculateForces()
+        float CalculateForces(float distance, float particleMass, float nodeMass)
         {
-            //if d>2s {use center of mass of node}
-            //else go down 1 level
+            float totalMass = particleMass * nodeMass;
+            return G * totalMass/ (float)Math.Pow(distance, 2);
         }
 
+        bool LengthIsOverDouble(float nodeSideLength, float distanceToNode)
+        {
+
+            return distanceToNode > nodeSideLength * 2;
+        }
+
+        public float CalculateDistanceToNode(Particle targetParticle, Node targetNode)
+        {
+            float sideA = Math.Abs(targetNode.CenterOfMass.X - targetParticle.CenterPoint.X);
+            float sideB = Math.Abs(targetNode.CenterOfMass.Y - targetParticle.CenterPoint.Y);
+            float distance = (float)Math.Sqrt(Math.Pow(sideA, 2) + Math.Pow(sideB, 2));
+
+            return distance;
+        }
 
         public void ParitionSpace()
         {
