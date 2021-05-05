@@ -18,7 +18,6 @@ namespace Barnes_Hut_GUI
         public Point BottomLeftCorner { get; set; }
         public Point TopRightCorner { get; set; }
         public float TotalMass { get; set; }
-        public Point CenterOfMass { get; set; }
 
         public float SideLength { get; }
 

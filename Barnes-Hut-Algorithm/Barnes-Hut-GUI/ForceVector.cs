@@ -12,7 +12,7 @@ namespace Barnes_Hut_GUI
         public Point Start { get; set; }
         public Point End { get; set;  }
         public float Magnitude { get; set; }
-        public int Angle { get; set; }
+        public float Angle { get; set; }
 
         public float xLen { get; set; }
         public float yLen { get; set; }
@@ -22,5 +22,17 @@ namespace Barnes_Hut_GUI
 
         public int DirectionVertical { get; set; }
 
+        public ForceVector(Point sPoint, Point ePoint, float mag, float ang, float xL, float yL)
+        {
+            Start = sPoint;
+            End = ePoint;
+            Magnitude = mag;
+            Angle = ang;
+            xLen = xL;
+            yLen = yL;
+            calculateDirections();
+        }
+
+        void calculateDirections() { }
     }
 }

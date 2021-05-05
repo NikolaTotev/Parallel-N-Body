@@ -58,10 +58,47 @@ namespace Barnes_Hut_GUI
 
         }
 
+        public void BHAlg()
+        {
+            foreach (Particle particle in AllParticles)
+            {
+                ForceTraversal(particle, RootNode);
+            }
+        }
+
+        public void ForceTraversal(Particle currentParticle, Node startNode)
+        {
+            List<float> distanceToNodeInfo = new List<float>();
+            if (startNode.IsLeaf)
+            {
+                distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.nodeParticles[0].CenterPoint);
+
+            }
+            else
+            {
+                distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.centerOfMass);
+            }
+
+
+            if (LengthIsOverDouble(startNode.SideLength, distanceToNodeInfo[0]))
+            {
+
+                float force = CalculateForces(distanceToNodeInfo[0], currentParticle.Mass, startNode.TotalMass);
+                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint, Point.Empty, distanceToNodeInfo[0], distanceToNodeInfo[1] ,0f, 0f);
+                currentParticle.ForcesToApply.Add(forceVect);
+
+            }
+
+            ForceTraversal(currentParticle, startNode.SeChild);
+            ForceTraversal(currentParticle, startNode.NeChild);
+            ForceTraversal(currentParticle, startNode.NwChild);
+            ForceTraversal(currentParticle, startNode.SwChild);
+        }
+
         float CalculateForces(float distance, float particleMass, float nodeMass)
         {
             float totalMass = particleMass * nodeMass;
-            return G * totalMass/ (float)Math.Pow(distance, 2);
+            return G * totalMass / (float)Math.Pow(distance, 2);
         }
 
         bool LengthIsOverDouble(float nodeSideLength, float distanceToNode)
@@ -70,13 +107,13 @@ namespace Barnes_Hut_GUI
             return distanceToNode > nodeSideLength * 2;
         }
 
-        public float CalculateDistanceToNode(Particle targetParticle, Node targetNode)
+        public List<float> CalculateDistanceToNode(Particle targetParticle, Point targetPoint)
         {
-            float sideA = Math.Abs(targetNode.CenterOfMass.X - targetParticle.CenterPoint.X);
-            float sideB = Math.Abs(targetNode.CenterOfMass.Y - targetParticle.CenterPoint.Y);
+            float sideA = Math.Abs(targetPoint.X - targetParticle.CenterPoint.X);
+            float sideB = Math.Abs(targetPoint.Y - targetParticle.CenterPoint.Y);
             float distance = (float)Math.Sqrt(Math.Pow(sideA, 2) + Math.Pow(sideB, 2));
-
-            return distance;
+            float angleSin = sideB / distance;
+            return new List<float>() { distance, angleSin };
         }
 
         public void ParitionSpace()
