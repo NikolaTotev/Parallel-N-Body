@@ -15,8 +15,8 @@ namespace Barnes_Hut_GUI
         }
 
         public List<Particle> nodeParticles { get; set; }
-        public Point BottomLeftCorner { get; set; }
-        public Point TopRightCorner { get; set; }
+        public PointF BottomLeftCorner { get; set; }
+        public PointF TopRightCorner { get; set; }
         public float TotalMass { get; set; }
 
         public float SideLength { get; }
@@ -32,14 +32,14 @@ namespace Barnes_Hut_GUI
 
         public bool IsPartitioned { get; set; }
 
-        public Point centerOfMass { get; set; }
+        public PointF centerOfMass { get; set; }
 
         public float totalWeight = 0;
 
         public float topCenterOfMassCoefX = 0;
         public float topCenterOfMassCoefY = 0;
 
-        public Node(Point trc, Point blc)
+        public Node(PointF trc, PointF blc)
         {
             TopRightCorner = trc;
             BottomLeftCorner = blc;
@@ -54,20 +54,20 @@ namespace Barnes_Hut_GUI
         void partitionNode()
         {
             double halfOfSideLength = SideLength / 2;
-            Point SETopRight = new Point(TopRightCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
-            Point SEBottomLeft = new Point((int)halfOfSideLength + BottomLeftCorner.X, BottomLeftCorner.Y);
+            PointF SETopRight = new PointF(TopRightCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
+            PointF SEBottomLeft = new PointF((int)halfOfSideLength + BottomLeftCorner.X, BottomLeftCorner.Y);
             SeChild = new Node(SETopRight, SEBottomLeft);
 
-            Point NETopRight = new Point(TopRightCorner.X, TopRightCorner.Y);
-            Point NEBottomLeft = new Point((int)halfOfSideLength + BottomLeftCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
+            PointF NETopRight = new PointF(TopRightCorner.X, TopRightCorner.Y);
+            PointF NEBottomLeft = new PointF((int)halfOfSideLength + BottomLeftCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
             NeChild = new Node(NETopRight, NEBottomLeft);
 
-            Point NWTopRight = new Point((int)halfOfSideLength + BottomLeftCorner.X, TopRightCorner.Y);
-            Point NWBottomLeft = new Point(BottomLeftCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
+            PointF NWTopRight = new PointF((int)halfOfSideLength + BottomLeftCorner.X, TopRightCorner.Y);
+            PointF NWBottomLeft = new PointF(BottomLeftCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
             NwChild = new Node(NWTopRight, NWBottomLeft);
 
-            Point SWTopRight = new Point((int)halfOfSideLength + BottomLeftCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
-            Point SWBottomLeft = new Point(BottomLeftCorner.X, BottomLeftCorner.Y);
+            PointF SWTopRight = new PointF((int)halfOfSideLength + BottomLeftCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
+            PointF SWBottomLeft = new PointF(BottomLeftCorner.X, BottomLeftCorner.Y);
             SwChild = new Node(SWTopRight, SWBottomLeft);
             parentQuadrant firstParticleQuadrant = determineQuadrant(nodeParticles[0]);
             AddParticleToChild(firstParticleQuadrant, nodeParticles[0]);
@@ -133,9 +133,9 @@ namespace Barnes_Hut_GUI
         {
             parentQuadrant quadrant = parentQuadrant.SE;
 
-            double halfOfSide = SideLength / 2;
-            int xMiddle = BottomLeftCorner.X + (int)halfOfSide;
-            int yMiddle = TopRightCorner.Y + (int) halfOfSide;
+            float halfOfSide = SideLength / 2;
+            float xMiddle = BottomLeftCorner.X + halfOfSide;
+            float yMiddle = TopRightCorner.Y +  halfOfSide;
 
             if (particle.CenterPoint.X >= xMiddle)
             {

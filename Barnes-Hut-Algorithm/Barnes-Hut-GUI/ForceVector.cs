@@ -9,10 +9,11 @@ namespace Barnes_Hut_GUI
 {
     class ForceVector
     {
-        public Point Start { get; set; }
-        public Point End { get; set;  }
+        public PointF Start { get; set; }
+        public PointF End { get; set;  }
         public float Magnitude { get; set; }
-        public float Angle { get; set; }
+        public float sinAngle { get; set; }
+        public float cosAngle { get; set; }
 
         public float xLen { get; set; }
         public float yLen { get; set; }
@@ -21,24 +22,28 @@ namespace Barnes_Hut_GUI
         public int DirectionHorizontal { get; set; }
 
         public int DirectionVertical { get; set; }
-        public ForceVector(Point sPoint = default, float mag = 0, float ang = 0, float xL = 0f, float yL = 0f)
+        public ForceVector(PointF sPoint = default, float mag = 0, float sinAng = 0, float cosAng = 0)
 
         {
             Start = sPoint;
             Magnitude = mag;
-            Angle = ang;
-            xLen = xL;
-            yLen = yL;
+            sinAngle = sinAng;
+            cosAngle = cosAng;
             calculateEndPoint();
             calculateDirections();
 
         }
 
-        void calculateDirections() { }
+        void calculateDirections()
+        {
+
+        }
 
         void calculateEndPoint()
         {
-
+            xLen = cosAngle * Magnitude;
+            yLen = sinAngle * Magnitude;
+            End = new PointF(Start.X+xLen, Start.Y+yLen);
         }
     }
 }

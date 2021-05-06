@@ -14,7 +14,11 @@ namespace Barnes_Hut_GUI
     {
         private QuadTree mainTree;
         private Graphics graphics;
+        private Graphics forceVectGraphics;
         private Pen particlePen = new Pen(Color.CornflowerBlue);
+        private Pen minforceVectPen = new Pen(Color.ForestGreen);
+        private Pen midforceVectPen = new Pen(Color.SandyBrown);
+        private Pen maxforceVectPen = new Pen(Color.OrangeRed);
         private Brush particleBrush = new SolidBrush(Color.CornflowerBlue);
         private Brush particleBrushRed = new SolidBrush(Color.Red);
         private Brush particleBrushYellow = new SolidBrush(Color.Yellow);
@@ -43,6 +47,7 @@ namespace Barnes_Hut_GUI
             InitializeComponent();
             mainTree = new QuadTree();
             graphics = p_SimulationArea.CreateGraphics();
+            forceVectGraphics= p_ForcePanel.CreateGraphics();
             mainTree.alg = AlgToUse.PWI;
         }
 
@@ -140,9 +145,15 @@ namespace Barnes_Hut_GUI
             }
         }
 
-        private void rb_UsePWI_Click(object sender, EventArgs e)
+        private void btn_CalcForces_Click(object sender, EventArgs e)
         {
-
+            int targetParticle = int.Parse(tb_TargetParticleNum.Text);
+            mainTree.PairWiseForceCalculation();
+            if (ShowForceVect)
+            {
+                mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, minforceVectPen, midforceVectPen, maxforceVectPen);
+            }
+            
         }
     }
 }

@@ -46,13 +46,13 @@ namespace Barnes_Hut_GUI
             this.label3 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.btn_CalcForces = new System.Windows.Forms.Button();
-            this.tb_TargetParcielNum = new System.Windows.Forms.TextBox();
+            this.tb_TargetParticleNum = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.cb_ShowResForce = new System.Windows.Forms.CheckBox();
             this.rb_ParlBH = new System.Windows.Forms.RadioButton();
             this.cb_ShowGrouping = new System.Windows.Forms.CheckBox();
-            this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
+            this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.SuspendLayout();
             // 
             // p_SimulationArea
@@ -132,7 +132,6 @@ namespace Barnes_Hut_GUI
             this.rb_UsePWI.Text = "Use Pairwise Interactions";
             this.rb_UsePWI.UseVisualStyleBackColor = true;
             this.rb_UsePWI.CheckedChanged += new System.EventHandler(this.rb_UsePWI_CheckedChanged);
-            this.rb_UsePWI.Click += new System.EventHandler(this.rb_UsePWI_Click);
             // 
             // rb_UseBH
             // 
@@ -218,13 +217,14 @@ namespace Barnes_Hut_GUI
             this.btn_CalcForces.TabIndex = 17;
             this.btn_CalcForces.Text = "Calculate Forces";
             this.btn_CalcForces.UseVisualStyleBackColor = true;
+            this.btn_CalcForces.Click += new System.EventHandler(this.btn_CalcForces_Click);
             // 
-            // tb_TargetParcielNum
+            // tb_TargetParticleNum
             // 
-            this.tb_TargetParcielNum.Location = new System.Drawing.Point(824, 490);
-            this.tb_TargetParcielNum.Name = "tb_TargetParcielNum";
-            this.tb_TargetParcielNum.Size = new System.Drawing.Size(122, 20);
-            this.tb_TargetParcielNum.TabIndex = 18;
+            this.tb_TargetParticleNum.Location = new System.Drawing.Point(824, 490);
+            this.tb_TargetParticleNum.Name = "tb_TargetParticleNum";
+            this.tb_TargetParticleNum.Size = new System.Drawing.Size(122, 20);
+            this.tb_TargetParticleNum.TabIndex = 18;
             // 
             // label4
             // 
@@ -267,14 +267,6 @@ namespace Barnes_Hut_GUI
             this.cb_ShowGrouping.Text = "Show Grouping";
             this.cb_ShowGrouping.UseVisualStyleBackColor = true;
             // 
-            // p_ForcePanel
-            // 
-            this.p_ForcePanel.Location = new System.Drawing.Point(12, 12);
-            this.p_ForcePanel.Name = "p_ForcePanel";
-            this.p_ForcePanel.Opacity = 0;
-            this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
-            this.p_ForcePanel.TabIndex = 24;
-            // 
             // p_TreePanel
             // 
             this.p_TreePanel.Location = new System.Drawing.Point(12, 12);
@@ -282,6 +274,14 @@ namespace Barnes_Hut_GUI
             this.p_TreePanel.Opacity = 0;
             this.p_TreePanel.Size = new System.Drawing.Size(737, 737);
             this.p_TreePanel.TabIndex = 25;
+            // 
+            // p_ForcePanel
+            // 
+            this.p_ForcePanel.Location = new System.Drawing.Point(12, 12);
+            this.p_ForcePanel.Name = "p_ForcePanel";
+            this.p_ForcePanel.Opacity = 0;
+            this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
+            this.p_ForcePanel.TabIndex = 24;
             // 
             // Form1
             // 
@@ -294,7 +294,7 @@ namespace Barnes_Hut_GUI
             this.Controls.Add(this.rb_ParlBH);
             this.Controls.Add(this.cb_ShowResForce);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.tb_TargetParcielNum);
+            this.Controls.Add(this.tb_TargetParticleNum);
             this.Controls.Add(this.btn_CalcForces);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.textBox1);
@@ -338,7 +338,7 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button btn_CalcForces;
-        private System.Windows.Forms.TextBox tb_TargetParcielNum;
+        private System.Windows.Forms.TextBox tb_TargetParticleNum;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox cb_ShowResForce;
         private System.Windows.Forms.RadioButton rb_ParlBH;

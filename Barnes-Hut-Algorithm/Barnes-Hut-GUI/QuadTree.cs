@@ -29,10 +29,12 @@ namespace Barnes_Hut_GUI
         public AlgToUse alg { get; set; }
 
 
+
+
         public QuadTree()
         {
-            Point bottomLeft = new Point(0, 737);
-            Point topRight = new Point(737, 0);
+            PointF bottomLeft = new Point(0, 737);
+            PointF topRight = new Point(737, 0);
             RootNode = new Node(topRight, bottomLeft);
             RootNode.IsRoot = true;
             AllParticles = new List<Particle>();
@@ -77,7 +79,6 @@ namespace Barnes_Hut_GUI
             if (AllParticles.Count > 100)
             {
                 return;
-
             }
 
             for (int i = 0; i < AllParticles.Count; i++)
@@ -86,9 +87,34 @@ namespace Barnes_Hut_GUI
                 {
                     if (j != i)
                     {
-
+                        List<float> distanceInfo = CalculateDistanceToNode(AllParticles[i], AllParticles[j].CenterPoint);
+                        float forceVecMag = CalculateForces(distanceInfo[0], AllParticles[i].Mass, AllParticles[j].Mass);
+                        AllParticles[i].AddForce(new ForceVector(AllParticles[i].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
                     }
                 }
+            }
+        }
+
+        public void VisualizeForceVectors(int particleNumber, Graphics currenctGraphics, Pen minPen, Pen midPen, Pen maxPen)
+        {
+
+            for (int i = 0; i < AllParticles[particleNumber].ForcesToApply.Count; i++)
+            {
+                float forceVecMag = AllParticles[particleNumber].ForcesToApply[i].Magnitude;
+                PointF forceVectStart = AllParticles[particleNumber].ForcesToApply[i].Start;
+                PointF forceVectEnd = AllParticles[particleNumber].ForcesToApply[i].End;
+
+                if (forceVecMag == AllParticles[particleNumber].MinForce)
+                {
+                    currenctGraphics.DrawLine(minPen, forceVectStart, forceVectEnd);
+                }
+                else if (forceVecMag == AllParticles[particleNumber].MaxForce)
+                {
+                    currenctGraphics.DrawLine(maxPen, forceVectStart, forceVectEnd);
+                }
+                else { currenctGraphics.DrawLine(midPen, forceVectStart, forceVectEnd); }
+
+
             }
         }
 
@@ -118,7 +144,7 @@ namespace Barnes_Hut_GUI
             {
 
                 float force = CalculateForces(distanceToNodeInfo[0], currentParticle.Mass, startNode.TotalMass);
-                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint, mag: distanceToNodeInfo[0], ang: distanceToNodeInfo[1], xL: 0f, yL: 0f);
+                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
                 currentParticle.ForcesToApply.Add(forceVect);
 
             }
@@ -141,13 +167,14 @@ namespace Barnes_Hut_GUI
             return distanceToNode * theta < nodeSideLength;
         }
 
-        public List<float> CalculateDistanceToNode(Particle targetParticle, Point targetPoint)
+        public List<float> CalculateDistanceToNode(Particle targetParticle, PointF targetPoint)
         {
-            float sideA = Math.Abs(targetPoint.X - targetParticle.CenterPoint.X);
-            float sideB = Math.Abs(targetPoint.Y - targetParticle.CenterPoint.Y);
+            float sideA = targetPoint.X - targetParticle.CenterPoint.X;
+            float sideB = targetPoint.Y - targetParticle.CenterPoint.Y;
             float distance = (float)Math.Sqrt(Math.Pow(sideA, 2) + Math.Pow(sideB, 2));
             float angleSin = sideB / distance;
-            return new List<float>() { distance, angleSin };
+            float angleCos = sideA / distance;
+            return new List<float>() { distance, angleSin, angleCos };
         }
 
         public void ParitionSpace()
