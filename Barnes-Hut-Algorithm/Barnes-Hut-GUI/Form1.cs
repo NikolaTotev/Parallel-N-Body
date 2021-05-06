@@ -24,6 +24,7 @@ namespace Barnes_Hut_GUI
         private bool ShowTree;
         private bool ShowEmptyCells;
         private bool ShowForceVect;
+        private bool ShowGrouping;
         private AlgToUse alg = AlgToUse.PWI;
 
 
@@ -108,20 +109,40 @@ namespace Barnes_Hut_GUI
 
         private void rb_UsePWI_CheckedChanged(object sender, EventArgs e)
         {
-            if (rb_UseBH.Checked)
+            if (rb_UsePWI.Checked)
             {
-                alg = AlgToUse.BH;
-                mainTree.alg = AlgToUse.BH;
+                alg = AlgToUse.PWI;
+                mainTree.alg = AlgToUse.PWI;
+                cb_ShowGrouping.Enabled = false;
+                ShowGrouping = false;
+                mainTree.ShowGrouping = false;
+
             }
         }
 
         private void rb_UseBH_CheckedChanged(object sender, EventArgs e)
         {
-            if (rb_UsePWI.Checked)
+            if (rb_UseBH.Checked)
             {
-                alg = AlgToUse.PWI;
-                mainTree.alg = AlgToUse.PWI;
+                alg = AlgToUse.BH;
+                mainTree.alg = AlgToUse.BH;
+                cb_ShowGrouping.Enabled = true;
             }
+        }
+
+        private void rb_ParlBH_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_ParlBH.Checked)
+            {
+                alg = AlgToUse.PBH;
+                mainTree.alg = AlgToUse.PBH;
+                cb_ShowGrouping.Enabled = true;
+            }
+        }
+
+        private void rb_UsePWI_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
