@@ -35,6 +35,13 @@ namespace Barnes_Hut_GUI
             this.btn_Partition = new System.Windows.Forms.Button();
             this.btn_GenerateParticles = new System.Windows.Forms.Button();
             this.btn_Reset = new System.Windows.Forms.Button();
+            this.cb_ForceVect = new System.Windows.Forms.CheckBox();
+            this.rb_UsePWI = new System.Windows.Forms.RadioButton();
+            this.rb_UseBH = new System.Windows.Forms.RadioButton();
+            this.cb_TreeOutline = new System.Windows.Forms.CheckBox();
+            this.cb_ShowEmptyCells = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tb_Theta = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // p_SimulationArea
@@ -92,11 +99,92 @@ namespace Barnes_Hut_GUI
             this.btn_Reset.UseVisualStyleBackColor = true;
             this.btn_Reset.Click += new System.EventHandler(this.btn_Reset_Click);
             // 
+            // cb_ForceVect
+            // 
+            this.cb_ForceVect.AutoSize = true;
+            this.cb_ForceVect.Location = new System.Drawing.Point(869, 492);
+            this.cb_ForceVect.Name = "cb_ForceVect";
+            this.cb_ForceVect.Size = new System.Drawing.Size(116, 17);
+            this.cb_ForceVect.TabIndex = 5;
+            this.cb_ForceVect.Text = "ShowForceVectors";
+            this.cb_ForceVect.UseVisualStyleBackColor = true;
+            this.cb_ForceVect.CheckedChanged += new System.EventHandler(this.cb_ForceVect_CheckedChanged);
+            // 
+            // rb_UsePWI
+            // 
+            this.rb_UsePWI.AutoSize = true;
+            this.rb_UsePWI.Location = new System.Drawing.Point(1005, 492);
+            this.rb_UsePWI.Name = "rb_UsePWI";
+            this.rb_UsePWI.Size = new System.Drawing.Size(144, 17);
+            this.rb_UsePWI.TabIndex = 8;
+            this.rb_UsePWI.TabStop = true;
+            this.rb_UsePWI.Text = "Use Pairwise Interactions";
+            this.rb_UsePWI.UseVisualStyleBackColor = true;
+            this.rb_UsePWI.CheckedChanged += new System.EventHandler(this.rb_UsePWI_CheckedChanged);
+            // 
+            // rb_UseBH
+            // 
+            this.rb_UseBH.AutoSize = true;
+            this.rb_UseBH.Location = new System.Drawing.Point(1005, 515);
+            this.rb_UseBH.Name = "rb_UseBH";
+            this.rb_UseBH.Size = new System.Drawing.Size(62, 17);
+            this.rb_UseBH.TabIndex = 9;
+            this.rb_UseBH.TabStop = true;
+            this.rb_UseBH.Text = "Use BH";
+            this.rb_UseBH.UseVisualStyleBackColor = true;
+            this.rb_UseBH.CheckedChanged += new System.EventHandler(this.rb_UseBH_CheckedChanged);
+            // 
+            // cb_TreeOutline
+            // 
+            this.cb_TreeOutline.AutoSize = true;
+            this.cb_TreeOutline.Location = new System.Drawing.Point(869, 516);
+            this.cb_TreeOutline.Name = "cb_TreeOutline";
+            this.cb_TreeOutline.Size = new System.Drawing.Size(114, 17);
+            this.cb_TreeOutline.TabIndex = 10;
+            this.cb_TreeOutline.Text = "Show Tree Outline";
+            this.cb_TreeOutline.UseVisualStyleBackColor = true;
+            this.cb_TreeOutline.CheckedChanged += new System.EventHandler(this.cb_TreeOutline_CheckedChanged);
+            // 
+            // cb_ShowEmptyCells
+            // 
+            this.cb_ShowEmptyCells.AutoSize = true;
+            this.cb_ShowEmptyCells.Location = new System.Drawing.Point(869, 539);
+            this.cb_ShowEmptyCells.Name = "cb_ShowEmptyCells";
+            this.cb_ShowEmptyCells.Size = new System.Drawing.Size(109, 17);
+            this.cb_ShowEmptyCells.TabIndex = 11;
+            this.cb_ShowEmptyCells.Text = "Show Empty cells";
+            this.cb_ShowEmptyCells.UseVisualStyleBackColor = true;
+            this.cb_ShowEmptyCells.CheckedChanged += new System.EventHandler(this.cb_ShowEmptyCells_CheckedChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(964, 439);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(35, 13);
+            this.label2.TabIndex = 13;
+            this.label2.Text = "Theta";
+            // 
+            // tb_Theta
+            // 
+            this.tb_Theta.Location = new System.Drawing.Point(1005, 436);
+            this.tb_Theta.Name = "tb_Theta";
+            this.tb_Theta.Size = new System.Drawing.Size(75, 20);
+            this.tb_Theta.TabIndex = 12;
+            this.tb_Theta.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 761);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.tb_Theta);
+            this.Controls.Add(this.cb_ShowEmptyCells);
+            this.Controls.Add(this.cb_TreeOutline);
+            this.Controls.Add(this.rb_UseBH);
+            this.Controls.Add(this.rb_UsePWI);
+            this.Controls.Add(this.cb_ForceVect);
             this.Controls.Add(this.btn_Reset);
             this.Controls.Add(this.btn_GenerateParticles);
             this.Controls.Add(this.btn_Partition);
@@ -118,6 +206,13 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.Button btn_Partition;
         private System.Windows.Forms.Button btn_GenerateParticles;
         private System.Windows.Forms.Button btn_Reset;
+        private System.Windows.Forms.CheckBox cb_ForceVect;
+        private System.Windows.Forms.RadioButton rb_UsePWI;
+        private System.Windows.Forms.RadioButton rb_UseBH;
+        private System.Windows.Forms.CheckBox cb_TreeOutline;
+        private System.Windows.Forms.CheckBox cb_ShowEmptyCells;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox tb_Theta;
     }
 }
 

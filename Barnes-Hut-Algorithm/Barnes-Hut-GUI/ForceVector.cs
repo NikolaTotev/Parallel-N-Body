@@ -21,8 +21,8 @@ namespace Barnes_Hut_GUI
         public int DirectionHorizontal { get; set; }
 
         public int DirectionVertical { get; set; }
+        public ForceVector(Point sPoint=default, Point ePoint =default, float mag=0, float ang=0, float xL=0f, float yL= 0f)
 
-        public ForceVector(Point sPoint, Point ePoint, float mag, float ang, float xL, float yL)
         {
             Start = sPoint;
             End = ePoint;

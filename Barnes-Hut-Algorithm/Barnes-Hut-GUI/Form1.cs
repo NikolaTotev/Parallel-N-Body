@@ -21,6 +21,11 @@ namespace Barnes_Hut_GUI
         private int ElipseRadius1 = 3;
         private int ElipseRadius2 = 2;
         private float ElipseRadius3 = 0.5f;
+        private bool ShowTree;
+        private bool ShowEmptyCells;
+        private bool ShowForceVect;
+        private AlgToUse alg = AlgToUse.PWI;
+
 
         List<Brush> Brushes = new List<Brush>()
         {
@@ -37,6 +42,7 @@ namespace Barnes_Hut_GUI
             InitializeComponent();
             mainTree = new QuadTree();
             graphics = p_SimulationArea.CreateGraphics();
+            mainTree.alg = AlgToUse.PWI;
         }
 
         private void btn_Partition_Click(object sender, EventArgs e)
@@ -45,9 +51,12 @@ namespace Barnes_Hut_GUI
             mainTree.Traverse(mainTree.RootNode, graphics, particlePen);
             for (int i = 0; i < mainTree.AllParticles.Count; i++)
             {
-                graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1, mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1* 2);
-                graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2, mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
-                graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3, mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
+                graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
+                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1 * 2);
+                graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2,
+                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
+                graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3,
+                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
             }
         }
 
@@ -58,9 +67,12 @@ namespace Barnes_Hut_GUI
 
             for (int i = 0; i < particleCount; i++)
             {
-               graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X-ElipseRadius1, mainTree.AllParticles[i].CenterPoint.Y- ElipseRadius1, ElipseRadius1*2, ElipseRadius1 * 2);
-               graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X- ElipseRadius2, mainTree.AllParticles[i].CenterPoint.Y- ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
-               graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X- ElipseRadius3, mainTree.AllParticles[i].CenterPoint.Y- ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
+                graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
+                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1 * 2);
+                graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2,
+                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
+                graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3,
+                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
             }
 
         }
@@ -69,6 +81,47 @@ namespace Barnes_Hut_GUI
         {
             mainTree.ClearParticles();
             graphics.Clear(Color.White);
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cb_ForceVect_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowForceVect = cb_ForceVect.Checked;
+            mainTree.ShowForceVect = cb_ForceVect.Checked;
+        }
+
+        private void cb_TreeOutline_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowForceVect = cb_TreeOutline.Checked;
+            mainTree.ShowForceVect = cb_TreeOutline.Checked;
+        }
+
+        private void cb_ShowEmptyCells_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowForceVect = cb_ShowEmptyCells.Checked;
+            mainTree.ShowForceVect = cb_ShowEmptyCells.Checked;
+        }
+
+        private void rb_UsePWI_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_UseBH.Checked)
+            {
+                alg = AlgToUse.BH;
+                mainTree.alg = AlgToUse.BH;
+            }
+        }
+
+        private void rb_UseBH_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_UsePWI.Checked)
+            {
+                alg = AlgToUse.PWI;
+                mainTree.alg = AlgToUse.PWI;
+            }
         }
     }
 }
