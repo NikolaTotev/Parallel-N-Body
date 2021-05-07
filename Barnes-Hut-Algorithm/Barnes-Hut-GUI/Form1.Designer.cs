@@ -29,7 +29,6 @@ namespace Barnes_Hut_GUI
         /// </summary>
         private void InitializeComponent()
         {
-            this.p_SimulationArea = new System.Windows.Forms.Panel();
             this.tb_ParticleCount = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btn_Partition = new System.Windows.Forms.Button();
@@ -53,16 +52,8 @@ namespace Barnes_Hut_GUI
             this.cb_ShowGrouping = new System.Windows.Forms.CheckBox();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
+            this.p_SimulationArea = new System.Windows.Forms.Panel();
             this.SuspendLayout();
-            // 
-            // p_SimulationArea
-            // 
-            this.p_SimulationArea.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.p_SimulationArea.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.p_SimulationArea.Location = new System.Drawing.Point(12, 12);
-            this.p_SimulationArea.Name = "p_SimulationArea";
-            this.p_SimulationArea.Size = new System.Drawing.Size(737, 737);
-            this.p_SimulationArea.TabIndex = 0;
             // 
             // tb_ParticleCount
             // 
@@ -283,6 +274,15 @@ namespace Barnes_Hut_GUI
             this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
             this.p_ForcePanel.TabIndex = 24;
             // 
+            // p_SimulationArea
+            // 
+            this.p_SimulationArea.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.p_SimulationArea.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.p_SimulationArea.Location = new System.Drawing.Point(12, 12);
+            this.p_SimulationArea.Name = "p_SimulationArea";
+            this.p_SimulationArea.Size = new System.Drawing.Size(737, 737);
+            this.p_SimulationArea.TabIndex = 0;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -320,8 +320,6 @@ namespace Barnes_Hut_GUI
         }
 
         #endregion
-
-        private System.Windows.Forms.Panel p_SimulationArea;
         private System.Windows.Forms.TextBox tb_ParticleCount;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btn_Partition;
@@ -345,6 +343,7 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.CheckBox cb_ShowGrouping;
         private TransparentPanel p_ForcePanel;
         private TransparentPanel p_TreePanel;
+        private System.Windows.Forms.Panel p_SimulationArea;
     }
 }
 

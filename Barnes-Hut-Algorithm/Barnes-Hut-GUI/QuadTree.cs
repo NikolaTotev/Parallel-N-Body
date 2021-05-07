@@ -113,8 +113,6 @@ namespace Barnes_Hut_GUI
                     currenctGraphics.DrawLine(maxPen, forceVectStart, forceVectEnd);
                 }
                 else { currenctGraphics.DrawLine(midPen, forceVectStart, forceVectEnd); }
-
-
             }
         }
 

@@ -87,6 +87,7 @@ namespace Barnes_Hut_GUI
         {
             mainTree.ClearParticles();
             graphics.Clear(Color.White);
+
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
