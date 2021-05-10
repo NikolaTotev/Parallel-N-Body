@@ -11,6 +11,7 @@ namespace Barnes_Hut_GUI
     {
         public PointF Start { get; set; }
         public PointF End { get; set;  }
+        public PointF EffectorCOM { get; set;  }
         public float Magnitude { get; set; }
         public float sinAngle { get; set; }
         public float cosAngle { get; set; }
@@ -22,13 +23,14 @@ namespace Barnes_Hut_GUI
         public int DirectionHorizontal { get; set; }
 
         public int DirectionVertical { get; set; }
-        public ForceVector(PointF sPoint = default, float mag = 0, float sinAng = 0, float cosAng = 0)
+        public ForceVector(PointF sPoint = default, PointF effector = default, float mag = 0, float sinAng = 0, float cosAng = 0)
 
         {
             Start = sPoint;
             Magnitude = mag;
             sinAngle = sinAng;
             cosAngle = cosAng;
+            EffectorCOM = effector;
             calculateEndPoint();
             calculateDirections();
 

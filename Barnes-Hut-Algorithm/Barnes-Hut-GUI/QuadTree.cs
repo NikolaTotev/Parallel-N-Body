@@ -89,7 +89,7 @@ namespace Barnes_Hut_GUI
                     {
                         List<float> distanceInfo = CalculateDistanceToNode(AllParticles[i], AllParticles[j].CenterPoint);
                         float forceVecMag = CalculateForces(distanceInfo[0], AllParticles[i].Mass, AllParticles[j].Mass);
-                        AllParticles[i].AddForce(new ForceVector(AllParticles[i].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
+                        AllParticles[i].AddForce(new ForceVector(AllParticles[i].CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
                     }
                 }
             }
@@ -124,33 +124,53 @@ namespace Barnes_Hut_GUI
             }
         }
 
+        public void SingleBHStep(int targetParticle)
+        {
+            ForceTraversal(AllParticles[targetParticle], RootNode);
+        }
+
         public void ForceTraversal(Particle currentParticle, Node startNode)
         {
             List<float> distanceToNodeInfo = new List<float>();
-            if (startNode.IsLeaf)
+
+            if (startNode.nodeParticles.Count == 1)
             {
                 distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.nodeParticles[0].CenterPoint);
-
             }
             else
             {
                 distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.centerOfMass);
             }
 
+            //if (startNode.IsLeaf)
+            //{
+            //    distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.nodeParticles[0].CenterPoint);
 
-            if (LengthIsOverDouble(startNode.SideLength, distanceToNodeInfo[0]))
+            //}
+            //else
+            //{
+            //    distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.centerOfMass);
+            //}
+
+
+            if (LengthIsOverDouble(startNode.SideLength, distanceToNodeInfo[0]) || startNode.nodeParticles.Count == 1)
             {
 
                 float force = CalculateForces(distanceToNodeInfo[0], currentParticle.Mass, startNode.TotalMass);
-                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
+                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint,startNode.centerOfMass ,mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
+                if (startNode.nodeParticles.Count == 1)
+                { 
+                    forceVect = new ForceVector(currentParticle.CenterPoint, startNode.nodeParticles[0].CenterPoint, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
+                } 
                 currentParticle.ForcesToApply.Add(forceVect);
-
             }
-
-            ForceTraversal(currentParticle, startNode.SeChild);
-            ForceTraversal(currentParticle, startNode.NeChild);
-            ForceTraversal(currentParticle, startNode.NwChild);
-            ForceTraversal(currentParticle, startNode.SwChild);
+            else
+            {
+                ForceTraversal(currentParticle, startNode.SeChild);
+                ForceTraversal(currentParticle, startNode.NeChild);
+                ForceTraversal(currentParticle, startNode.NwChild);
+                ForceTraversal(currentParticle, startNode.SwChild);
+            }
         }
 
         float CalculateForces(float distance, float particleMass, float nodeMass)
