@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Math;
+using System.Diagnostics;
+
 
 namespace Barnes_Hut_GUI
 {
@@ -19,7 +22,7 @@ namespace Barnes_Hut_GUI
 
         public Node RootNode { get; set; }
         private const float G = 9.8f;
-        public float theta = 0.5f;
+        public float theta = 2f;
 
         public bool ShowTree { get; set; }
         public bool ShowEmptyCells { get; set; }
@@ -54,6 +57,8 @@ namespace Barnes_Hut_GUI
                 currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
                 currenctGraphics.FillEllipse(Brushes.MediumPurple, nextNode.centerOfMass.X - 5,
                     nextNode.centerOfMass.Y - 5, 5 * 2, 5 * 2);
+                currenctGraphics.FillEllipse(Brushes.White, nextNode.centerOfMass.X - 0.5f,
+                    nextNode.centerOfMass.Y - 0.5f, 0.5f * 2, 0.5f * 2);
                 return;
             }
 
@@ -71,6 +76,8 @@ namespace Barnes_Hut_GUI
                 {
                     currenctGraphics.FillEllipse(Brushes.Pink, nextNode.centerOfMass.X - 7,
                         nextNode.centerOfMass.Y - 7, 7 * 2, 7 * 2);
+                    currenctGraphics.FillEllipse(Brushes.DarkBlue, nextNode.centerOfMass.X - 0.5f,
+                        nextNode.centerOfMass.Y - 0.5f, 0.5f * 2, 0.5f * 2);
                 }
                 else
                 {
@@ -78,8 +85,10 @@ namespace Barnes_Hut_GUI
                     {
                         currenctGraphics.FillEllipse(Brushes.Thistle, nextNode.centerOfMass.X - 8,
                             nextNode.centerOfMass.Y - 8, 8 * 2, 8 * 2);
+                        currenctGraphics.FillEllipse(Brushes.DeepPink, nextNode.centerOfMass.X - 0.5f,
+                            nextNode.centerOfMass.Y - 0.5f, 0.5f * 2, 0.5f * 2);
                     }
-                    
+
                 }
 
             }
@@ -137,7 +146,7 @@ namespace Barnes_Hut_GUI
 
         public void VisualizeGrouping(int particleNumber, Graphics currenctGraphics, Pen graphicsPen)
         {
-
+            Pen drawPen = new Pen(Color.SkyBlue, 2.0f);
             for (int i = 0; i < AllParticles[particleNumber].ForcesToApply.Count; i++)
             {
                 float forceVecMag = AllParticles[particleNumber].ForcesToApply[i].Magnitude;
@@ -145,8 +154,10 @@ namespace Barnes_Hut_GUI
                 PointF forceVectEnd = AllParticles[particleNumber].ForcesToApply[i].EffectorCOM;
 
                 currenctGraphics.DrawLine(graphicsPen, forceVectStart, forceVectEnd);
-                currenctGraphics.FillEllipse(Brushes.SkyBlue, forceVectEnd.X - 5,
-                    forceVectEnd.Y - 5, 5 * 2, 5 * 2);
+                currenctGraphics.DrawEllipse(drawPen, forceVectEnd.X - 4,
+                    forceVectEnd.Y - 4, 4 * 2, 4 * 2);
+                currenctGraphics.FillEllipse(Brushes.NavajoWhite, forceVectEnd.X - 0.5f,
+                    forceVectEnd.Y - 0.5f, 0.5f * 2, 0.5f * 2);
             }
         }
 
@@ -164,6 +175,32 @@ namespace Barnes_Hut_GUI
             ForceTraversal(AllParticles[targetParticle], RootNode.NeChild);
             ForceTraversal(AllParticles[targetParticle], RootNode.NwChild);
             ForceTraversal(AllParticles[targetParticle], RootNode.SwChild);
+        }
+
+        public long ParallelSingleBHStep(int targetParticle)
+        {
+            Stopwatch sw = new Stopwatch();
+            Thread SeThread = new Thread(new ThreadStart(() => ForceTraversal(AllParticles[targetParticle], RootNode.SeChild)
+                ));
+            Thread NeThread = new Thread(new ThreadStart(() => ForceTraversal(AllParticles[targetParticle], RootNode.NeChild)
+                ));
+            Thread NwThread = new Thread(new ThreadStart(() => ForceTraversal(AllParticles[targetParticle], RootNode.NwChild)
+                ));
+            Thread SwThread = new Thread(new ThreadStart(()=>ForceTraversal(AllParticles[targetParticle], RootNode.SwChild)
+                ));
+
+            SeThread.Start();
+            NeThread.Start();
+            NwThread.Start();
+            SwThread.Start();
+
+            sw.Start();
+            SeThread.Join();
+            NeThread.Join(); 
+            NwThread.Join();
+            SwThread.Join();
+            sw.Stop();
+            return sw.ElapsedMilliseconds;
         }
 
         public void ForceTraversal(Particle currentParticle, Node startNode)
@@ -269,8 +306,8 @@ namespace Barnes_Hut_GUI
             {
                 Particle newParticle = new Particle();
                 Point particleCenter = new Point(rand.Next(5, 730), rand.Next(5, 730));
-                newParticle.CenterPoint = testPoints[i];
-                //newParticle.CenterPoint = particleCenter;
+                //newParticle.CenterPoint = testPoints[i];
+                newParticle.CenterPoint = particleCenter;
                 AllParticles.Add(newParticle);
             }
         }

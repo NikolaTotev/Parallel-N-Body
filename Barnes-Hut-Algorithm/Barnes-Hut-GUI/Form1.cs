@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
+using System.Threading;
+
 
 namespace Barnes_Hut_GUI
 {
@@ -15,7 +18,8 @@ namespace Barnes_Hut_GUI
         private QuadTree mainTree;
         private Graphics graphics;
         private Graphics forceVectGraphics;
-        private Pen particlePen = new Pen(Color.CornflowerBlue);
+        private Pen particlePen = new Pen(Color.White);
+        private Pen treePen = new Pen(Color.LightBlue);
         private Pen minforceVectPen = new Pen(Color.ForestGreen);
         private Pen midforceVectPen = new Pen(Color.SandyBrown);
         private Pen maxforceVectPen = new Pen(Color.OrangeRed);
@@ -55,17 +59,19 @@ namespace Barnes_Hut_GUI
 
         private void btn_Partition_Click(object sender, EventArgs e)
         {
-            mainTree.ParitionSpace();
-            mainTree.Traverse(mainTree.RootNode, graphics, particlePen);
-            for (int i = 0; i < mainTree.AllParticles.Count; i++)
-            {
-                graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
-                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1 * 2);
-                graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2,
-                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
-                graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3,
-                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
-            }
+            Thread T = new Thread(()=> mainTree.ParitionSpace(), 1073741824);
+            T.Start();
+            
+            //mainTree.Traverse(mainTree.RootNode, graphics, treePen);
+            //for (int i = 0; i < mainTree.AllParticles.Count; i++)
+            //{
+            //    graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
+            //        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1 * 2);
+            //    graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2,
+            //        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
+            //    graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3,
+            //        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
+            //}
         }
 
         private void btn_GenerateParticles_Click(object sender, EventArgs e)
@@ -157,16 +163,30 @@ namespace Barnes_Hut_GUI
         private void btn_CalcForces_Click(object sender, EventArgs e)
         {
             int targetParticle = int.Parse(tb_TargetParticleNum.Text);
+            Stopwatch sw = new Stopwatch();
 
             switch (alg)
             {
                 case AlgToUse.BH:
+                    sw.Start();
                     mainTree.SingleBHStep(targetParticle);
+                    sw.Stop();
+                    l_TotalTimeValue.Text = sw.ElapsedMilliseconds.ToString();
+                    l_BHSingleStepTimeValue.Text = sw.ElapsedMilliseconds.ToString();
                     break;
                 case AlgToUse.PWI:
+                    sw.Start();
                     mainTree.PairWiseForceCalculation();
+                    sw.Stop();
+                    l_TotalTimeValue.Text = sw.ElapsedMilliseconds.ToString();
+                    l_PWITimeValue.Text = sw.ElapsedMilliseconds.ToString();
                     break;
                 case AlgToUse.PBH:
+                    //sw.Start();
+                    long time = mainTree.ParallelSingleBHStep(targetParticle);
+                    //sw.Stop();
+                    l_TotalTimeValue.Text = time.ToString();
+                    l_BHParlTimeValue.Text = time.ToString();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -182,8 +202,8 @@ namespace Barnes_Hut_GUI
                 mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, midforceVectPen);
             }
 
-        }
+            
 
-      
+        }
     }
 }

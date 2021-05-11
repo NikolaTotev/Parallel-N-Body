@@ -19,6 +19,7 @@ namespace Barnes_Hut_GUI
 
         private bool initialMinMaxNotSet = true;
 
+        private readonly object listLock = new object();
 
         public Particle()
         {
@@ -52,7 +53,11 @@ namespace Barnes_Hut_GUI
                 MidForce = (MaxForce - MinForce) / 2;
             }
 
-            ForcesToApply.Add(currentVector);
+            lock (listLock)
+            {
+                ForcesToApply.Add(currentVector);
+            }
+            
         }
 
         public void CalculateResultantForce()

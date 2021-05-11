@@ -51,8 +51,24 @@ namespace Barnes_Hut_GUI
             this.rb_ParlBH = new System.Windows.Forms.RadioButton();
             this.cb_ShowGrouping = new System.Windows.Forms.CheckBox();
             this.p_SimulationArea = new System.Windows.Forms.Panel();
+            this.iL_ExecMetrics = new System.Windows.Forms.Label();
+            this.iL_Start = new System.Windows.Forms.Label();
+            this.iL_End = new System.Windows.Forms.Label();
+            this.iL_Total = new System.Windows.Forms.Label();
+            this.p_ExecMetrics = new System.Windows.Forms.Panel();
+            this.iL_lastRun = new System.Windows.Forms.Label();
+            this.iL_PWI = new System.Windows.Forms.Label();
+            this.iL_BHSingleStep = new System.Windows.Forms.Label();
+            this.iL_BHParlSingleStep = new System.Windows.Forms.Label();
+            this.l_StartTimeValue = new System.Windows.Forms.Label();
+            this.l_EndTimeValue = new System.Windows.Forms.Label();
+            this.l_TotalTimeValue = new System.Windows.Forms.Label();
+            this.l_PWITimeValue = new System.Windows.Forms.Label();
+            this.l_BHSingleStepTimeValue = new System.Windows.Forms.Label();
+            this.l_BHParlTimeValue = new System.Windows.Forms.Label();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
+            this.p_ExecMetrics.SuspendLayout();
             this.SuspendLayout();
             // 
             // tb_ParticleCount
@@ -104,7 +120,7 @@ namespace Barnes_Hut_GUI
             // cb_ForceVect
             // 
             this.cb_ForceVect.AutoSize = true;
-            this.cb_ForceVect.Location = new System.Drawing.Point(824, 516);
+            this.cb_ForceVect.Location = new System.Drawing.Point(789, 434);
             this.cb_ForceVect.Name = "cb_ForceVect";
             this.cb_ForceVect.Size = new System.Drawing.Size(122, 17);
             this.cb_ForceVect.TabIndex = 5;
@@ -202,7 +218,7 @@ namespace Barnes_Hut_GUI
             // 
             // btn_CalcForces
             // 
-            this.btn_CalcForces.Location = new System.Drawing.Point(824, 585);
+            this.btn_CalcForces.Location = new System.Drawing.Point(789, 503);
             this.btn_CalcForces.Name = "btn_CalcForces";
             this.btn_CalcForces.Size = new System.Drawing.Size(131, 23);
             this.btn_CalcForces.TabIndex = 17;
@@ -212,7 +228,7 @@ namespace Barnes_Hut_GUI
             // 
             // tb_TargetParticleNum
             // 
-            this.tb_TargetParticleNum.Location = new System.Drawing.Point(824, 490);
+            this.tb_TargetParticleNum.Location = new System.Drawing.Point(789, 408);
             this.tb_TargetParticleNum.Name = "tb_TargetParticleNum";
             this.tb_TargetParticleNum.Size = new System.Drawing.Size(122, 20);
             this.tb_TargetParticleNum.TabIndex = 18;
@@ -220,7 +236,7 @@ namespace Barnes_Hut_GUI
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(823, 474);
+            this.label4.Location = new System.Drawing.Point(788, 392);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(76, 13);
             this.label4.TabIndex = 19;
@@ -229,7 +245,7 @@ namespace Barnes_Hut_GUI
             // cb_ShowResForce
             // 
             this.cb_ShowResForce.AutoSize = true;
-            this.cb_ShowResForce.Location = new System.Drawing.Point(824, 539);
+            this.cb_ShowResForce.Location = new System.Drawing.Point(789, 457);
             this.cb_ShowResForce.Name = "cb_ShowResForce";
             this.cb_ShowResForce.Size = new System.Drawing.Size(131, 17);
             this.cb_ShowResForce.TabIndex = 20;
@@ -251,7 +267,7 @@ namespace Barnes_Hut_GUI
             // cb_ShowGrouping
             // 
             this.cb_ShowGrouping.AutoSize = true;
-            this.cb_ShowGrouping.Location = new System.Drawing.Point(824, 562);
+            this.cb_ShowGrouping.Location = new System.Drawing.Point(789, 480);
             this.cb_ShowGrouping.Name = "cb_ShowGrouping";
             this.cb_ShowGrouping.Size = new System.Drawing.Size(99, 17);
             this.cb_ShowGrouping.TabIndex = 22;
@@ -267,6 +283,154 @@ namespace Barnes_Hut_GUI
             this.p_SimulationArea.Name = "p_SimulationArea";
             this.p_SimulationArea.Size = new System.Drawing.Size(737, 737);
             this.p_SimulationArea.TabIndex = 0;
+            // 
+            // iL_ExecMetrics
+            // 
+            this.iL_ExecMetrics.AutoSize = true;
+            this.iL_ExecMetrics.Location = new System.Drawing.Point(12, 11);
+            this.iL_ExecMetrics.Name = "iL_ExecMetrics";
+            this.iL_ExecMetrics.Size = new System.Drawing.Size(91, 13);
+            this.iL_ExecMetrics.TabIndex = 26;
+            this.iL_ExecMetrics.Text = "Execution Metrics";
+            // 
+            // iL_Start
+            // 
+            this.iL_Start.AutoSize = true;
+            this.iL_Start.Location = new System.Drawing.Point(17, 55);
+            this.iL_Start.Name = "iL_Start";
+            this.iL_Start.Size = new System.Drawing.Size(32, 13);
+            this.iL_Start.TabIndex = 27;
+            this.iL_Start.Text = "Start:";
+            // 
+            // iL_End
+            // 
+            this.iL_End.AutoSize = true;
+            this.iL_End.Location = new System.Drawing.Point(17, 75);
+            this.iL_End.Name = "iL_End";
+            this.iL_End.Size = new System.Drawing.Size(29, 13);
+            this.iL_End.TabIndex = 28;
+            this.iL_End.Text = "End:";
+            // 
+            // iL_Total
+            // 
+            this.iL_Total.AutoSize = true;
+            this.iL_Total.Location = new System.Drawing.Point(17, 97);
+            this.iL_Total.Name = "iL_Total";
+            this.iL_Total.Size = new System.Drawing.Size(34, 13);
+            this.iL_Total.TabIndex = 29;
+            this.iL_Total.Text = "Total:";
+            // 
+            // p_ExecMetrics
+            // 
+            this.p_ExecMetrics.BackColor = System.Drawing.Color.White;
+            this.p_ExecMetrics.Controls.Add(this.l_BHParlTimeValue);
+            this.p_ExecMetrics.Controls.Add(this.l_BHSingleStepTimeValue);
+            this.p_ExecMetrics.Controls.Add(this.l_PWITimeValue);
+            this.p_ExecMetrics.Controls.Add(this.l_TotalTimeValue);
+            this.p_ExecMetrics.Controls.Add(this.l_EndTimeValue);
+            this.p_ExecMetrics.Controls.Add(this.l_StartTimeValue);
+            this.p_ExecMetrics.Controls.Add(this.iL_BHParlSingleStep);
+            this.p_ExecMetrics.Controls.Add(this.iL_BHSingleStep);
+            this.p_ExecMetrics.Controls.Add(this.iL_PWI);
+            this.p_ExecMetrics.Controls.Add(this.iL_Total);
+            this.p_ExecMetrics.Controls.Add(this.iL_lastRun);
+            this.p_ExecMetrics.Controls.Add(this.iL_End);
+            this.p_ExecMetrics.Controls.Add(this.iL_Start);
+            this.p_ExecMetrics.Controls.Add(this.iL_ExecMetrics);
+            this.p_ExecMetrics.Location = new System.Drawing.Point(789, 555);
+            this.p_ExecMetrics.Name = "p_ExecMetrics";
+            this.p_ExecMetrics.Size = new System.Drawing.Size(376, 194);
+            this.p_ExecMetrics.TabIndex = 30;
+            // 
+            // iL_lastRun
+            // 
+            this.iL_lastRun.AutoSize = true;
+            this.iL_lastRun.Location = new System.Drawing.Point(16, 35);
+            this.iL_lastRun.Name = "iL_lastRun";
+            this.iL_lastRun.Size = new System.Drawing.Size(50, 13);
+            this.iL_lastRun.TabIndex = 31;
+            this.iL_lastRun.Text = "Last Run";
+            // 
+            // iL_PWI
+            // 
+            this.iL_PWI.AutoSize = true;
+            this.iL_PWI.Location = new System.Drawing.Point(17, 120);
+            this.iL_PWI.Name = "iL_PWI";
+            this.iL_PWI.Size = new System.Drawing.Size(28, 13);
+            this.iL_PWI.TabIndex = 32;
+            this.iL_PWI.Text = "PWI";
+            // 
+            // iL_BHSingleStep
+            // 
+            this.iL_BHSingleStep.AutoSize = true;
+            this.iL_BHSingleStep.Location = new System.Drawing.Point(18, 142);
+            this.iL_BHSingleStep.Name = "iL_BHSingleStep";
+            this.iL_BHSingleStep.Size = new System.Drawing.Size(79, 13);
+            this.iL_BHSingleStep.TabIndex = 33;
+            this.iL_BHSingleStep.Text = "BH Single Step";
+            // 
+            // iL_BHParlSingleStep
+            // 
+            this.iL_BHParlSingleStep.AutoSize = true;
+            this.iL_BHParlSingleStep.Location = new System.Drawing.Point(20, 164);
+            this.iL_BHParlSingleStep.Name = "iL_BHParlSingleStep";
+            this.iL_BHParlSingleStep.Size = new System.Drawing.Size(100, 13);
+            this.iL_BHParlSingleStep.TabIndex = 34;
+            this.iL_BHParlSingleStep.Text = "BH Parl Single Step";
+            // 
+            // l_StartTimeValue
+            // 
+            this.l_StartTimeValue.AutoSize = true;
+            this.l_StartTimeValue.Location = new System.Drawing.Point(105, 55);
+            this.l_StartTimeValue.Name = "l_StartTimeValue";
+            this.l_StartTimeValue.Size = new System.Drawing.Size(13, 13);
+            this.l_StartTimeValue.TabIndex = 35;
+            this.l_StartTimeValue.Text = "0";
+            // 
+            // l_EndTimeValue
+            // 
+            this.l_EndTimeValue.AutoSize = true;
+            this.l_EndTimeValue.Location = new System.Drawing.Point(105, 75);
+            this.l_EndTimeValue.Name = "l_EndTimeValue";
+            this.l_EndTimeValue.Size = new System.Drawing.Size(13, 13);
+            this.l_EndTimeValue.TabIndex = 36;
+            this.l_EndTimeValue.Text = "0";
+            // 
+            // l_TotalTimeValue
+            // 
+            this.l_TotalTimeValue.AutoSize = true;
+            this.l_TotalTimeValue.Location = new System.Drawing.Point(107, 97);
+            this.l_TotalTimeValue.Name = "l_TotalTimeValue";
+            this.l_TotalTimeValue.Size = new System.Drawing.Size(13, 13);
+            this.l_TotalTimeValue.TabIndex = 37;
+            this.l_TotalTimeValue.Text = "0";
+            // 
+            // l_PWITimeValue
+            // 
+            this.l_PWITimeValue.AutoSize = true;
+            this.l_PWITimeValue.Location = new System.Drawing.Point(158, 120);
+            this.l_PWITimeValue.Name = "l_PWITimeValue";
+            this.l_PWITimeValue.Size = new System.Drawing.Size(27, 13);
+            this.l_PWITimeValue.TabIndex = 38;
+            this.l_PWITimeValue.Text = "N/A";
+            // 
+            // l_BHSingleStepTimeValue
+            // 
+            this.l_BHSingleStepTimeValue.AutoSize = true;
+            this.l_BHSingleStepTimeValue.Location = new System.Drawing.Point(158, 142);
+            this.l_BHSingleStepTimeValue.Name = "l_BHSingleStepTimeValue";
+            this.l_BHSingleStepTimeValue.Size = new System.Drawing.Size(27, 13);
+            this.l_BHSingleStepTimeValue.TabIndex = 39;
+            this.l_BHSingleStepTimeValue.Text = "N/A";
+            // 
+            // l_BHParlTimeValue
+            // 
+            this.l_BHParlTimeValue.AutoSize = true;
+            this.l_BHParlTimeValue.Location = new System.Drawing.Point(158, 164);
+            this.l_BHParlTimeValue.Name = "l_BHParlTimeValue";
+            this.l_BHParlTimeValue.Size = new System.Drawing.Size(27, 13);
+            this.l_BHParlTimeValue.TabIndex = 40;
+            this.l_BHParlTimeValue.Text = "N/A";
             // 
             // p_TreePanel
             // 
@@ -313,8 +477,11 @@ namespace Barnes_Hut_GUI
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tb_ParticleCount);
             this.Controls.Add(this.p_SimulationArea);
+            this.Controls.Add(this.p_ExecMetrics);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.p_ExecMetrics.ResumeLayout(false);
+            this.p_ExecMetrics.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -345,6 +512,21 @@ namespace Barnes_Hut_GUI
         private TransparentPanel p_ForcePanel;
         private TransparentPanel p_TreePanel;
         private System.Windows.Forms.Panel p_SimulationArea;
+        private System.Windows.Forms.Label iL_ExecMetrics;
+        private System.Windows.Forms.Label iL_Start;
+        private System.Windows.Forms.Label iL_End;
+        private System.Windows.Forms.Label iL_Total;
+        private System.Windows.Forms.Panel p_ExecMetrics;
+        private System.Windows.Forms.Label iL_lastRun;
+        private System.Windows.Forms.Label l_BHParlTimeValue;
+        private System.Windows.Forms.Label l_BHSingleStepTimeValue;
+        private System.Windows.Forms.Label l_PWITimeValue;
+        private System.Windows.Forms.Label l_TotalTimeValue;
+        private System.Windows.Forms.Label l_EndTimeValue;
+        private System.Windows.Forms.Label l_StartTimeValue;
+        private System.Windows.Forms.Label iL_BHParlSingleStep;
+        private System.Windows.Forms.Label iL_BHSingleStep;
+        private System.Windows.Forms.Label iL_PWI;
     }
 }
 
