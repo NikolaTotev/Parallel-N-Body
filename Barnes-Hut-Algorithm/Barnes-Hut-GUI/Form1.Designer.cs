@@ -43,16 +43,16 @@ namespace Barnes_Hut_GUI
             this.tb_Theta = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.tb_TimeStepSim = new System.Windows.Forms.TextBox();
             this.btn_CalcForces = new System.Windows.Forms.Button();
             this.tb_TargetParticleNum = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.cb_ShowResForce = new System.Windows.Forms.CheckBox();
             this.rb_ParlBH = new System.Windows.Forms.RadioButton();
             this.cb_ShowGrouping = new System.Windows.Forms.CheckBox();
+            this.p_SimulationArea = new System.Windows.Forms.Panel();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
-            this.p_SimulationArea = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // tb_ParticleCount
@@ -193,12 +193,12 @@ namespace Barnes_Hut_GUI
             this.label3.TabIndex = 16;
             this.label3.Text = "Timesteps to Simulate";
             // 
-            // textBox1
+            // tb_TimeStepSim
             // 
-            this.textBox1.Location = new System.Drawing.Point(789, 326);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(175, 20);
-            this.textBox1.TabIndex = 15;
+            this.tb_TimeStepSim.Location = new System.Drawing.Point(789, 326);
+            this.tb_TimeStepSim.Name = "tb_TimeStepSim";
+            this.tb_TimeStepSim.Size = new System.Drawing.Size(175, 20);
+            this.tb_TimeStepSim.TabIndex = 15;
             // 
             // btn_CalcForces
             // 
@@ -257,6 +257,16 @@ namespace Barnes_Hut_GUI
             this.cb_ShowGrouping.TabIndex = 22;
             this.cb_ShowGrouping.Text = "Show Grouping";
             this.cb_ShowGrouping.UseVisualStyleBackColor = true;
+            this.cb_ShowGrouping.CheckedChanged += new System.EventHandler(this.cb_ShowGrouping_CheckedChanged);
+            // 
+            // p_SimulationArea
+            // 
+            this.p_SimulationArea.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.p_SimulationArea.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.p_SimulationArea.Location = new System.Drawing.Point(12, 12);
+            this.p_SimulationArea.Name = "p_SimulationArea";
+            this.p_SimulationArea.Size = new System.Drawing.Size(737, 737);
+            this.p_SimulationArea.TabIndex = 0;
             // 
             // p_TreePanel
             // 
@@ -274,15 +284,6 @@ namespace Barnes_Hut_GUI
             this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
             this.p_ForcePanel.TabIndex = 24;
             // 
-            // p_SimulationArea
-            // 
-            this.p_SimulationArea.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.p_SimulationArea.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.p_SimulationArea.Location = new System.Drawing.Point(12, 12);
-            this.p_SimulationArea.Name = "p_SimulationArea";
-            this.p_SimulationArea.Size = new System.Drawing.Size(737, 737);
-            this.p_SimulationArea.TabIndex = 0;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -297,7 +298,7 @@ namespace Barnes_Hut_GUI
             this.Controls.Add(this.tb_TargetParticleNum);
             this.Controls.Add(this.btn_CalcForces);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.tb_TimeStepSim);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tb_Theta);
@@ -334,7 +335,7 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.TextBox tb_Theta;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox tb_TimeStepSim;
         private System.Windows.Forms.Button btn_CalcForces;
         private System.Windows.Forms.TextBox tb_TargetParticleNum;
         private System.Windows.Forms.Label label4;

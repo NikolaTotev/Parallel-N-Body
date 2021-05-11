@@ -94,7 +94,7 @@ namespace Barnes_Hut_GUI
                     return;
             }
         }
-        
+
         public void AddParticle(Particle particleToAdd)
         {
             nodeParticles.Add(particleToAdd);
@@ -107,7 +107,6 @@ namespace Barnes_Hut_GUI
                 IsLeaf = false;
                 IsPartitioned = true;
             }
-         
 
             if (IsInternal && IsPartitioned)
             {
@@ -120,12 +119,12 @@ namespace Barnes_Hut_GUI
         {
             totalWeight += newParticle.Mass;
             topCenterOfMassCoefX += (newParticle.CenterPoint.X * newParticle.Mass);
-            topCenterOfMassCoefX += (newParticle.CenterPoint.Y * newParticle.Mass);
+            topCenterOfMassCoefY += (newParticle.CenterPoint.Y * newParticle.Mass);
 
             double xCOM = topCenterOfMassCoefX / totalWeight;
             double yCOM = topCenterOfMassCoefY / totalWeight;
 
-            centerOfMass= new Point((int)xCOM, (int)yCOM);
+            centerOfMass = new Point((int)xCOM, (int)yCOM);
 
         }
 
@@ -135,7 +134,7 @@ namespace Barnes_Hut_GUI
 
             float halfOfSide = SideLength / 2;
             float xMiddle = BottomLeftCorner.X + halfOfSide;
-            float yMiddle = TopRightCorner.Y +  halfOfSide;
+            float yMiddle = TopRightCorner.Y + halfOfSide;
 
             if (particle.CenterPoint.X >= xMiddle)
             {
@@ -162,7 +161,7 @@ namespace Barnes_Hut_GUI
                     //}
                 }
 
-               
+
             }
 
             if (particle.CenterPoint.X < xMiddle)

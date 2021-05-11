@@ -49,6 +49,8 @@ namespace Barnes_Hut_GUI
             graphics = p_SimulationArea.CreateGraphics();
             forceVectGraphics= p_ForcePanel.CreateGraphics();
             mainTree.alg = AlgToUse.PWI;
+            cb_ShowGrouping.Enabled = false;
+            rb_UsePWI.Checked = true;
         }
 
         private void btn_Partition_Click(object sender, EventArgs e)
@@ -109,8 +111,14 @@ namespace Barnes_Hut_GUI
 
         private void cb_ShowEmptyCells_CheckedChanged(object sender, EventArgs e)
         {
-            ShowForceVect = cb_ShowEmptyCells.Checked;
-            mainTree.ShowForceVect = cb_ShowEmptyCells.Checked;
+            ShowEmptyCells = cb_ShowEmptyCells.Checked;
+            mainTree.ShowEmptyCells = cb_ShowEmptyCells.Checked;
+        }
+
+        private void cb_ShowGrouping_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowGrouping = cb_ShowGrouping.Checked;
+            mainTree.ShowGrouping = cb_ShowGrouping.Checked;
         }
 
         private void rb_UsePWI_CheckedChanged(object sender, EventArgs e)
@@ -149,12 +157,33 @@ namespace Barnes_Hut_GUI
         private void btn_CalcForces_Click(object sender, EventArgs e)
         {
             int targetParticle = int.Parse(tb_TargetParticleNum.Text);
-            mainTree.PairWiseForceCalculation();
+
+            switch (alg)
+            {
+                case AlgToUse.BH:
+                    mainTree.SingleBHStep(targetParticle);
+                    break;
+                case AlgToUse.PWI:
+                    mainTree.PairWiseForceCalculation();
+                    break;
+                case AlgToUse.PBH:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
             if (ShowForceVect)
             {
                 mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, minforceVectPen, midforceVectPen, maxforceVectPen);
             }
-            
+
+            if (ShowGrouping)
+            {
+                mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, midforceVectPen);
+            }
+
         }
+
+      
     }
 }

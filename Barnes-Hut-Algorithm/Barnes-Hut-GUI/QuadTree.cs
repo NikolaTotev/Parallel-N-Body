@@ -49,20 +49,39 @@ namespace Barnes_Hut_GUI
                 return;
             }
 
-            if (nextNode.IsLeaf)
+            if (nextNode.nodeParticles.Count == 1)
             {
                 currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
+                currenctGraphics.FillEllipse(Brushes.MediumPurple, nextNode.centerOfMass.X - 5,
+                    nextNode.centerOfMass.Y - 5, 5 * 2, 5 * 2);
                 return;
             }
 
-            if (nextNode.nodeParticles.Count == 0)
+            if (nextNode.nodeParticles.Count == 0 && ShowEmptyCells)
             {
                 currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
                 currenctGraphics.FillRectangle(Brushes.IndianRed, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength - 10, nextNode.SideLength - 10);
             }
+
             else
             {
                 currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
+
+                if (nextNode.IsRoot)
+                {
+                    currenctGraphics.FillEllipse(Brushes.Pink, nextNode.centerOfMass.X - 7,
+                        nextNode.centerOfMass.Y - 7, 7 * 2, 7 * 2);
+                }
+                else
+                {
+                    if (nextNode.nodeParticles.Count > 0)
+                    {
+                        currenctGraphics.FillEllipse(Brushes.Thistle, nextNode.centerOfMass.X - 8,
+                            nextNode.centerOfMass.Y - 8, 8 * 2, 8 * 2);
+                    }
+                    
+                }
+
             }
 
 
@@ -116,6 +135,21 @@ namespace Barnes_Hut_GUI
             }
         }
 
+        public void VisualizeGrouping(int particleNumber, Graphics currenctGraphics, Pen graphicsPen)
+        {
+
+            for (int i = 0; i < AllParticles[particleNumber].ForcesToApply.Count; i++)
+            {
+                float forceVecMag = AllParticles[particleNumber].ForcesToApply[i].Magnitude;
+                PointF forceVectStart = AllParticles[particleNumber].ForcesToApply[i].Start;
+                PointF forceVectEnd = AllParticles[particleNumber].ForcesToApply[i].EffectorCOM;
+
+                currenctGraphics.DrawLine(graphicsPen, forceVectStart, forceVectEnd);
+                currenctGraphics.FillEllipse(Brushes.SkyBlue, forceVectEnd.X - 5,
+                    forceVectEnd.Y - 5, 5 * 2, 5 * 2);
+            }
+        }
+
         public void BHAlg()
         {
             foreach (Particle particle in AllParticles)
@@ -126,12 +160,23 @@ namespace Barnes_Hut_GUI
 
         public void SingleBHStep(int targetParticle)
         {
-            ForceTraversal(AllParticles[targetParticle], RootNode);
+            ForceTraversal(AllParticles[targetParticle], RootNode.SeChild);
+            ForceTraversal(AllParticles[targetParticle], RootNode.NeChild);
+            ForceTraversal(AllParticles[targetParticle], RootNode.NwChild);
+            ForceTraversal(AllParticles[targetParticle], RootNode.SwChild);
         }
 
         public void ForceTraversal(Particle currentParticle, Node startNode)
         {
+
+
             List<float> distanceToNodeInfo = new List<float>();
+
+            if (startNode.nodeParticles.Count == 0)
+            {
+                return;
+
+            }
 
             if (startNode.nodeParticles.Count == 1)
             {
@@ -157,12 +202,17 @@ namespace Barnes_Hut_GUI
             {
 
                 float force = CalculateForces(distanceToNodeInfo[0], currentParticle.Mass, startNode.TotalMass);
-                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint,startNode.centerOfMass ,mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
+                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint, startNode.centerOfMass, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
                 if (startNode.nodeParticles.Count == 1)
-                { 
+                {
                     forceVect = new ForceVector(currentParticle.CenterPoint, startNode.nodeParticles[0].CenterPoint, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
-                } 
-                currentParticle.ForcesToApply.Add(forceVect);
+                }
+
+                if (startNode.nodeParticles[0] != currentParticle)
+                {
+                    currentParticle.ForcesToApply.Add(forceVect);
+                }
+
             }
             else
             {
@@ -182,7 +232,7 @@ namespace Barnes_Hut_GUI
         bool LengthIsOverDouble(float nodeSideLength, float distanceToNode)
         {
 
-            return distanceToNode * theta < nodeSideLength;
+            return distanceToNode > nodeSideLength * theta;
         }
 
         public List<float> CalculateDistanceToNode(Particle targetParticle, PointF targetPoint)
@@ -210,17 +260,17 @@ namespace Barnes_Hut_GUI
             List<Point> testPoints = new List<Point>()
             {
                 new Point(91, 395),
-                new Point(98, 400),
-                new Point(110, 405),
-                new Point(114, 395),
-                new Point(105, 395)
+                new Point(500, 10),
+                new Point(110, 605),
+                new Point(414, 695),
+                new Point(705, 295)
         };
             for (int i = 0; i < particleCount; i++)
             {
                 Particle newParticle = new Particle();
                 Point particleCenter = new Point(rand.Next(5, 730), rand.Next(5, 730));
-                //newParticle.CenterPoint = testPoints[i];
-                newParticle.CenterPoint = particleCenter;
+                newParticle.CenterPoint = testPoints[i];
+                //newParticle.CenterPoint = particleCenter;
                 AllParticles.Add(newParticle);
             }
         }
