@@ -33,6 +33,8 @@ namespace Barnes_Hut_GUI
         private bool ShowEmptyCells;
         private bool ShowForceVect;
         private bool ShowGrouping;
+        private bool DrawGraphics;
+        private bool isWorking;
         private AlgToUse alg = AlgToUse.PWI;
 
 
@@ -55,23 +57,43 @@ namespace Barnes_Hut_GUI
             mainTree.alg = AlgToUse.PWI;
             cb_ShowGrouping.Enabled = false;
             rb_UsePWI.Checked = true;
+            DrawGraphics = false;
+            mainTree.OnProgress += MainTree_OnProgress;
+            mainTree.OnCompleted += MainTree_OnCompleted; ;
+        }
+
+        private void MainTree_OnCompleted(object sender, EventArgs e)
+        {
+            DrawTree();
+        }
+
+        private void MainTree_OnProgress(object source, MyEventArgs e)
+        {
+            l_Progress.Text = e.GetInfo().ToString();
         }
 
         private void btn_Partition_Click(object sender, EventArgs e)
         {
             Thread T = new Thread(()=> mainTree.ParitionSpace(), 1073741824);
             T.Start();
-            
-            //mainTree.Traverse(mainTree.RootNode, graphics, treePen);
-            //for (int i = 0; i < mainTree.AllParticles.Count; i++)
-            //{
-            //    graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
-            //        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1 * 2);
-            //    graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2,
-            //        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
-            //    graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3,
-            //        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
-            //}
+            isWorking = true;
+        }
+
+        private void DrawTree()
+        {
+            if (DrawGraphics)
+            {
+                mainTree.Traverse(mainTree.RootNode, graphics, treePen);
+                for (int i = 0; i < mainTree.AllParticles.Count; i++)
+                {
+                    graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
+                        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1 * 2);
+                    graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2,
+                        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
+                    graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3,
+                        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
+                }
+            }
         }
 
         private void btn_GenerateParticles_Click(object sender, EventArgs e)
@@ -192,18 +214,23 @@ namespace Barnes_Hut_GUI
                     throw new ArgumentOutOfRangeException();
             }
             
-            if (ShowForceVect)
+            if (ShowForceVect && DrawGraphics)
             {
                 mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, minforceVectPen, midforceVectPen, maxforceVectPen);
             }
 
-            if (ShowGrouping)
+            if (ShowGrouping && DrawGraphics)
             {
                 mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, midforceVectPen);
             }
 
             
 
+        }
+
+        private void cb_DrawGraphics_CheckedChanged(object sender, EventArgs e)
+        {
+            DrawGraphics = cb_DrawGraphics.Checked;
         }
     }
 }

@@ -56,18 +56,20 @@ namespace Barnes_Hut_GUI
             this.iL_End = new System.Windows.Forms.Label();
             this.iL_Total = new System.Windows.Forms.Label();
             this.p_ExecMetrics = new System.Windows.Forms.Panel();
-            this.iL_lastRun = new System.Windows.Forms.Label();
-            this.iL_PWI = new System.Windows.Forms.Label();
-            this.iL_BHSingleStep = new System.Windows.Forms.Label();
-            this.iL_BHParlSingleStep = new System.Windows.Forms.Label();
-            this.l_StartTimeValue = new System.Windows.Forms.Label();
-            this.l_EndTimeValue = new System.Windows.Forms.Label();
-            this.l_TotalTimeValue = new System.Windows.Forms.Label();
-            this.l_PWITimeValue = new System.Windows.Forms.Label();
-            this.l_BHSingleStepTimeValue = new System.Windows.Forms.Label();
             this.l_BHParlTimeValue = new System.Windows.Forms.Label();
+            this.l_BHSingleStepTimeValue = new System.Windows.Forms.Label();
+            this.l_PWITimeValue = new System.Windows.Forms.Label();
+            this.l_TotalTimeValue = new System.Windows.Forms.Label();
+            this.l_EndTimeValue = new System.Windows.Forms.Label();
+            this.l_StartTimeValue = new System.Windows.Forms.Label();
+            this.iL_BHParlSingleStep = new System.Windows.Forms.Label();
+            this.iL_BHSingleStep = new System.Windows.Forms.Label();
+            this.iL_PWI = new System.Windows.Forms.Label();
+            this.iL_lastRun = new System.Windows.Forms.Label();
+            this.cb_DrawGraphics = new System.Windows.Forms.CheckBox();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
+            this.l_Progress = new System.Windows.Forms.Label();
             this.p_ExecMetrics.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -342,77 +344,14 @@ namespace Barnes_Hut_GUI
             this.p_ExecMetrics.Size = new System.Drawing.Size(376, 194);
             this.p_ExecMetrics.TabIndex = 30;
             // 
-            // iL_lastRun
+            // l_BHParlTimeValue
             // 
-            this.iL_lastRun.AutoSize = true;
-            this.iL_lastRun.Location = new System.Drawing.Point(16, 35);
-            this.iL_lastRun.Name = "iL_lastRun";
-            this.iL_lastRun.Size = new System.Drawing.Size(50, 13);
-            this.iL_lastRun.TabIndex = 31;
-            this.iL_lastRun.Text = "Last Run";
-            // 
-            // iL_PWI
-            // 
-            this.iL_PWI.AutoSize = true;
-            this.iL_PWI.Location = new System.Drawing.Point(17, 120);
-            this.iL_PWI.Name = "iL_PWI";
-            this.iL_PWI.Size = new System.Drawing.Size(28, 13);
-            this.iL_PWI.TabIndex = 32;
-            this.iL_PWI.Text = "PWI";
-            // 
-            // iL_BHSingleStep
-            // 
-            this.iL_BHSingleStep.AutoSize = true;
-            this.iL_BHSingleStep.Location = new System.Drawing.Point(18, 142);
-            this.iL_BHSingleStep.Name = "iL_BHSingleStep";
-            this.iL_BHSingleStep.Size = new System.Drawing.Size(79, 13);
-            this.iL_BHSingleStep.TabIndex = 33;
-            this.iL_BHSingleStep.Text = "BH Single Step";
-            // 
-            // iL_BHParlSingleStep
-            // 
-            this.iL_BHParlSingleStep.AutoSize = true;
-            this.iL_BHParlSingleStep.Location = new System.Drawing.Point(20, 164);
-            this.iL_BHParlSingleStep.Name = "iL_BHParlSingleStep";
-            this.iL_BHParlSingleStep.Size = new System.Drawing.Size(100, 13);
-            this.iL_BHParlSingleStep.TabIndex = 34;
-            this.iL_BHParlSingleStep.Text = "BH Parl Single Step";
-            // 
-            // l_StartTimeValue
-            // 
-            this.l_StartTimeValue.AutoSize = true;
-            this.l_StartTimeValue.Location = new System.Drawing.Point(105, 55);
-            this.l_StartTimeValue.Name = "l_StartTimeValue";
-            this.l_StartTimeValue.Size = new System.Drawing.Size(13, 13);
-            this.l_StartTimeValue.TabIndex = 35;
-            this.l_StartTimeValue.Text = "0";
-            // 
-            // l_EndTimeValue
-            // 
-            this.l_EndTimeValue.AutoSize = true;
-            this.l_EndTimeValue.Location = new System.Drawing.Point(105, 75);
-            this.l_EndTimeValue.Name = "l_EndTimeValue";
-            this.l_EndTimeValue.Size = new System.Drawing.Size(13, 13);
-            this.l_EndTimeValue.TabIndex = 36;
-            this.l_EndTimeValue.Text = "0";
-            // 
-            // l_TotalTimeValue
-            // 
-            this.l_TotalTimeValue.AutoSize = true;
-            this.l_TotalTimeValue.Location = new System.Drawing.Point(107, 97);
-            this.l_TotalTimeValue.Name = "l_TotalTimeValue";
-            this.l_TotalTimeValue.Size = new System.Drawing.Size(13, 13);
-            this.l_TotalTimeValue.TabIndex = 37;
-            this.l_TotalTimeValue.Text = "0";
-            // 
-            // l_PWITimeValue
-            // 
-            this.l_PWITimeValue.AutoSize = true;
-            this.l_PWITimeValue.Location = new System.Drawing.Point(158, 120);
-            this.l_PWITimeValue.Name = "l_PWITimeValue";
-            this.l_PWITimeValue.Size = new System.Drawing.Size(27, 13);
-            this.l_PWITimeValue.TabIndex = 38;
-            this.l_PWITimeValue.Text = "N/A";
+            this.l_BHParlTimeValue.AutoSize = true;
+            this.l_BHParlTimeValue.Location = new System.Drawing.Point(158, 164);
+            this.l_BHParlTimeValue.Name = "l_BHParlTimeValue";
+            this.l_BHParlTimeValue.Size = new System.Drawing.Size(27, 13);
+            this.l_BHParlTimeValue.TabIndex = 40;
+            this.l_BHParlTimeValue.Text = "N/A";
             // 
             // l_BHSingleStepTimeValue
             // 
@@ -423,14 +362,88 @@ namespace Barnes_Hut_GUI
             this.l_BHSingleStepTimeValue.TabIndex = 39;
             this.l_BHSingleStepTimeValue.Text = "N/A";
             // 
-            // l_BHParlTimeValue
+            // l_PWITimeValue
             // 
-            this.l_BHParlTimeValue.AutoSize = true;
-            this.l_BHParlTimeValue.Location = new System.Drawing.Point(158, 164);
-            this.l_BHParlTimeValue.Name = "l_BHParlTimeValue";
-            this.l_BHParlTimeValue.Size = new System.Drawing.Size(27, 13);
-            this.l_BHParlTimeValue.TabIndex = 40;
-            this.l_BHParlTimeValue.Text = "N/A";
+            this.l_PWITimeValue.AutoSize = true;
+            this.l_PWITimeValue.Location = new System.Drawing.Point(158, 120);
+            this.l_PWITimeValue.Name = "l_PWITimeValue";
+            this.l_PWITimeValue.Size = new System.Drawing.Size(27, 13);
+            this.l_PWITimeValue.TabIndex = 38;
+            this.l_PWITimeValue.Text = "N/A";
+            // 
+            // l_TotalTimeValue
+            // 
+            this.l_TotalTimeValue.AutoSize = true;
+            this.l_TotalTimeValue.Location = new System.Drawing.Point(107, 97);
+            this.l_TotalTimeValue.Name = "l_TotalTimeValue";
+            this.l_TotalTimeValue.Size = new System.Drawing.Size(13, 13);
+            this.l_TotalTimeValue.TabIndex = 37;
+            this.l_TotalTimeValue.Text = "0";
+            // 
+            // l_EndTimeValue
+            // 
+            this.l_EndTimeValue.AutoSize = true;
+            this.l_EndTimeValue.Location = new System.Drawing.Point(105, 75);
+            this.l_EndTimeValue.Name = "l_EndTimeValue";
+            this.l_EndTimeValue.Size = new System.Drawing.Size(13, 13);
+            this.l_EndTimeValue.TabIndex = 36;
+            this.l_EndTimeValue.Text = "0";
+            // 
+            // l_StartTimeValue
+            // 
+            this.l_StartTimeValue.AutoSize = true;
+            this.l_StartTimeValue.Location = new System.Drawing.Point(105, 55);
+            this.l_StartTimeValue.Name = "l_StartTimeValue";
+            this.l_StartTimeValue.Size = new System.Drawing.Size(13, 13);
+            this.l_StartTimeValue.TabIndex = 35;
+            this.l_StartTimeValue.Text = "0";
+            // 
+            // iL_BHParlSingleStep
+            // 
+            this.iL_BHParlSingleStep.AutoSize = true;
+            this.iL_BHParlSingleStep.Location = new System.Drawing.Point(20, 164);
+            this.iL_BHParlSingleStep.Name = "iL_BHParlSingleStep";
+            this.iL_BHParlSingleStep.Size = new System.Drawing.Size(100, 13);
+            this.iL_BHParlSingleStep.TabIndex = 34;
+            this.iL_BHParlSingleStep.Text = "BH Parl Single Step";
+            // 
+            // iL_BHSingleStep
+            // 
+            this.iL_BHSingleStep.AutoSize = true;
+            this.iL_BHSingleStep.Location = new System.Drawing.Point(18, 142);
+            this.iL_BHSingleStep.Name = "iL_BHSingleStep";
+            this.iL_BHSingleStep.Size = new System.Drawing.Size(79, 13);
+            this.iL_BHSingleStep.TabIndex = 33;
+            this.iL_BHSingleStep.Text = "BH Single Step";
+            // 
+            // iL_PWI
+            // 
+            this.iL_PWI.AutoSize = true;
+            this.iL_PWI.Location = new System.Drawing.Point(17, 120);
+            this.iL_PWI.Name = "iL_PWI";
+            this.iL_PWI.Size = new System.Drawing.Size(28, 13);
+            this.iL_PWI.TabIndex = 32;
+            this.iL_PWI.Text = "PWI";
+            // 
+            // iL_lastRun
+            // 
+            this.iL_lastRun.AutoSize = true;
+            this.iL_lastRun.Location = new System.Drawing.Point(16, 35);
+            this.iL_lastRun.Name = "iL_lastRun";
+            this.iL_lastRun.Size = new System.Drawing.Size(50, 13);
+            this.iL_lastRun.TabIndex = 31;
+            this.iL_lastRun.Text = "Last Run";
+            // 
+            // cb_DrawGraphics
+            // 
+            this.cb_DrawGraphics.AutoSize = true;
+            this.cb_DrawGraphics.Location = new System.Drawing.Point(846, 232);
+            this.cb_DrawGraphics.Name = "cb_DrawGraphics";
+            this.cb_DrawGraphics.Size = new System.Drawing.Size(96, 17);
+            this.cb_DrawGraphics.TabIndex = 31;
+            this.cb_DrawGraphics.Text = "Draw Graphics";
+            this.cb_DrawGraphics.UseVisualStyleBackColor = true;
+            this.cb_DrawGraphics.CheckedChanged += new System.EventHandler(this.cb_DrawGraphics_CheckedChanged);
             // 
             // p_TreePanel
             // 
@@ -448,11 +461,22 @@ namespace Barnes_Hut_GUI
             this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
             this.p_ForcePanel.TabIndex = 24;
             // 
+            // l_Progress
+            // 
+            this.l_Progress.AutoSize = true;
+            this.l_Progress.Location = new System.Drawing.Point(1051, 392);
+            this.l_Progress.Name = "l_Progress";
+            this.l_Progress.Size = new System.Drawing.Size(35, 13);
+            this.l_Progress.TabIndex = 32;
+            this.l_Progress.Text = "Theta";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 761);
+            this.Controls.Add(this.l_Progress);
+            this.Controls.Add(this.cb_DrawGraphics);
             this.Controls.Add(this.p_TreePanel);
             this.Controls.Add(this.p_ForcePanel);
             this.Controls.Add(this.cb_ShowGrouping);
@@ -527,6 +551,8 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.Label iL_BHParlSingleStep;
         private System.Windows.Forms.Label iL_BHSingleStep;
         private System.Windows.Forms.Label iL_PWI;
+        private System.Windows.Forms.CheckBox cb_DrawGraphics;
+        private System.Windows.Forms.Label l_Progress;
     }
 }
 

@@ -53,7 +53,7 @@ namespace Barnes_Hut_GUI
         //Function is called if there is more than 1 child in the node;
         void partitionNode()
         {
-            double halfOfSideLength = SideLength / 2;
+            float halfOfSideLength = SideLength / 2;
             PointF SETopRight = new PointF(TopRightCorner.X, (int)halfOfSideLength + TopRightCorner.Y);
             PointF SEBottomLeft = new PointF((int)halfOfSideLength + BottomLeftCorner.X, BottomLeftCorner.Y);
             SeChild = new Node(SETopRight, SEBottomLeft);
@@ -136,14 +136,14 @@ namespace Barnes_Hut_GUI
             float xMiddle = BottomLeftCorner.X + halfOfSide;
             float yMiddle = TopRightCorner.Y + halfOfSide;
 
-            if (particle.CenterPoint.X >= xMiddle)
+            if ((int)particle.CenterPoint.X >= (int)xMiddle)
             {
                 //if (xMiddle - particle.CenterPoint.X <= 3)
                 //{
                 //    particle.CenterPoint = new Point(particle.CenterPoint.X + 3, particle.CenterPoint.Y);
                 //}
 
-                if (particle.CenterPoint.Y <= yMiddle)
+                if ((int)particle.CenterPoint.Y <= (int)yMiddle)
                 {
                     quadrant = parentQuadrant.NE;
                     //if (yMiddle - particle.CenterPoint.Y <= 3)
@@ -152,7 +152,7 @@ namespace Barnes_Hut_GUI
                     //}
                 }
 
-                if (particle.CenterPoint.Y > yMiddle)
+                if ((int)particle.CenterPoint.Y > (int)yMiddle)
                 {
                     quadrant = parentQuadrant.SE;
                     //if (yMiddle - particle.CenterPoint.Y <= 3)
@@ -164,14 +164,14 @@ namespace Barnes_Hut_GUI
 
             }
 
-            if (particle.CenterPoint.X < xMiddle)
+            if ((int)particle.CenterPoint.X < (int)xMiddle)
             {
                 //if (xMiddle - particle.CenterPoint.X <= 3)
                 //{
                 //    particle.CenterPoint = new Point(particle.CenterPoint.X - 3, particle.CenterPoint.Y);
                 //}
 
-                if (particle.CenterPoint.Y <= yMiddle)
+                if ((int)particle.CenterPoint.Y <= (int)yMiddle)
                 {
                     quadrant = parentQuadrant.NW;
                     //if (yMiddle - particle.CenterPoint.Y <= 3)
@@ -180,7 +180,7 @@ namespace Barnes_Hut_GUI
                     //}
                 }
 
-                if (particle.CenterPoint.Y > yMiddle)
+                if ((int)particle.CenterPoint.Y > (int)yMiddle)
                 {
                     quadrant = parentQuadrant.SW;
                     //if (yMiddle - particle.CenterPoint.Y <= 3)

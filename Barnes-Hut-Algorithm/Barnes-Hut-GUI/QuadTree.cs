@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,25 @@ namespace Barnes_Hut_GUI
     enum AlgToUse
     {
         BH, PWI, PBH
+    }
+
+    public delegate void MyEventHandler(object source, MyEventArgs e);
+
+
+
+    public class MyEventArgs : EventArgs
+    {
+        private int EventInfo;
+
+        public MyEventArgs(int Text)
+        {
+            EventInfo = Text;
+        }
+
+        public int GetInfo()
+        {
+            return EventInfo;
+        }
     }
 
     class QuadTree
@@ -31,8 +51,8 @@ namespace Barnes_Hut_GUI
         public bool ShowGrouping { get; set; }
         public AlgToUse alg { get; set; }
 
-
-
+        public event MyEventHandler OnProgress;
+        public event EventHandler OnCompleted;
 
         public QuadTree()
         {
@@ -42,6 +62,22 @@ namespace Barnes_Hut_GUI
             RootNode.IsRoot = true;
             AllParticles = new List<Particle>();
 
+        }
+
+        private void RaiseEventOnUIThread(Delegate theEvent, object[] args)
+        {
+            foreach (Delegate d in theEvent.GetInvocationList())
+            {
+                ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
+                if (syncer == null)
+                {
+                    d.DynamicInvoke(args);
+                }
+                else
+                {
+                    syncer.BeginInvoke(d, args);  // cleanup omitted
+                }
+            }
         }
 
 
@@ -104,10 +140,10 @@ namespace Barnes_Hut_GUI
 
         public void PairWiseForceCalculation()
         {
-            if (AllParticles.Count > 100)
-            {
-                return;
-            }
+            //if (AllParticles.Count > 100)
+            //{
+            //    return;
+            //}
 
             for (int i = 0; i < AllParticles.Count; i++)
             {
@@ -186,7 +222,7 @@ namespace Barnes_Hut_GUI
                 ));
             Thread NwThread = new Thread(new ThreadStart(() => ForceTraversal(AllParticles[targetParticle], RootNode.NwChild)
                 ));
-            Thread SwThread = new Thread(new ThreadStart(()=>ForceTraversal(AllParticles[targetParticle], RootNode.SwChild)
+            Thread SwThread = new Thread(new ThreadStart(() => ForceTraversal(AllParticles[targetParticle], RootNode.SwChild)
                 ));
 
             SeThread.Start();
@@ -196,7 +232,7 @@ namespace Barnes_Hut_GUI
 
             sw.Start();
             SeThread.Join();
-            NeThread.Join(); 
+            NeThread.Join();
             NwThread.Join();
             SwThread.Join();
             sw.Stop();
@@ -284,15 +320,26 @@ namespace Barnes_Hut_GUI
 
         public void ParitionSpace()
         {
-            foreach (Particle particle in AllParticles)
+            for (int q = 0; q < AllParticles.Count; q++)
             {
-                RootNode.AddParticle(particle);
+                RootNode.AddParticle(AllParticles[q]);
+
+                if (q % 5 == 0)
+                {
+                    MyEventArgs args = new MyEventArgs(q);
+                    RaiseEventOnUIThread(OnProgress, new object[] { null, args });
+                }
             }
+
+            RaiseEventOnUIThread(OnCompleted, new object[] { null, new EventArgs() });
+
         }
 
         public void GenerateParticles(int particleCount)
         {
             Random rand = new Random();
+            Thread.Sleep(2000);
+            Random rand2 = new Random();
 
             List<Point> testPoints = new List<Point>()
             {
@@ -301,13 +348,22 @@ namespace Barnes_Hut_GUI
                 new Point(110, 605),
                 new Point(414, 695),
                 new Point(705, 295)
-        };
+            };
+
+            List<Point> testPoints2 = new List<Point>()
+            {
+                new Point(91, 395),
+                new Point(91, 395),
+                new Point(89, 396),
+                new Point(100, 395),
+                new Point(90, 400)
+            };
             for (int i = 0; i < particleCount; i++)
             {
                 Particle newParticle = new Particle();
-                Point particleCenter = new Point(rand.Next(5, 730), rand.Next(5, 730));
-                //newParticle.CenterPoint = testPoints[i];
-                newParticle.CenterPoint = particleCenter;
+                Point particleCenter = new Point(rand.Next(5, 730), rand2.Next(5, 730));
+                newParticle.CenterPoint = testPoints2[i];
+                //newParticle.CenterPoint = particleCenter;
                 AllParticles.Add(newParticle);
             }
         }
