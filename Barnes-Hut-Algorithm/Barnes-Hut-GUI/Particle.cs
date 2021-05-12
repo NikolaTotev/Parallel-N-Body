@@ -20,6 +20,7 @@ namespace Barnes_Hut_GUI
         private bool initialMinMaxNotSet = true;
 
         private readonly object listLock = new object();
+        
 
         public Particle()
         {

@@ -67,9 +67,19 @@ namespace Barnes_Hut_GUI
             this.iL_PWI = new System.Windows.Forms.Label();
             this.iL_lastRun = new System.Windows.Forms.Label();
             this.cb_DrawGraphics = new System.Windows.Forms.CheckBox();
+            this.l_Progress = new System.Windows.Forms.Label();
+            this.btn_Gen100PlusParticles = new System.Windows.Forms.Button();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
-            this.l_Progress = new System.Windows.Forms.Label();
+            this.btn_AutoTest = new System.Windows.Forms.Button();
+            this.tb_AutoIncValue = new System.Windows.Forms.TextBox();
+            this.tb_AutoIncStart = new System.Windows.Forms.TextBox();
+            this.tb_AutoIncEnd = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.l_AutoProgress = new System.Windows.Forms.Label();
+            this.l_Status = new System.Windows.Forms.Label();
+            this.dia_SaveLocation = new System.Windows.Forms.SaveFileDialog();
             this.p_ExecMetrics.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -191,11 +201,12 @@ namespace Barnes_Hut_GUI
             this.tb_Theta.Name = "tb_Theta";
             this.tb_Theta.Size = new System.Drawing.Size(75, 20);
             this.tb_Theta.TabIndex = 12;
+            this.tb_Theta.Text = "2";
             this.tb_Theta.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(789, 350);
+            this.button1.Location = new System.Drawing.Point(956, 376);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 14;
@@ -205,7 +216,7 @@ namespace Barnes_Hut_GUI
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(786, 310);
+            this.label3.Location = new System.Drawing.Point(953, 336);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(110, 13);
             this.label3.TabIndex = 16;
@@ -213,7 +224,7 @@ namespace Barnes_Hut_GUI
             // 
             // tb_TimeStepSim
             // 
-            this.tb_TimeStepSim.Location = new System.Drawing.Point(789, 326);
+            this.tb_TimeStepSim.Location = new System.Drawing.Point(956, 352);
             this.tb_TimeStepSim.Name = "tb_TimeStepSim";
             this.tb_TimeStepSim.Size = new System.Drawing.Size(175, 20);
             this.tb_TimeStepSim.TabIndex = 15;
@@ -445,6 +456,25 @@ namespace Barnes_Hut_GUI
             this.cb_DrawGraphics.UseVisualStyleBackColor = true;
             this.cb_DrawGraphics.CheckedChanged += new System.EventHandler(this.cb_DrawGraphics_CheckedChanged);
             // 
+            // l_Progress
+            // 
+            this.l_Progress.AutoSize = true;
+            this.l_Progress.Location = new System.Drawing.Point(996, 434);
+            this.l_Progress.Name = "l_Progress";
+            this.l_Progress.Size = new System.Drawing.Size(35, 13);
+            this.l_Progress.TabIndex = 32;
+            this.l_Progress.Text = "Theta";
+            // 
+            // btn_Gen100PlusParticles
+            // 
+            this.btn_Gen100PlusParticles.Location = new System.Drawing.Point(1107, 45);
+            this.btn_Gen100PlusParticles.Name = "btn_Gen100PlusParticles";
+            this.btn_Gen100PlusParticles.Size = new System.Drawing.Size(56, 23);
+            this.btn_Gen100PlusParticles.TabIndex = 33;
+            this.btn_Gen100PlusParticles.Text = "+100";
+            this.btn_Gen100PlusParticles.UseVisualStyleBackColor = true;
+            this.btn_Gen100PlusParticles.Click += new System.EventHandler(this.btn_Gen100PlusParticles_Click);
+            // 
             // p_TreePanel
             // 
             this.p_TreePanel.Location = new System.Drawing.Point(12, 12);
@@ -461,20 +491,94 @@ namespace Barnes_Hut_GUI
             this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
             this.p_ForcePanel.TabIndex = 24;
             // 
-            // l_Progress
+            // btn_AutoTest
             // 
-            this.l_Progress.AutoSize = true;
-            this.l_Progress.Location = new System.Drawing.Point(1051, 392);
-            this.l_Progress.Name = "l_Progress";
-            this.l_Progress.Size = new System.Drawing.Size(35, 13);
-            this.l_Progress.TabIndex = 32;
-            this.l_Progress.Text = "Theta";
+            this.btn_AutoTest.Location = new System.Drawing.Point(789, 274);
+            this.btn_AutoTest.Name = "btn_AutoTest";
+            this.btn_AutoTest.Size = new System.Drawing.Size(56, 23);
+            this.btn_AutoTest.TabIndex = 34;
+            this.btn_AutoTest.Text = "Auto";
+            this.btn_AutoTest.UseVisualStyleBackColor = true;
+            this.btn_AutoTest.Click += new System.EventHandler(this.btn_AutoTest_Click);
+            // 
+            // tb_AutoIncValue
+            // 
+            this.tb_AutoIncValue.Location = new System.Drawing.Point(851, 276);
+            this.tb_AutoIncValue.Name = "tb_AutoIncValue";
+            this.tb_AutoIncValue.Size = new System.Drawing.Size(69, 20);
+            this.tb_AutoIncValue.TabIndex = 35;
+            this.tb_AutoIncValue.Text = "100";
+            // 
+            // tb_AutoIncStart
+            // 
+            this.tb_AutoIncStart.Location = new System.Drawing.Point(958, 276);
+            this.tb_AutoIncStart.Name = "tb_AutoIncStart";
+            this.tb_AutoIncStart.Size = new System.Drawing.Size(69, 20);
+            this.tb_AutoIncStart.TabIndex = 36;
+            this.tb_AutoIncStart.Text = "100";
+            // 
+            // tb_AutoIncEnd
+            // 
+            this.tb_AutoIncEnd.Location = new System.Drawing.Point(1062, 276);
+            this.tb_AutoIncEnd.Name = "tb_AutoIncEnd";
+            this.tb_AutoIncEnd.Size = new System.Drawing.Size(69, 20);
+            this.tb_AutoIncEnd.TabIndex = 37;
+            this.tb_AutoIncEnd.Text = "1000";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(1027, 279);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(26, 13);
+            this.label5.TabIndex = 38;
+            this.label5.Text = "End";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(929, 279);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(29, 13);
+            this.label6.TabIndex = 39;
+            this.label6.Text = "Start";
+            // 
+            // l_AutoProgress
+            // 
+            this.l_AutoProgress.AutoSize = true;
+            this.l_AutoProgress.Location = new System.Drawing.Point(788, 300);
+            this.l_AutoProgress.Name = "l_AutoProgress";
+            this.l_AutoProgress.Size = new System.Drawing.Size(51, 13);
+            this.l_AutoProgress.TabIndex = 40;
+            this.l_AutoProgress.Text = "Progress:";
+            // 
+            // l_Status
+            // 
+            this.l_Status.AutoSize = true;
+            this.l_Status.Location = new System.Drawing.Point(789, 313);
+            this.l_Status.Name = "l_Status";
+            this.l_Status.Size = new System.Drawing.Size(40, 13);
+            this.l_Status.TabIndex = 41;
+            this.l_Status.Text = "Status:";
+            // 
+            // dia_SaveLocation
+            // 
+            this.dia_SaveLocation.InitialDirectory = "D:\\Documents\\Project Files\\N-Body\\Parallel-N-Body\\PerformanceLogs";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 761);
+            this.Controls.Add(this.l_Status);
+            this.Controls.Add(this.l_AutoProgress);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.tb_AutoIncEnd);
+            this.Controls.Add(this.tb_AutoIncStart);
+            this.Controls.Add(this.tb_AutoIncValue);
+            this.Controls.Add(this.btn_AutoTest);
+            this.Controls.Add(this.btn_Gen100PlusParticles);
             this.Controls.Add(this.l_Progress);
             this.Controls.Add(this.cb_DrawGraphics);
             this.Controls.Add(this.p_TreePanel);
@@ -504,6 +608,7 @@ namespace Barnes_Hut_GUI
             this.Controls.Add(this.p_ExecMetrics);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.p_ExecMetrics.ResumeLayout(false);
             this.p_ExecMetrics.PerformLayout();
             this.ResumeLayout(false);
@@ -553,6 +658,16 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.Label iL_PWI;
         private System.Windows.Forms.CheckBox cb_DrawGraphics;
         private System.Windows.Forms.Label l_Progress;
+        private System.Windows.Forms.Button btn_Gen100PlusParticles;
+        private System.Windows.Forms.Button btn_AutoTest;
+        private System.Windows.Forms.TextBox tb_AutoIncValue;
+        private System.Windows.Forms.TextBox tb_AutoIncStart;
+        private System.Windows.Forms.TextBox tb_AutoIncEnd;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label l_AutoProgress;
+        private System.Windows.Forms.Label l_Status;
+        private System.Windows.Forms.SaveFileDialog dia_SaveLocation;
     }
 }
 

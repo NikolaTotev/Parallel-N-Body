@@ -54,6 +54,17 @@ namespace Barnes_Hut_GUI
         public event MyEventHandler OnProgress;
         public event EventHandler OnCompleted;
 
+        bool[,] pointMap = new bool[737, 737];
+
+        public TimeSpan thread1Worktime;
+        public TimeSpan thread2Worktime;
+        public TimeSpan thread3Worktime;
+        public TimeSpan thread4Worktime;
+
+
+
+
+
         public QuadTree()
         {
             PointF bottomLeft = new Point(0, 737);
@@ -213,17 +224,22 @@ namespace Barnes_Hut_GUI
             ForceTraversal(AllParticles[targetParticle], RootNode.SwChild);
         }
 
-        public long ParallelSingleBHStep(int targetParticle)
+        public TimeSpan ParallelSingleBHStep(int targetParticle)
         {
             Stopwatch sw = new Stopwatch();
-            Thread SeThread = new Thread(new ThreadStart(() => ForceTraversal(AllParticles[targetParticle], RootNode.SeChild)
+            Thread SeThread = new Thread(new ThreadStart(() => ProxyForceTrav(AllParticles[targetParticle], RootNode.SeChild)
                 ));
-            Thread NeThread = new Thread(new ThreadStart(() => ForceTraversal(AllParticles[targetParticle], RootNode.NeChild)
+            Thread NeThread = new Thread(new ThreadStart(() => ProxyForceTrav(AllParticles[targetParticle], RootNode.NeChild)
                 ));
-            Thread NwThread = new Thread(new ThreadStart(() => ForceTraversal(AllParticles[targetParticle], RootNode.NwChild)
+            Thread NwThread = new Thread(new ThreadStart(() => ProxyForceTrav(AllParticles[targetParticle], RootNode.NwChild)
                 ));
-            Thread SwThread = new Thread(new ThreadStart(() => ForceTraversal(AllParticles[targetParticle], RootNode.SwChild)
+            Thread SwThread = new Thread(new ThreadStart(() => ProxyForceTrav(AllParticles[targetParticle], RootNode.SwChild)
                 ));
+
+            SeThread.Name = "One";
+            NeThread.Name = "Two";
+            NwThread.Name = "Three";
+            SwThread.Name = "Four";
 
             SeThread.Start();
             NeThread.Start();
@@ -236,12 +252,41 @@ namespace Barnes_Hut_GUI
             NwThread.Join();
             SwThread.Join();
             sw.Stop();
-            return sw.ElapsedMilliseconds;
+            return thread1Worktime+thread2Worktime+thread3Worktime+thread4Worktime;
+        }
+
+        public void ProxyForceTrav(Particle currentParticle, Node startNode)
+        {
+            Thread thr = Thread.CurrentThread;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            ForceTraversal(currentParticle, startNode);
+            sw.Stop();
+            if (thr.Name == "One")
+            {
+                thread1Worktime = sw.Elapsed;
+            }
+
+            if (thr.Name == "Two")
+            {
+                thread2Worktime = sw.Elapsed;
+            }
+
+            if (thr.Name == "Three")
+            {
+                thread3Worktime = sw.Elapsed;
+            }
+
+            if (thr.Name == "Four")
+            {
+                thread4Worktime = sw.Elapsed;
+            }
         }
 
         public void ForceTraversal(Particle currentParticle, Node startNode)
         {
-
+          
 
             List<float> distanceToNodeInfo = new List<float>();
 
@@ -294,6 +339,7 @@ namespace Barnes_Hut_GUI
                 ForceTraversal(currentParticle, startNode.NwChild);
                 ForceTraversal(currentParticle, startNode.SwChild);
             }
+            
         }
 
         float CalculateForces(float distance, float particleMass, float nodeMass)
@@ -322,6 +368,7 @@ namespace Barnes_Hut_GUI
         {
             for (int q = 0; q < AllParticles.Count; q++)
             {
+                Debug.WriteLine($"Adding particle {q}...");
                 RootNode.AddParticle(AllParticles[q]);
 
                 if (q % 5 == 0)
@@ -338,9 +385,6 @@ namespace Barnes_Hut_GUI
         public void GenerateParticles(int particleCount)
         {
             Random rand = new Random();
-            Thread.Sleep(2000);
-            Random rand2 = new Random();
-
             List<Point> testPoints = new List<Point>()
             {
                 new Point(91, 395),
@@ -352,8 +396,8 @@ namespace Barnes_Hut_GUI
 
             List<Point> testPoints2 = new List<Point>()
             {
-                new Point(91, 395),
-                new Point(91, 395),
+                new Point(103, 89),
+                new Point(103, 88),
                 new Point(89, 396),
                 new Point(100, 395),
                 new Point(90, 400)
@@ -361,13 +405,31 @@ namespace Barnes_Hut_GUI
             for (int i = 0; i < particleCount; i++)
             {
                 Particle newParticle = new Particle();
-                Point particleCenter = new Point(rand.Next(5, 730), rand2.Next(5, 730));
-                newParticle.CenterPoint = testPoints2[i];
-                //newParticle.CenterPoint = particleCenter;
-                AllParticles.Add(newParticle);
+                int x = rand.Next(5, 730);
+                int y = rand.Next(5, 730);
+                bool pointSet = false;
+                int doubleHit = 0;
+                while (!pointSet)
+                {
+                    pointSet = false;
+                    if (!pointMap[x, y])
+                    {
+                        Point particleCenter = new Point(x, y);
+                        //newParticle.CenterPoint = testPoints2[i];
+                        newParticle.CenterPoint = particleCenter;
+                        AllParticles.Add(newParticle);
+                        pointMap[x, y] = true;
+                        pointSet = true;
+                    }
+                    else
+                    {
+                        x = rand.Next(5, 730);
+                        y = rand.Next(5, 730);
+                        doubleHit++;
+                    }
+                }
             }
         }
-
 
 
         public void ClearParticles()

@@ -8,7 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Threading;
+using CsvHelper;
 
 
 namespace Barnes_Hut_GUI
@@ -36,6 +39,11 @@ namespace Barnes_Hut_GUI
         private bool DrawGraphics;
         private bool isWorking;
         private AlgToUse alg = AlgToUse.PWI;
+        private Thread m_partitionThread;
+        private int currentParticleValue = 0;
+        private long PWITicks = 0;
+        private long BHTicks = 0;
+        private long PBHTicks = 0;
 
 
         List<Brush> Brushes = new List<Brush>()
@@ -53,7 +61,7 @@ namespace Barnes_Hut_GUI
             InitializeComponent();
             mainTree = new QuadTree();
             graphics = p_SimulationArea.CreateGraphics();
-            forceVectGraphics= p_ForcePanel.CreateGraphics();
+            forceVectGraphics = p_ForcePanel.CreateGraphics();
             mainTree.alg = AlgToUse.PWI;
             cb_ShowGrouping.Enabled = false;
             rb_UsePWI.Checked = true;
@@ -64,7 +72,11 @@ namespace Barnes_Hut_GUI
 
         private void MainTree_OnCompleted(object sender, EventArgs e)
         {
-            DrawTree();
+            if (DrawGraphics)
+            {
+                DrawTree();
+            }
+            
         }
 
         private void MainTree_OnProgress(object source, MyEventArgs e)
@@ -74,13 +86,21 @@ namespace Barnes_Hut_GUI
 
         private void btn_Partition_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(()=> mainTree.ParitionSpace(), 1073741824);
-            T.Start();
+            Partition();
             isWorking = true;
+        }
+
+        private void Partition()
+        {
+            m_partitionThread = new Thread(() => mainTree.ParitionSpace(), 1073741824);
+            m_partitionThread.Name = "PartThread";
+            m_partitionThread.Start();
         }
 
         private void DrawTree()
         {
+            m_partitionThread.Join(500);
+            m_partitionThread = null;
             if (DrawGraphics)
             {
                 mainTree.Traverse(mainTree.RootNode, graphics, treePen);
@@ -99,8 +119,15 @@ namespace Barnes_Hut_GUI
         private void btn_GenerateParticles_Click(object sender, EventArgs e)
         {
             int particleCount = int.Parse(tb_ParticleCount.Text);
+            currentParticleValue = particleCount;
             mainTree.GenerateParticles(particleCount);
 
+            DrawParticles(particleCount);
+
+        }
+
+        private void DrawParticles(int particleCount)
+        {
             for (int i = 0; i < particleCount; i++)
             {
                 graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
@@ -110,7 +137,6 @@ namespace Barnes_Hut_GUI
                 graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3,
                     mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
             }
-
         }
 
         private void btn_Reset_Click(object sender, EventArgs e)
@@ -184,6 +210,11 @@ namespace Barnes_Hut_GUI
 
         private void btn_CalcForces_Click(object sender, EventArgs e)
         {
+            CalculateForces();
+        }
+
+        private void CalculateForces()
+        {
             int targetParticle = int.Parse(tb_TargetParticleNum.Text);
             Stopwatch sw = new Stopwatch();
 
@@ -191,46 +222,197 @@ namespace Barnes_Hut_GUI
             {
                 case AlgToUse.BH:
                     sw.Start();
+                    mainTree.theta = float.Parse(tb_Theta.Text);
                     mainTree.SingleBHStep(targetParticle);
                     sw.Stop();
-                    l_TotalTimeValue.Text = sw.ElapsedMilliseconds.ToString();
-                    l_BHSingleStepTimeValue.Text = sw.ElapsedMilliseconds.ToString();
+                    l_TotalTimeValue.Text = sw.Elapsed.ToString();
+                    l_BHSingleStepTimeValue.Text = sw.Elapsed.ToString();
+                    //Clipboard.SetText(sw.Elapsed.ToString());
+                    BHTicks = sw.Elapsed.Ticks;
                     break;
                 case AlgToUse.PWI:
                     sw.Start();
                     mainTree.PairWiseForceCalculation();
                     sw.Stop();
-                    l_TotalTimeValue.Text = sw.ElapsedMilliseconds.ToString();
-                    l_PWITimeValue.Text = sw.ElapsedMilliseconds.ToString();
+                    l_TotalTimeValue.Text = sw.Elapsed.ToString();
+                    l_PWITimeValue.Text = sw.Elapsed.ToString();
+                    //Clipboard.SetText(sw.Elapsed.ToString());
+                    PWITicks = sw.Elapsed.Ticks;
                     break;
                 case AlgToUse.PBH:
                     //sw.Start();
-                    long time = mainTree.ParallelSingleBHStep(targetParticle);
+                    mainTree.theta = float.Parse(tb_Theta.Text);
+                    TimeSpan time = mainTree.ParallelSingleBHStep(targetParticle);
                     //sw.Stop();
                     l_TotalTimeValue.Text = time.ToString();
                     l_BHParlTimeValue.Text = time.ToString();
+                    //Clipboard.SetText(time.ToString());
+                    PBHTicks = time.Ticks;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
             if (ShowForceVect && DrawGraphics)
             {
-                mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, minforceVectPen, midforceVectPen, maxforceVectPen);
+                mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, minforceVectPen, midforceVectPen,
+                    maxforceVectPen);
             }
 
             if (ShowGrouping && DrawGraphics)
             {
                 mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, midforceVectPen);
             }
-
-            
-
         }
 
         private void cb_DrawGraphics_CheckedChanged(object sender, EventArgs e)
         {
             DrawGraphics = cb_DrawGraphics.Checked;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (m_partitionThread != null)
+            {
+                if (m_partitionThread.IsAlive)
+                {
+                    if (m_partitionThread.Join(500))
+                    {
+                        Debug.WriteLine("Thread joined");
+                    }
+                    else
+                    {
+                        m_partitionThread.Abort();
+                    }
+                }
+            }
+        }
+
+        private void btn_Gen100PlusParticles_Click(object sender, EventArgs e)
+        {
+            mainTree.ClearParticles();
+            graphics.Clear(Color.White);
+            currentParticleValue += 100;
+            tb_ParticleCount.Text = currentParticleValue.ToString();
+            mainTree.GenerateParticles(currentParticleValue);
+            DrawParticles(currentParticleValue);
+            CalculateForces();
+        }
+
+        private void btn_AutoTest_Click(object sender, EventArgs e)
+        {
+            int startParticleCount = int.Parse(tb_AutoIncStart.Text);
+            int endParticleCount = int.Parse(tb_AutoIncEnd.Text);
+            int stepSize = int.Parse(tb_AutoIncValue.Text);
+
+            int numberOfSteps = (endParticleCount - startParticleCount) / stepSize;
+
+            int currentParticleCount = startParticleCount;
+
+            List<AutoPerformancClass> records = new List<AutoPerformancClass>();
+
+            long pbhAvgSum = 0;
+            long pbhAvg = 0;
+
+            long bhAvgSum = 0;
+            long bhAvg = 0;
+
+            long bhMin;
+            long pbhMin;
+
+            int sampleSize = 20;
+
+            for (int i = 0; i < numberOfSteps; i++)
+            {
+
+                l_Status.Text = "Status: Generating Particles";
+                mainTree.GenerateParticles(currentParticleCount);
+                tb_TargetParticleNum.Text = "40";
+
+
+                alg = AlgToUse.PWI;
+                //CalculateForces();
+                Partition();
+                m_partitionThread.Join();
+
+
+                alg = AlgToUse.PBH;
+                CalculateForces();
+                pbhMin = PBHTicks;
+                alg = AlgToUse.BH;
+                CalculateForces();
+                bhMin = BHTicks;
+
+
+                alg = AlgToUse.PBH;
+
+                for (int j = 0; j < sampleSize; j++)
+                {
+                    CalculateForces();
+                    if (PBHTicks < pbhMin)
+                    {
+                        pbhMin = PBHTicks;
+                    }
+                    //pbhAvgSum += PBHTicks;
+                  //  Thread.Sleep(500);
+                }
+
+                pbhAvg = pbhAvgSum / sampleSize;
+
+                alg = AlgToUse.BH;
+                l_Status.Text = "Status: Partitioning";
+
+                for (int j = 0; j < sampleSize; j++)
+                {
+                    CalculateForces();
+                    if (BHTicks < bhMin)
+                    {
+                        bhMin = BHTicks;
+                    }
+                    //bhAvgSum += BHTicks;
+                   // Thread.Sleep(500);
+                }
+
+                bhAvg = bhAvgSum / sampleSize;
+
+               
+
+                records.Add(new AutoPerformancClass(currentParticleCount, PWITicks, bhMin, pbhMin));
+
+                mainTree.ClearParticles();
+                currentParticleCount += stepSize;
+                m_partitionThread.Join(500);
+                Thread.Sleep(100);
+                l_AutoProgress.Text = $"Progress: {i} Total: {numberOfSteps} Particles: {currentParticleCount}";
+                Thread.Sleep(100);
+            }
+            Debug.WriteLine("Moving to save");
+            dia_SaveLocation.AddExtension = true;
+            dia_SaveLocation.DefaultExt = ".csv";
+            Debug.WriteLine("Dialogue Setting Set");
+            dia_SaveLocation.ShowDialog();
+            string savePath = dia_SaveLocation.FileName;
+            using (var writer = new StreamWriter(savePath))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteRecords(records);
+            }
+        }
+    }
+
+    class AutoPerformancClass
+    {
+        public int particleCount { get; set; }
+        public long pwiTicks { get; set; }
+        public long bhTicks { get; set; }
+        public long pbhTicks { get; set; }
+
+        public AutoPerformancClass(int pCount, long pwTick, long bhTick, long pbhTick)
+        {
+            particleCount = pCount;
+            pwiTicks = pwTick;
+            bhTicks = bhTick;
+            pbhTicks = pbhTick;
         }
     }
 }
