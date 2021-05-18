@@ -101,22 +101,23 @@ namespace Barnes_Hut_GUI
             });
             chart_ExecTime.Series = execTimes;
 
-            List<float> parlLevels = new List<float>();
+            List<double> parlLevels = new List<double>();
 
 
             for (int i = 0; i < threadCountComparison.Count; i++)
             {
-                float p = threadCountComparison[0] / threadCountComparison[i];
-                float pm1 = 1 - p;
-                float pover = p / float.Parse(threadCounts[i]);
-                float speedup = 1 / (pm1 + pover);
-                parlLevels.Add(speedup);
+                //float p = threadCountComparison[0] / threadCountComparison[i];
+                //float pm1 = 1 - p;
+                //float pover = p / float.Parse(threadCounts[i]);
+                //float speedup = 1 / (pm1 + pover);
+                double speedUp = (double)threadCountComparison[0] / (double)threadCountComparison[i];
+                parlLevels.Add(speedUp);
             }
 
             parlComp.Add(new LineSeries()
             {
                 Title = "Level of Parallelism",
-                Values = new ChartValues<float>(parlLevels),
+                Values = new ChartValues<double>(parlLevels),
                 PointGeometry = DefaultGeometries.Circle
             });
 

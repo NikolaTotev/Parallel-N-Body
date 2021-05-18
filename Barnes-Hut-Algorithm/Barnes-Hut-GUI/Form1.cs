@@ -304,7 +304,7 @@ namespace Barnes_Hut_GUI
             int startParticleCount = int.Parse(tb_AutoIncStart.Text);
             int endParticleCount = int.Parse(tb_AutoIncEnd.Text);
             int stepSize = int.Parse(tb_AutoIncValue.Text);
-            int maxThreadCount = 6;
+            int maxThreadCount = 12;
             int numberOfSteps = (endParticleCount - startParticleCount) / stepSize;
 
             int currentParticleCount = startParticleCount;
@@ -378,28 +378,28 @@ namespace Barnes_Hut_GUI
              //   execTime = mainTree.SingleFramePairwiseParallelSimulation();
               //  ppwiExecTimes.Add(execTime.Milliseconds);
                 //Partition
-                Partition();
-                m_partitionThread.Join();
-                m_partitionThread = null;
+                //Partition();
+                //m_partitionThread.Join();
+                //m_partitionThread = null;
 
-                //Run BH
-                execTime = mainTree.SingleFrameBHSimulation();
-                bhExecTimes.Add(execTime.Milliseconds);
+                ////Run BH
+                //execTime = mainTree.SingleFrameBHSimulation();
+                //bhExecTimes.Add(execTime.Milliseconds);
 
-                //Run PBH
-
-
-                execTime = mainTree.ParallelSingleFrameBHSimulation();
-                pbhExecTimes.Add(execTime.Milliseconds);
+                ////Run PBH
 
 
-                xAxisVals.Add(currentParticleCount.ToString());
-
-                mainTree.ClearParticles();
-                currentParticleCount += stepSize;
+                //execTime = mainTree.ParallelSingleFrameBHSimulation();
+                //pbhExecTimes.Add(execTime.Milliseconds);
 
 
-                l_AutoProgress.Text = $"Progress: {i} Total: {numberOfSteps} Particles: {currentParticleCount}";
+                //xAxisVals.Add(currentParticleCount.ToString());
+
+                //mainTree.ClearParticles();
+                //currentParticleCount += stepSize;
+
+
+                //l_AutoProgress.Text = $"Progress: {i} Total: {numberOfSteps} Particles: {currentParticleCount}";
 
             }
             

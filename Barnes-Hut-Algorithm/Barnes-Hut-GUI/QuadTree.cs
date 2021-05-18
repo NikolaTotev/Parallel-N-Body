@@ -273,7 +273,7 @@ namespace Barnes_Hut_GUI
         {
             List<Thread> workerThreads = new List<Thread>();
 
-            int particlesPerThread = AllParticles.Count / 6;
+            int particlesPerThread = AllParticles.Count / numberOfThreads;
 
             List<int> threadStartIndecies = new List<int>();
             List<int> threadEndIndecies = new List<int>();
@@ -303,7 +303,7 @@ namespace Barnes_Hut_GUI
             for (int i = 0; i < numberOfThreads; i++)
             {
                 int si = threadStartIndecies[i];
-                int ei= threadStartIndecies[i];
+                int ei= threadEndIndecies[i];
                 Thread worker = new Thread((() => ForceCalculation(si, ei)));
                 worker.Name = $"Thread_{i}";
                 workerThreads.Add(worker);
@@ -322,6 +322,9 @@ namespace Barnes_Hut_GUI
             }
 
             sw.Stop();
+
+
+            workerThreads = null;
             return sw.Elapsed;
         }
 
