@@ -83,6 +83,7 @@ namespace Barnes_Hut_GUI
             this.rb_ParallelPWI = new System.Windows.Forms.RadioButton();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
+            this.chart_ThreadComparison = new LiveCharts.WinForms.CartesianChart();
             this.p_ExecMetrics.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -601,11 +602,20 @@ namespace Barnes_Hut_GUI
             this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
             this.p_ForcePanel.TabIndex = 24;
             // 
+            // chart_ThreadComparison
+            // 
+            this.chart_ThreadComparison.Location = new System.Drawing.Point(41, 774);
+            this.chart_ThreadComparison.Name = "chart_ThreadComparison";
+            this.chart_ThreadComparison.Size = new System.Drawing.Size(1100, 296);
+            this.chart_ThreadComparison.TabIndex = 43;
+            this.chart_ThreadComparison.Text = "chart_Parallelism";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 761);
+            this.ClientSize = new System.Drawing.Size(1184, 1103);
+            this.Controls.Add(this.chart_ThreadComparison);
             this.Controls.Add(this.rb_ParallelPWI);
             this.Controls.Add(this.l_Status);
             this.Controls.Add(this.l_AutoProgress);
@@ -708,6 +718,7 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.RadioButton rb_ParallelPWI;
         private System.Windows.Forms.Label l_PPWITimeValue;
         private System.Windows.Forms.Label iL_PPWI;
+        private LiveCharts.WinForms.CartesianChart chart_ThreadComparison;
     }
 }
 

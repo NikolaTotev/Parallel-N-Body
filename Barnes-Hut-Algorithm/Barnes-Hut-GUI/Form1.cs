@@ -12,6 +12,8 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using CsvHelper;
+using LiveCharts;
+using LiveCharts.Wpf;
 
 
 namespace Barnes_Hut_GUI
@@ -426,8 +428,46 @@ namespace Barnes_Hut_GUI
                 mainTree.ClearParticles();
             }
 
-            ChartWindow chartWindow = new ChartWindow(xAxisVals, threadComparison, threadCounts, pwiExecTimes, ppwiExecTimes, bhExecTimes, pbhExecTimes, startParticleCount, endParticleCount);
-            chartWindow.Show();
+
+            chart_ThreadComparison.AxisX.Add(new LiveCharts.Wpf.Axis()
+            {
+                Title = "Thread Count",
+                Labels = threadCounts
+            });
+
+            chart_ThreadComparison.AxisY.Add(new LiveCharts.Wpf.Axis()
+            {
+                Title = "Level of Parallelism",
+            });
+
+            chart_ThreadComparison.LegendLocation = LiveCharts.LegendLocation.Bottom;
+            chart_ThreadComparison.Series.Clear();
+            SeriesCollection parlComp = new SeriesCollection();
+
+            List<double> parlLevels = new List<double>();
+
+
+            for (int i = 0; i < threadComparison.Count; i++)
+            {
+                //float p = threadCountComparison[0] / threadCountComparison[i];
+                //float pm1 = 1 - p;
+                //float pover = p / float.Parse(threadCounts[i]);
+                //float speedup = 1 / (pm1 + pover);
+                double speedUp = (double)threadComparison[0] / (double)threadComparison[i];
+                parlLevels.Add(speedUp);
+            }
+
+            parlComp.Add(new LineSeries()
+            {
+                Title = "Level of Parallelism",
+                Values = new ChartValues<double>(parlLevels),
+                PointGeometry = DefaultGeometries.Circle
+            });
+
+            chart_ThreadComparison.Series = parlComp;
+
+            //ChartWindow chartWindow = new ChartWindow(xAxisVals, threadComparison, threadCounts, pwiExecTimes, ppwiExecTimes, bhExecTimes, pbhExecTimes, startParticleCount, endParticleCount);
+            //chartWindow.Show();
             //Debug.WriteLine("Moving to save");
             //dia_SaveLocation.AddExtension = true;
             //dia_SaveLocation.DefaultExt = ".csv";

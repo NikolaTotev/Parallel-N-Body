@@ -68,11 +68,12 @@ namespace Barnes_Hut_GUI
             });
 
             chart_ExecTime.LegendLocation = LiveCharts.LegendLocation.Bottom;
-            chart_ThreadComparison.LegendLocation = LiveCharts.LegendLocation.Bottom;
-
             chart_ExecTime.Series.Clear();
-            chart_ThreadComparison.Series.Clear();
             SeriesCollection execTimes = new SeriesCollection();
+
+
+            chart_ThreadComparison.LegendLocation = LiveCharts.LegendLocation.Bottom;
+            chart_ThreadComparison.Series.Clear();
             SeriesCollection parlComp = new SeriesCollection();
             //execTimes.Add(new LineSeries()
             //{
