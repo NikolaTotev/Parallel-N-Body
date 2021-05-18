@@ -76,7 +76,7 @@ namespace Barnes_Hut_GUI
             {
                 DrawTree();
             }
-            
+
         }
 
         private void MainTree_OnProgress(object source, MyEventArgs e)
@@ -242,7 +242,7 @@ namespace Barnes_Hut_GUI
                 case AlgToUse.PBH:
                     //sw.Start();
                     mainTree.theta = float.Parse(tb_Theta.Text);
-                    TimeSpan time = mainTree.ParallelSingleBHStep(targetParticle);
+                    TimeSpan time = mainTree.ParallelSingleParticleBH(targetParticle);
                     //sw.Stop();
                     l_TotalTimeValue.Text = time.ToString();
                     l_BHParlTimeValue.Text = time.ToString();
@@ -309,18 +309,23 @@ namespace Barnes_Hut_GUI
 
             int currentParticleCount = startParticleCount;
 
-            List<AutoPerformancClass> records = new List<AutoPerformancClass>();
+            List<string> xAxisVals = new List<string>();
+            List<int> pwiExecTimes = new List<int>();
+            List<int> ppwiExecTimes = new List<int>();
+            List<int> bhExecTimes = new List<int>();
+            List<int> pbhExecTimes = new List<int>();
 
-            long pbhAvgSum = 0;
-            long pbhAvg = 0;
+            TimeSpan execTime;
+            //long pbhAvgSum = 0;
+            //long pbhAvg = 0;
 
-            long bhAvgSum = 0;
-            long bhAvg = 0;
+            //long bhAvgSum = 0;
+            //long bhAvg = 0;
 
-            long bhMin;
-            long pbhMin;
+            //long bhMin;
+            //long pbhMin;
 
-            int sampleSize = 20;
+            //int sampleSize = 20;
 
             for (int i = 0; i < numberOfSteps; i++)
             {
@@ -330,72 +335,134 @@ namespace Barnes_Hut_GUI
                 tb_TargetParticleNum.Text = "40";
 
 
+                alg = AlgToUse.PBH;
+
+                //for (int j = 0; j < sampleSize; j++)
+                //{
+                //    CalculateForces();
+                //    if (PBHTicks < pbhMin)
+                //    {
+                //        pbhMin = PBHTicks;
+                //    }
+                //    //pbhAvgSum += PBHTicks;
+                //    //  Thread.Sleep(500);
+                //}
+
+                //pbhAvg = pbhAvgSum / sampleSize;
+
+                //alg = AlgToUse.BH;
+                //l_Status.Text = "Status: Partitioning";
+
+                //for (int j = 0; j < sampleSize; j++)
+                //{
+                //    CalculateForces();
+                //    if (BHTicks < bhMin)
+                //    {
+                //        bhMin = BHTicks;
+                //    }
+                //    //bhAvgSum += BHTicks;
+                //    // Thread.Sleep(500);
+                //}
+
+                //bhAvg = bhAvgSum / sampleSize;
+
+
+                //Run PWI
                 alg = AlgToUse.PWI;
-                //CalculateForces();
+              //  execTime = mainTree.SingleFramePairwiseSimulation();
+              //  pwiExecTimes.Add(execTime.Milliseconds);
+
+                //Run PPWI
+             //   execTime = mainTree.SingleFramePairwiseParallelSimulation();
+              //  ppwiExecTimes.Add(execTime.Milliseconds);
+                //Partition
                 Partition();
                 m_partitionThread.Join();
+                m_partitionThread = null;
 
+                //Run BH
+                execTime = mainTree.SingleFrameBHSimulation();
+                bhExecTimes.Add(execTime.Milliseconds);
 
-                alg = AlgToUse.PBH;
-                CalculateForces();
-                pbhMin = PBHTicks;
-                alg = AlgToUse.BH;
-                CalculateForces();
-                bhMin = BHTicks;
+                //Run PBH
+                execTime = mainTree.ParallelSingleFrameBHSimulation();
+                pbhExecTimes.Add(execTime.Milliseconds);
 
-
-                alg = AlgToUse.PBH;
-
-                for (int j = 0; j < sampleSize; j++)
-                {
-                    CalculateForces();
-                    if (PBHTicks < pbhMin)
-                    {
-                        pbhMin = PBHTicks;
-                    }
-                    //pbhAvgSum += PBHTicks;
-                  //  Thread.Sleep(500);
-                }
-
-                pbhAvg = pbhAvgSum / sampleSize;
-
-                alg = AlgToUse.BH;
-                l_Status.Text = "Status: Partitioning";
-
-                for (int j = 0; j < sampleSize; j++)
-                {
-                    CalculateForces();
-                    if (BHTicks < bhMin)
-                    {
-                        bhMin = BHTicks;
-                    }
-                    //bhAvgSum += BHTicks;
-                   // Thread.Sleep(500);
-                }
-
-                bhAvg = bhAvgSum / sampleSize;
-
-               
-
-                records.Add(new AutoPerformancClass(currentParticleCount, PWITicks, bhMin, pbhMin));
+                xAxisVals.Add(currentParticleCount.ToString());
 
                 mainTree.ClearParticles();
                 currentParticleCount += stepSize;
-                m_partitionThread.Join(500);
-                Thread.Sleep(100);
+
+
                 l_AutoProgress.Text = $"Progress: {i} Total: {numberOfSteps} Particles: {currentParticleCount}";
-                Thread.Sleep(100);
+
             }
-            Debug.WriteLine("Moving to save");
-            dia_SaveLocation.AddExtension = true;
-            dia_SaveLocation.DefaultExt = ".csv";
-            Debug.WriteLine("Dialogue Setting Set");
-            dia_SaveLocation.ShowDialog();
-            string savePath = dia_SaveLocation.FileName;
-            using (var writer = new StreamWriter(savePath))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+
+            ChartWindow chartWindow = new ChartWindow(xAxisVals, pwiExecTimes, ppwiExecTimes, bhExecTimes, pbhExecTimes, startParticleCount, endParticleCount);
+            chartWindow.Show();
+            //Debug.WriteLine("Moving to save");
+            //dia_SaveLocation.AddExtension = true;
+            //dia_SaveLocation.DefaultExt = ".csv";
+            //Debug.WriteLine("Dialogue Setting Set");
+            //dia_SaveLocation.ShowDialog();
+            //string savePath = dia_SaveLocation.FileName;
+            //using (var writer = new StreamWriter(savePath))
+            //using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            //{
+            //    csv.WriteRecords(records);
+            //}
+        }
+
+        private void btn_Simulate_Click(object sender, EventArgs e)
+        {
+            Stopwatch sw = new Stopwatch();
+            TimeSpan time;
+            switch (alg)
             {
-                csv.WriteRecords(records);
+                case AlgToUse.PWI:
+                    sw.Start();
+                    time = mainTree.SingleFramePairwiseSimulation();
+                    sw.Stop();
+                    l_TotalTimeValue.Text = time.ToString();
+                    l_PWITimeValue.Text = time.ToString();
+                    //Clipboard.SetText(sw.Elapsed.ToString());
+                    PWITicks = sw.Elapsed.Ticks;
+                    break;
+                case AlgToUse.PPWI:
+                    time = mainTree.SingleFramePairwiseParallelSimulation();
+                    l_TotalTimeValue.Text = time.ToString();
+                    l_PPWITimeValue.Text = time.ToString();
+                    break;
+                case AlgToUse.BH:
+                    mainTree.theta = float.Parse(tb_Theta.Text);
+                    time = mainTree.SingleFrameBHSimulation();
+                    l_TotalTimeValue.Text = time.ToString();
+                    l_BHSingleStepTimeValue.Text = time.ToString();
+                    //Clipboard.SetText(sw.Elapsed.ToString());
+                    BHTicks = sw.Elapsed.Ticks;
+                    break;
+
+                case AlgToUse.PBH:
+
+                    mainTree.theta = float.Parse(tb_Theta.Text);
+                    time = mainTree.ParallelSingleFrameBHSimulation();
+                    l_TotalTimeValue.Text = time.ToString();
+                    l_BHParlTimeValue.Text = time.ToString();
+                    //Clipboard.SetText(time.ToString());
+                    PBHTicks = time.Ticks;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void rb_ParallelPWI_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_ParallelPWI.Checked)
+            {
+                alg = AlgToUse.PPWI;
+                mainTree.alg = AlgToUse.PPWI;
+                cb_ShowGrouping.Enabled = false;
             }
         }
     }
@@ -403,11 +470,11 @@ namespace Barnes_Hut_GUI
     class AutoPerformancClass
     {
         public int particleCount { get; set; }
-        public long pwiTicks { get; set; }
-        public long bhTicks { get; set; }
-        public long pbhTicks { get; set; }
+        public TimeSpan pwiTicks { get; set; }
+        public TimeSpan bhTicks { get; set; }
+        public TimeSpan pbhTicks { get; set; }
 
-        public AutoPerformancClass(int pCount, long pwTick, long bhTick, long pbhTick)
+        public AutoPerformancClass(int pCount, TimeSpan pwTick, TimeSpan bhTick, TimeSpan pbhTick)
         {
             particleCount = pCount;
             pwiTicks = pwTick;

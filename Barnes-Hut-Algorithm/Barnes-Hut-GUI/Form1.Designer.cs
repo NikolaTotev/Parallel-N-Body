@@ -41,7 +41,7 @@ namespace Barnes_Hut_GUI
             this.cb_ShowEmptyCells = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tb_Theta = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btn_Simulate = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.tb_TimeStepSim = new System.Windows.Forms.TextBox();
             this.btn_CalcForces = new System.Windows.Forms.Button();
@@ -56,6 +56,8 @@ namespace Barnes_Hut_GUI
             this.iL_End = new System.Windows.Forms.Label();
             this.iL_Total = new System.Windows.Forms.Label();
             this.p_ExecMetrics = new System.Windows.Forms.Panel();
+            this.l_PPWITimeValue = new System.Windows.Forms.Label();
+            this.iL_PPWI = new System.Windows.Forms.Label();
             this.l_BHParlTimeValue = new System.Windows.Forms.Label();
             this.l_BHSingleStepTimeValue = new System.Windows.Forms.Label();
             this.l_PWITimeValue = new System.Windows.Forms.Label();
@@ -69,8 +71,6 @@ namespace Barnes_Hut_GUI
             this.cb_DrawGraphics = new System.Windows.Forms.CheckBox();
             this.l_Progress = new System.Windows.Forms.Label();
             this.btn_Gen100PlusParticles = new System.Windows.Forms.Button();
-            this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
-            this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.btn_AutoTest = new System.Windows.Forms.Button();
             this.tb_AutoIncValue = new System.Windows.Forms.TextBox();
             this.tb_AutoIncStart = new System.Windows.Forms.TextBox();
@@ -80,6 +80,9 @@ namespace Barnes_Hut_GUI
             this.l_AutoProgress = new System.Windows.Forms.Label();
             this.l_Status = new System.Windows.Forms.Label();
             this.dia_SaveLocation = new System.Windows.Forms.SaveFileDialog();
+            this.rb_ParallelPWI = new System.Windows.Forms.RadioButton();
+            this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
+            this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ExecMetrics.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -143,7 +146,7 @@ namespace Barnes_Hut_GUI
             // rb_UsePWI
             // 
             this.rb_UsePWI.AutoSize = true;
-            this.rb_UsePWI.Location = new System.Drawing.Point(987, 186);
+            this.rb_UsePWI.Location = new System.Drawing.Point(987, 165);
             this.rb_UsePWI.Name = "rb_UsePWI";
             this.rb_UsePWI.Size = new System.Drawing.Size(144, 17);
             this.rb_UsePWI.TabIndex = 8;
@@ -204,14 +207,15 @@ namespace Barnes_Hut_GUI
             this.tb_Theta.Text = "2";
             this.tb_Theta.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
-            // button1
+            // btn_Simulate
             // 
-            this.button1.Location = new System.Drawing.Point(956, 376);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 14;
-            this.button1.Text = "Simulate Timestep";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btn_Simulate.Location = new System.Drawing.Point(956, 376);
+            this.btn_Simulate.Name = "btn_Simulate";
+            this.btn_Simulate.Size = new System.Drawing.Size(75, 23);
+            this.btn_Simulate.TabIndex = 14;
+            this.btn_Simulate.Text = "Simulate Timestep";
+            this.btn_Simulate.UseVisualStyleBackColor = true;
+            this.btn_Simulate.Click += new System.EventHandler(this.btn_Simulate_Click);
             // 
             // label3
             // 
@@ -336,6 +340,8 @@ namespace Barnes_Hut_GUI
             // p_ExecMetrics
             // 
             this.p_ExecMetrics.BackColor = System.Drawing.Color.White;
+            this.p_ExecMetrics.Controls.Add(this.l_PPWITimeValue);
+            this.p_ExecMetrics.Controls.Add(this.iL_PPWI);
             this.p_ExecMetrics.Controls.Add(this.l_BHParlTimeValue);
             this.p_ExecMetrics.Controls.Add(this.l_BHSingleStepTimeValue);
             this.p_ExecMetrics.Controls.Add(this.l_PWITimeValue);
@@ -350,15 +356,33 @@ namespace Barnes_Hut_GUI
             this.p_ExecMetrics.Controls.Add(this.iL_End);
             this.p_ExecMetrics.Controls.Add(this.iL_Start);
             this.p_ExecMetrics.Controls.Add(this.iL_ExecMetrics);
-            this.p_ExecMetrics.Location = new System.Drawing.Point(789, 555);
+            this.p_ExecMetrics.Location = new System.Drawing.Point(789, 532);
             this.p_ExecMetrics.Name = "p_ExecMetrics";
-            this.p_ExecMetrics.Size = new System.Drawing.Size(376, 194);
+            this.p_ExecMetrics.Size = new System.Drawing.Size(376, 217);
             this.p_ExecMetrics.TabIndex = 30;
+            // 
+            // l_PPWITimeValue
+            // 
+            this.l_PPWITimeValue.AutoSize = true;
+            this.l_PPWITimeValue.Location = new System.Drawing.Point(158, 141);
+            this.l_PPWITimeValue.Name = "l_PPWITimeValue";
+            this.l_PPWITimeValue.Size = new System.Drawing.Size(27, 13);
+            this.l_PPWITimeValue.TabIndex = 42;
+            this.l_PPWITimeValue.Text = "N/A";
+            // 
+            // iL_PPWI
+            // 
+            this.iL_PPWI.AutoSize = true;
+            this.iL_PPWI.Location = new System.Drawing.Point(17, 141);
+            this.iL_PPWI.Name = "iL_PPWI";
+            this.iL_PPWI.Size = new System.Drawing.Size(35, 13);
+            this.iL_PPWI.TabIndex = 41;
+            this.iL_PPWI.Text = "PPWI";
             // 
             // l_BHParlTimeValue
             // 
             this.l_BHParlTimeValue.AutoSize = true;
-            this.l_BHParlTimeValue.Location = new System.Drawing.Point(158, 164);
+            this.l_BHParlTimeValue.Location = new System.Drawing.Point(158, 185);
             this.l_BHParlTimeValue.Name = "l_BHParlTimeValue";
             this.l_BHParlTimeValue.Size = new System.Drawing.Size(27, 13);
             this.l_BHParlTimeValue.TabIndex = 40;
@@ -367,7 +391,7 @@ namespace Barnes_Hut_GUI
             // l_BHSingleStepTimeValue
             // 
             this.l_BHSingleStepTimeValue.AutoSize = true;
-            this.l_BHSingleStepTimeValue.Location = new System.Drawing.Point(158, 142);
+            this.l_BHSingleStepTimeValue.Location = new System.Drawing.Point(158, 163);
             this.l_BHSingleStepTimeValue.Name = "l_BHSingleStepTimeValue";
             this.l_BHSingleStepTimeValue.Size = new System.Drawing.Size(27, 13);
             this.l_BHSingleStepTimeValue.TabIndex = 39;
@@ -412,7 +436,7 @@ namespace Barnes_Hut_GUI
             // iL_BHParlSingleStep
             // 
             this.iL_BHParlSingleStep.AutoSize = true;
-            this.iL_BHParlSingleStep.Location = new System.Drawing.Point(20, 164);
+            this.iL_BHParlSingleStep.Location = new System.Drawing.Point(20, 185);
             this.iL_BHParlSingleStep.Name = "iL_BHParlSingleStep";
             this.iL_BHParlSingleStep.Size = new System.Drawing.Size(100, 13);
             this.iL_BHParlSingleStep.TabIndex = 34;
@@ -421,7 +445,7 @@ namespace Barnes_Hut_GUI
             // iL_BHSingleStep
             // 
             this.iL_BHSingleStep.AutoSize = true;
-            this.iL_BHSingleStep.Location = new System.Drawing.Point(18, 142);
+            this.iL_BHSingleStep.Location = new System.Drawing.Point(18, 163);
             this.iL_BHSingleStep.Name = "iL_BHSingleStep";
             this.iL_BHSingleStep.Size = new System.Drawing.Size(79, 13);
             this.iL_BHSingleStep.TabIndex = 33;
@@ -474,22 +498,6 @@ namespace Barnes_Hut_GUI
             this.btn_Gen100PlusParticles.Text = "+100";
             this.btn_Gen100PlusParticles.UseVisualStyleBackColor = true;
             this.btn_Gen100PlusParticles.Click += new System.EventHandler(this.btn_Gen100PlusParticles_Click);
-            // 
-            // p_TreePanel
-            // 
-            this.p_TreePanel.Location = new System.Drawing.Point(12, 12);
-            this.p_TreePanel.Name = "p_TreePanel";
-            this.p_TreePanel.Opacity = 0;
-            this.p_TreePanel.Size = new System.Drawing.Size(737, 737);
-            this.p_TreePanel.TabIndex = 25;
-            // 
-            // p_ForcePanel
-            // 
-            this.p_ForcePanel.Location = new System.Drawing.Point(12, 12);
-            this.p_ForcePanel.Name = "p_ForcePanel";
-            this.p_ForcePanel.Opacity = 0;
-            this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
-            this.p_ForcePanel.TabIndex = 24;
             // 
             // btn_AutoTest
             // 
@@ -565,11 +573,40 @@ namespace Barnes_Hut_GUI
             // 
             this.dia_SaveLocation.InitialDirectory = "D:\\Documents\\Project Files\\N-Body\\Parallel-N-Body\\PerformanceLogs";
             // 
+            // rb_ParallelPWI
+            // 
+            this.rb_ParallelPWI.AutoSize = true;
+            this.rb_ParallelPWI.Location = new System.Drawing.Point(987, 188);
+            this.rb_ParallelPWI.Name = "rb_ParallelPWI";
+            this.rb_ParallelPWI.Size = new System.Drawing.Size(181, 17);
+            this.rb_ParallelPWI.TabIndex = 42;
+            this.rb_ParallelPWI.TabStop = true;
+            this.rb_ParallelPWI.Text = "Use Parallel Pairwise Interactions";
+            this.rb_ParallelPWI.UseVisualStyleBackColor = true;
+            this.rb_ParallelPWI.CheckedChanged += new System.EventHandler(this.rb_ParallelPWI_CheckedChanged);
+            // 
+            // p_TreePanel
+            // 
+            this.p_TreePanel.Location = new System.Drawing.Point(12, 12);
+            this.p_TreePanel.Name = "p_TreePanel";
+            this.p_TreePanel.Opacity = 0;
+            this.p_TreePanel.Size = new System.Drawing.Size(737, 737);
+            this.p_TreePanel.TabIndex = 25;
+            // 
+            // p_ForcePanel
+            // 
+            this.p_ForcePanel.Location = new System.Drawing.Point(12, 12);
+            this.p_ForcePanel.Name = "p_ForcePanel";
+            this.p_ForcePanel.Opacity = 0;
+            this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
+            this.p_ForcePanel.TabIndex = 24;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 761);
+            this.Controls.Add(this.rb_ParallelPWI);
             this.Controls.Add(this.l_Status);
             this.Controls.Add(this.l_AutoProgress);
             this.Controls.Add(this.label6);
@@ -591,7 +628,7 @@ namespace Barnes_Hut_GUI
             this.Controls.Add(this.btn_CalcForces);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.tb_TimeStepSim);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btn_Simulate);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tb_Theta);
             this.Controls.Add(this.cb_ShowEmptyCells);
@@ -629,7 +666,7 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.CheckBox cb_ShowEmptyCells;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tb_Theta;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btn_Simulate;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox tb_TimeStepSim;
         private System.Windows.Forms.Button btn_CalcForces;
@@ -668,6 +705,9 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.Label l_AutoProgress;
         private System.Windows.Forms.Label l_Status;
         private System.Windows.Forms.SaveFileDialog dia_SaveLocation;
+        private System.Windows.Forms.RadioButton rb_ParallelPWI;
+        private System.Windows.Forms.Label l_PPWITimeValue;
+        private System.Windows.Forms.Label iL_PPWI;
     }
 }
 

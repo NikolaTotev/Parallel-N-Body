@@ -14,7 +14,7 @@ namespace Barnes_Hut_GUI
 {
     enum AlgToUse
     {
-        BH, PWI, PBH
+        PWI, PPWI, BH, PBH
     }
 
     public delegate void MyEventHandler(object source, MyEventArgs e);
@@ -60,7 +60,8 @@ namespace Barnes_Hut_GUI
         public TimeSpan thread2Worktime;
         public TimeSpan thread3Worktime;
         public TimeSpan thread4Worktime;
-
+        Stopwatch sw = new Stopwatch();
+        private bool initialPartition = false;
 
 
 
@@ -224,9 +225,83 @@ namespace Barnes_Hut_GUI
             ForceTraversal(AllParticles[targetParticle], RootNode.SwChild);
         }
 
-        public TimeSpan ParallelSingleBHStep(int targetParticle)
+        public TimeSpan SingleFramePairwiseSimulation()
         {
-            Stopwatch sw = new Stopwatch();
+            sw.Reset();
+            sw.Start();
+            foreach (Particle currentParticle in AllParticles)
+            {
+                for (int j = 0; j < AllParticles.Count; j++)
+                {
+                    if (AllParticles[j] != currentParticle)
+                    {
+                        List<float> distanceInfo = CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
+                        float forceVecMag = CalculateForces(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
+                        currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
+                    }
+                }
+            }
+            sw.Stop();
+            return sw.Elapsed;
+        }
+
+        public TimeSpan SingleFramePairwiseParallelSimulation()
+        {
+            sw.Reset();
+            sw.Start();
+            Parallel.ForEach(AllParticles, currentParticle =>
+            {
+                for (int j = 0; j < AllParticles.Count; j++)
+                {
+                    if (AllParticles[j] != currentParticle)
+                    {
+                        List<float> distanceInfo =
+                            CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
+                        float forceVecMag =
+                            CalculateForces(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
+                        currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint,
+                            AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
+                    }
+                }
+            });
+            sw.Stop();
+            return sw.Elapsed;
+        }
+
+        public TimeSpan SingleFrameBHSimulation()
+        {
+            sw.Reset();
+            sw.Start();
+            foreach (Particle currentParticle in AllParticles)
+            {
+                //This might be best if taken into a function
+                ForceTraversal(currentParticle, RootNode.SeChild);
+                ForceTraversal(currentParticle, RootNode.NeChild);
+                ForceTraversal(currentParticle, RootNode.NwChild);
+                ForceTraversal(currentParticle, RootNode.SwChild);
+            }
+            sw.Stop();
+            return sw.Elapsed;
+        }
+
+        public TimeSpan ParallelSingleFrameBHSimulation()
+        {
+            sw.Reset();
+            sw.Start();
+            Parallel.ForEach(AllParticles, currentParticle =>
+            {
+                ForceTraversal(currentParticle, RootNode.SeChild);
+                ForceTraversal(currentParticle, RootNode.NeChild);
+                ForceTraversal(currentParticle, RootNode.NwChild);
+                ForceTraversal(currentParticle, RootNode.SwChild);
+            });
+            sw.Stop();
+            return sw.Elapsed;
+        }
+
+        public TimeSpan ParallelSingleParticleBH(int targetParticle)
+        {
+            sw.Reset();
             Thread SeThread = new Thread(new ThreadStart(() => ProxyForceTrav(AllParticles[targetParticle], RootNode.SeChild)
                 ));
             Thread NeThread = new Thread(new ThreadStart(() => ProxyForceTrav(AllParticles[targetParticle], RootNode.NeChild)
@@ -252,7 +327,7 @@ namespace Barnes_Hut_GUI
             NwThread.Join();
             SwThread.Join();
             sw.Stop();
-            return thread1Worktime+thread2Worktime+thread3Worktime+thread4Worktime;
+            return thread1Worktime + thread2Worktime + thread3Worktime + thread4Worktime;
         }
 
         public void ProxyForceTrav(Particle currentParticle, Node startNode)
@@ -286,7 +361,7 @@ namespace Barnes_Hut_GUI
 
         public void ForceTraversal(Particle currentParticle, Node startNode)
         {
-          
+
 
             List<float> distanceToNodeInfo = new List<float>();
 
@@ -339,7 +414,7 @@ namespace Barnes_Hut_GUI
                 ForceTraversal(currentParticle, startNode.NwChild);
                 ForceTraversal(currentParticle, startNode.SwChild);
             }
-            
+
         }
 
         float CalculateForces(float distance, float particleMass, float nodeMass)
