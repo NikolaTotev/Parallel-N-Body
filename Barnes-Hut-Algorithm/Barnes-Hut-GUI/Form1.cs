@@ -304,7 +304,7 @@ namespace Barnes_Hut_GUI
             int startParticleCount = int.Parse(tb_AutoIncStart.Text);
             int endParticleCount = int.Parse(tb_AutoIncEnd.Text);
             int stepSize = int.Parse(tb_AutoIncValue.Text);
-
+            int maxThreadCount = 6;
             int numberOfSteps = (endParticleCount - startParticleCount) / stepSize;
 
             int currentParticleCount = startParticleCount;
@@ -314,6 +314,8 @@ namespace Barnes_Hut_GUI
             List<int> ppwiExecTimes = new List<int>();
             List<int> bhExecTimes = new List<int>();
             List<int> pbhExecTimes = new List<int>();
+            List<int> threadComparison = new List<int>();
+            List<string> threadCounts = new List<string>();
 
             TimeSpan execTime;
             //long pbhAvgSum = 0;
@@ -385,8 +387,11 @@ namespace Barnes_Hut_GUI
                 bhExecTimes.Add(execTime.Milliseconds);
 
                 //Run PBH
+
+
                 execTime = mainTree.ParallelSingleFrameBHSimulation();
                 pbhExecTimes.Add(execTime.Milliseconds);
+
 
                 xAxisVals.Add(currentParticleCount.ToString());
 
@@ -397,8 +402,31 @@ namespace Barnes_Hut_GUI
                 l_AutoProgress.Text = $"Progress: {i} Total: {numberOfSteps} Particles: {currentParticleCount}";
 
             }
+            
 
-            ChartWindow chartWindow = new ChartWindow(xAxisVals, pwiExecTimes, ppwiExecTimes, bhExecTimes, pbhExecTimes, startParticleCount, endParticleCount);
+
+            mainTree.ClearParticles();
+            currentParticleCount = endParticleCount;
+            l_Status.Text = "Status: Comparing thread performance.";
+            tb_TargetParticleNum.Text = $"{currentParticleCount}";
+
+            Partition();
+            m_partitionThread.Join();
+            for (int j = 1; j < maxThreadCount + 1; j++)
+            {
+                l_Status.Text = $"Status: Comparing thread performance. Thread:{j}";
+                mainTree.GenerateParticles(currentParticleCount);
+                Partition();
+                m_partitionThread.Join();
+                m_partitionThread = null;
+
+                execTime = mainTree.SingleFrameParallelBHSimulationThreadControl(j);
+                threadComparison.Add(execTime.Milliseconds);
+                threadCounts.Add(j.ToString());
+                mainTree.ClearParticles();
+            }
+
+            ChartWindow chartWindow = new ChartWindow(xAxisVals, threadComparison, threadCounts, pwiExecTimes, ppwiExecTimes, bhExecTimes, pbhExecTimes, startParticleCount, endParticleCount);
             chartWindow.Show();
             //Debug.WriteLine("Moving to save");
             //dia_SaveLocation.AddExtension = true;

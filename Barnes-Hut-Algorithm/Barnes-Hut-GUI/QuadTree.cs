@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Math;
 using System.Diagnostics;
+using System.Globalization;
 
 
 namespace Barnes_Hut_GUI
@@ -268,13 +269,68 @@ namespace Barnes_Hut_GUI
             return sw.Elapsed;
         }
 
+        public TimeSpan SingleFrameParallelBHSimulationThreadControl(int numberOfThreads)
+        {
+            List<Thread> workerThreads = new List<Thread>();
+
+            int particlesPerThread = AllParticles.Count / 6;
+
+            List<int> threadStartIndecies = new List<int>();
+            List<int> threadEndIndecies = new List<int>();
+            int currentStartIndex = 0;
+            int endIndex;
+            for (int i = 0; i < numberOfThreads; i++)
+            {
+                if (i != numberOfThreads - 1)
+                {
+                    threadStartIndecies.Add(currentStartIndex);
+                    endIndex = currentStartIndex + particlesPerThread;
+                    threadEndIndecies.Add(endIndex);
+                    currentStartIndex = endIndex + 1;
+                }
+                else
+                {
+                    threadStartIndecies.Add(currentStartIndex);
+                    endIndex = AllParticles.Count;
+                    threadEndIndecies.Add(endIndex);
+                }
+                
+                
+
+                
+            }
+
+            for (int i = 0; i < numberOfThreads; i++)
+            {
+                int si = threadStartIndecies[i];
+                int ei= threadStartIndecies[i];
+                Thread worker = new Thread((() => ForceCalculation(si, ei)));
+                worker.Name = $"Thread_{i}";
+                workerThreads.Add(worker);
+            }
+
+            sw.Reset();
+            sw.Start();
+            foreach (var workerThread in workerThreads)
+            {
+                workerThread.Start();
+            }
+
+            foreach (var workerThread in workerThreads)
+            {
+                workerThread.Join();
+            }
+
+            sw.Stop();
+            return sw.Elapsed;
+        }
+
         public TimeSpan SingleFrameBHSimulation()
         {
             sw.Reset();
             sw.Start();
             foreach (Particle currentParticle in AllParticles)
             {
-                //This might be best if taken into a function
                 ForceTraversal(currentParticle, RootNode.SeChild);
                 ForceTraversal(currentParticle, RootNode.NeChild);
                 ForceTraversal(currentParticle, RootNode.NwChild);
@@ -284,17 +340,56 @@ namespace Barnes_Hut_GUI
             return sw.Elapsed;
         }
 
-        public TimeSpan ParallelSingleFrameBHSimulation()
+        private void ForceCalculation(int startIndex, int endIndex)
         {
-            sw.Reset();
-            sw.Start();
-            Parallel.ForEach(AllParticles, currentParticle =>
+            for (int i = startIndex; i < endIndex; i++)
             {
+                Particle currentParticle = AllParticles[i];
                 ForceTraversal(currentParticle, RootNode.SeChild);
                 ForceTraversal(currentParticle, RootNode.NeChild);
                 ForceTraversal(currentParticle, RootNode.NwChild);
                 ForceTraversal(currentParticle, RootNode.SwChild);
-            });
+            }
+
+        }
+
+        public TimeSpan ParallelSingleFrameBHSimulation()
+        {
+            sw.Reset();
+            int numberOfThreads = 6;
+            int particlesPerThread = AllParticles.Count / 6;
+
+            List<int> threadStartIndecies = new List<int>();
+            int currentStartIndex = 0;
+            threadStartIndecies.Add(currentStartIndex);
+            for (int i = 0; i < numberOfThreads - 1; i++)
+            {
+                currentStartIndex += particlesPerThread;
+                threadStartIndecies.Add(currentStartIndex);
+            }
+            Thread firstThread = new Thread((() => ForceCalculation(threadStartIndecies[0], particlesPerThread)));
+            Thread secondThread = new Thread((() => ForceCalculation(threadStartIndecies[1], particlesPerThread)));
+            Thread thirdThread = new Thread((() => ForceCalculation(threadStartIndecies[2], particlesPerThread)));
+            Thread fourthThread = new Thread((() => ForceCalculation(threadStartIndecies[3], particlesPerThread)));
+            Thread fifthThread = new Thread((() => ForceCalculation(threadStartIndecies[4], particlesPerThread)));
+            Thread sixthThread = new Thread((() => ForceCalculation(threadStartIndecies[5], particlesPerThread)));
+
+            sw.Start();
+
+            firstThread.Start();
+            secondThread.Start();
+            thirdThread.Start();
+            fourthThread.Start();
+            fifthThread.Start();
+            sixthThread.Start();
+
+            firstThread.Join();
+            secondThread.Join();
+            thirdThread.Join();
+            fourthThread.Join();
+            fifthThread.Join();
+            sixthThread.Join();
+
             sw.Stop();
             return sw.Elapsed;
         }
