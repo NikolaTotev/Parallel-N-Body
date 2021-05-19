@@ -422,7 +422,7 @@ namespace Barnes_Hut_GUI
                 m_partitionThread.Join();
                 m_partitionThread = null;
 
-                execTime = mainTree.SingleFrameParallelBHSimulationThreadControl(j);
+                execTime = mainTree.SingleFrameParallelBHSimulationThreadControl(j, QuadTree.threadModes.fromParallelLib);
                 threadComparison.Add(execTime.Milliseconds);
                 threadCounts.Add(j.ToString());
                 mainTree.ClearParticles();

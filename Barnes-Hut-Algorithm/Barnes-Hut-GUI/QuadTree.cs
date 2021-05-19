@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -269,64 +270,106 @@ namespace Barnes_Hut_GUI
             return sw.Elapsed;
         }
 
-        public TimeSpan SingleFrameParallelBHSimulationThreadControl(int numberOfThreads)
-        {
-            List<Thread> workerThreads = new List<Thread>();
 
+        public enum threadModes
+        {
+            selfMade,
+            fromParallelLib
+
+        };
+
+        public TimeSpan SingleFrameParallelBHSimulationThreadControl(int numberOfThreads, threadModes mode)
+        {
             int particlesPerThread = AllParticles.Count / numberOfThreads;
 
-            List<int> threadStartIndecies = new List<int>();
-            List<int> threadEndIndecies = new List<int>();
-            int currentStartIndex = 0;
-            int endIndex;
-            for (int i = 0; i < numberOfThreads; i++)
+            switch (mode)
             {
-                if (i != numberOfThreads - 1)
-                {
-                    threadStartIndecies.Add(currentStartIndex);
-                    endIndex = currentStartIndex + particlesPerThread;
-                    threadEndIndecies.Add(endIndex);
-                    currentStartIndex = endIndex + 1;
-                }
-                else
-                {
-                    threadStartIndecies.Add(currentStartIndex);
-                    endIndex = AllParticles.Count;
-                    threadEndIndecies.Add(endIndex);
-                }
-                
-                
+                case threadModes.selfMade:
+                    List<Thread> workerThreads = new List<Thread>();
 
-                
+
+                    List<int> threadStartIndecies = new List<int>();
+                    List<int> threadEndIndecies = new List<int>();
+                    int currentStartIndex = 0;
+                    int endIndex;
+                    for (int i = 0; i < numberOfThreads; i++)
+                    {
+                        if (i != numberOfThreads - 1)
+                        {
+                            threadStartIndecies.Add(currentStartIndex);
+                            endIndex = currentStartIndex + particlesPerThread;
+                            threadEndIndecies.Add(endIndex);
+                            currentStartIndex = endIndex + 1;
+                        }
+                        else
+                        {
+                            threadStartIndecies.Add(currentStartIndex);
+                            endIndex = AllParticles.Count;
+                            threadEndIndecies.Add(endIndex);
+                        }
+
+
+
+
+                    }
+
+                    for (int i = 0; i < numberOfThreads; i++)
+                    {
+                        int si = threadStartIndecies[i];
+                        int ei = threadEndIndecies[i];
+                        Thread worker = new Thread((() => ForceCalculation(si, ei)));
+                        worker.Priority = ThreadPriority.Highest;
+                        worker.Name = $"Thread_{i}";
+                        workerThreads.Add(worker);
+                    }
+
+                    sw.Reset();
+                    sw.Start();
+                    foreach (var workerThread in workerThreads)
+                    {
+                        workerThread.Start();
+                    }
+
+                    foreach (var workerThread in workerThreads)
+                    {
+                        workerThread.Join();
+                    }
+
+                    sw.Stop();
+
+
+                    workerThreads = null;
+                    return sw.Elapsed;
+                    break;
+                case threadModes.fromParallelLib:
+                    Partitioner<Particle> rangePartitioner = Partitioner.Create(AllParticles, false);
+                    //var rn = Partitioner.Create(0, AllParticles.Count, 10);
+
+                    sw.Reset();
+                    sw.Start();
+                    Parallel.ForEach(rangePartitioner,
+                        new ParallelOptions { MaxDegreeOfParallelism = numberOfThreads },
+                        (currentParticle) =>
+                        {
+
+                            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+
+
+                            ForceTraversal(currentParticle, RootNode.SeChild);
+                            ForceTraversal(currentParticle, RootNode.NeChild);
+                            ForceTraversal(currentParticle, RootNode.NwChild);
+                            ForceTraversal(currentParticle, RootNode.SwChild);
+                        });
+                    sw.Stop();
+
+                    return sw.Elapsed;
+                    break;
+                default:
+                    return new TimeSpan();
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
 
-            for (int i = 0; i < numberOfThreads; i++)
-            {
-                int si = threadStartIndecies[i];
-                int ei= threadEndIndecies[i];
-                Thread worker = new Thread((() => ForceCalculation(si, ei)));
-                worker.Priority = ThreadPriority.Highest;
-                worker.Name = $"Thread_{i}";
-                workerThreads.Add(worker);
-            }
 
-            sw.Reset();
-            sw.Start();
-            foreach (var workerThread in workerThreads)
-            {
-                workerThread.Start();
-            }
-
-            foreach (var workerThread in workerThreads)
-            {
-                workerThread.Join();
-            }
-
-            sw.Stop();
-
-
-            workerThreads = null;
-            return sw.Elapsed;
         }
 
         public TimeSpan SingleFrameBHSimulation()
