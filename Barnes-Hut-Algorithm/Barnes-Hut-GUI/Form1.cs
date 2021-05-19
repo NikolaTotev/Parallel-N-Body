@@ -428,7 +428,10 @@ namespace Barnes_Hut_GUI
                 mainTree.ClearParticles();
             }
 
-
+            
+      
+            //chart_ThreadComparison.AxisX.Clear();
+            //chart_ThreadComparison.AxisY.Clear();
             chart_ThreadComparison.AxisX.Add(new LiveCharts.Wpf.Axis()
             {
                 Title = "Thread Count",
@@ -439,7 +442,6 @@ namespace Barnes_Hut_GUI
             {
                 Title = "Level of Parallelism",
             });
-
             chart_ThreadComparison.LegendLocation = LiveCharts.LegendLocation.Bottom;
             chart_ThreadComparison.Series.Clear();
             SeriesCollection parlComp = new SeriesCollection();

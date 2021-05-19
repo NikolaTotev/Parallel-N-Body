@@ -305,6 +305,7 @@ namespace Barnes_Hut_GUI
                 int si = threadStartIndecies[i];
                 int ei= threadEndIndecies[i];
                 Thread worker = new Thread((() => ForceCalculation(si, ei)));
+                worker.Priority = ThreadPriority.Highest;
                 worker.Name = $"Thread_{i}";
                 workerThreads.Add(worker);
             }
