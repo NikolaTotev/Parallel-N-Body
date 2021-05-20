@@ -342,7 +342,7 @@ namespace Barnes_Hut_GUI
                     return sw.Elapsed;
                     break;
                 case threadModes.fromParallelLib:
-                    Partitioner<Particle> rangePartitioner = Partitioner.Create(AllParticles, false);
+                    Partitioner<Particle> rangePartitioner = Partitioner.Create(AllParticles, true);
                     //var rn = Partitioner.Create(0, AllParticles.Count, 10);
 
                     sw.Reset();
