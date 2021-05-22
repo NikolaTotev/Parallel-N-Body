@@ -168,13 +168,13 @@ namespace Barnes_Hut_GUI
         private void cb_ShowEmptyCells_CheckedChanged(object sender, EventArgs e)
         {
             ShowEmptyCells = cb_ShowEmptyCells.Checked;
-            mainTree.ShowEmptyCells = cb_ShowEmptyCells.Checked;
+            mainTree.DrawBhNodeGrouping = cb_ShowEmptyCells.Checked;
         }
 
         private void cb_ShowGrouping_CheckedChanged(object sender, EventArgs e)
         {
             ShowGrouping = cb_ShowGrouping.Checked;
-            mainTree.ShowGrouping = cb_ShowGrouping.Checked;
+            mainTree.DrawBhNodeGrouping = cb_ShowGrouping.Checked;
         }
 
         private void rb_UsePWI_CheckedChanged(object sender, EventArgs e)
@@ -185,7 +185,7 @@ namespace Barnes_Hut_GUI
                 mainTree.alg = QuadTree.AlgToUse.PWI;
                 cb_ShowGrouping.Enabled = false;
                 ShowGrouping = false;
-                mainTree.ShowGrouping = false;
+                mainTree.DrawBhNodeGrouping = false;
 
             }
         }
@@ -234,7 +234,7 @@ namespace Barnes_Hut_GUI
                     break;
                 case QuadTree.AlgToUse.PWI:
                     sw.Start();
-                    mainTree.PairWiseForceCalculation();
+                    mainTree.PairwiseForceCalculation();
                     sw.Stop();
                     l_TotalTimeValue.Text = sw.Elapsed.ToString();
                     l_PWITimeValue.Text = sw.Elapsed.ToString();

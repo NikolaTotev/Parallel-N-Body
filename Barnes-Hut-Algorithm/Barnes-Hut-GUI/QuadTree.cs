@@ -126,14 +126,115 @@ namespace Barnes_Hut_GUI
 
         #region Force Calculations
 
+        /// <summary>
+        /// Calculate the forces on a particle using Pairwise interaction (brute force method)
+        /// </summary>
+        public void PairwiseForceCalculation()
+        {
 
+            for (int i = 0; i < AllParticles.Count; i++)
+            {
+                for (int j = 0; j < AllParticles.Count; j++)
+                {
+                    if (j != i)
+                    {
+                        List<float> distanceInfo = CalculateDistanceToNode(AllParticles[i], AllParticles[j].CenterPoint);
+                        float forceVecMag = GravitationalForceCalculation(distanceInfo[0], AllParticles[i].Mass, AllParticles[j].Mass);
+                        AllParticles[i].AddForce(new ForceVector(AllParticles[i].CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Calculate the forces on the particles in the AllParticles array starting from index <startIndex> to <endIndex> (inclusive)
+        /// using the BH algorithm for traversing the tree.
+        /// For calculating forces using 1 thread, start index is set to 0 and end index the last index of the array.
+        /// For calculating forces using multiple threads, partitioning must be done by the calling function
+        /// </summary>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        private void BhAlgForceCalculation(int startIndex, int endIndex)
+        {
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                Particle currentParticle = AllParticles[i];
+                BhAlgApplyForceOnParticle(currentParticle, RootNode.SeChild);
+                BhAlgApplyForceOnParticle(currentParticle, RootNode.NeChild);
+                BhAlgApplyForceOnParticle(currentParticle, RootNode.NwChild);
+                BhAlgApplyForceOnParticle(currentParticle, RootNode.SwChild);
+            }
+
+        }
 
         #endregion
 
-        #region Core Fore Calculation Functions
+        #region Core Force Calculation Functions
+
+        /// <summary>
+        /// Calculate the forces for a given particle.
+        /// </summary>
+        /// <param name="currentParticle"></param>
+        /// <param name="startNode"></param>
+        public void BhAlgApplyForceOnParticle(Particle currentParticle, Node startNode)
+        {
 
 
+            List<float> distanceToNodeInfo = new List<float>();
 
+            if (startNode.nodeParticles.Count == 0)
+            {
+                return;
+
+            }
+
+            if (startNode.nodeParticles.Count == 1)
+            {
+                distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.nodeParticles[0].CenterPoint);
+            }
+            else
+            {
+                distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.centerOfMass);
+            }
+
+            if (LengthIsOverDouble(startNode.SideLength, distanceToNodeInfo[0]) || startNode.nodeParticles.Count == 1)
+            {
+
+                float force = GravitationalForceCalculation(distanceToNodeInfo[0], currentParticle.Mass, startNode.TotalMass);
+                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint, startNode.centerOfMass, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
+                if (startNode.nodeParticles.Count == 1)
+                {
+                    forceVect = new ForceVector(currentParticle.CenterPoint, startNode.nodeParticles[0].CenterPoint, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
+                }
+
+                if (startNode.nodeParticles[0] != currentParticle)
+                {
+                    currentParticle.ForcesToApply.Add(forceVect);
+                }
+
+            }
+            else
+            {
+                BhAlgApplyForceOnParticle(currentParticle, startNode.SeChild);
+                BhAlgApplyForceOnParticle(currentParticle, startNode.NeChild);
+                BhAlgApplyForceOnParticle(currentParticle, startNode.NwChild);
+                BhAlgApplyForceOnParticle(currentParticle, startNode.SwChild);
+            }
+
+        }
+        
+        /// <summary>
+        /// Calculate the gravitational forces on a particle based on the particle mass, the node its interacting with and the distance between them.
+        /// </summary>
+        /// <param name="distance"></param>
+        /// <param name="particleMass"></param>
+        /// <param name="nodeMass"></param>
+        /// <returns></returns>
+        float GravitationalForceCalculation(float distance, float particleMass, float nodeMass)
+        {
+            float totalMass = particleMass * nodeMass;
+            return G * totalMass / (float)Math.Pow(distance, 2);
+        }
         #endregion
 
         #region Visualization
@@ -199,7 +300,8 @@ namespace Barnes_Hut_GUI
             VisualizeTreeNodes(nextNode.SwChild, currentGraphics, rectPen);
 
         }
-
+        
+        
         #endregion
 
 
@@ -207,22 +309,6 @@ namespace Barnes_Hut_GUI
 
 
 
-        public void PairWiseForceCalculation()
-        {
-
-            for (int i = 0; i < AllParticles.Count; i++)
-            {
-                for (int j = 0; j < AllParticles.Count; j++)
-                {
-                    if (j != i)
-                    {
-                        List<float> distanceInfo = CalculateDistanceToNode(AllParticles[i], AllParticles[j].CenterPoint);
-                        float forceVecMag = CalculateForces(distanceInfo[0], AllParticles[i].Mass, AllParticles[j].Mass);
-                        AllParticles[i].AddForce(new ForceVector(AllParticles[i].CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
-                    }
-                }
-            }
-        }
 
         public void VisualizeForceVectors(int particleNumber, Graphics currenctGraphics, Pen minPen, Pen midPen, Pen maxPen)
         {
@@ -261,21 +347,13 @@ namespace Barnes_Hut_GUI
                     forceVectEnd.Y - 0.5f, 0.5f * 2, 0.5f * 2);
             }
         }
-
-        public void BHAlg()
-        {
-            foreach (Particle particle in AllParticles)
-            {
-                ForceTraversal(particle, RootNode);
-            }
-        }
-
+        
         public void SingleBHStep(int targetParticle)
         {
-            ForceTraversal(AllParticles[targetParticle], RootNode.SeChild);
-            ForceTraversal(AllParticles[targetParticle], RootNode.NeChild);
-            ForceTraversal(AllParticles[targetParticle], RootNode.NwChild);
-            ForceTraversal(AllParticles[targetParticle], RootNode.SwChild);
+            BhAlgApplyForceOnParticle(AllParticles[targetParticle], RootNode.SeChild);
+            BhAlgApplyForceOnParticle(AllParticles[targetParticle], RootNode.NeChild);
+            BhAlgApplyForceOnParticle(AllParticles[targetParticle], RootNode.NwChild);
+            BhAlgApplyForceOnParticle(AllParticles[targetParticle], RootNode.SwChild);
         }
 
         public TimeSpan SingleFramePairwiseSimulation()
@@ -289,7 +367,7 @@ namespace Barnes_Hut_GUI
                     if (AllParticles[j] != currentParticle)
                     {
                         List<float> distanceInfo = CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
-                        float forceVecMag = CalculateForces(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
+                        float forceVecMag = GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
                         currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
                     }
                 }
@@ -311,7 +389,7 @@ namespace Barnes_Hut_GUI
                         List<float> distanceInfo =
                             CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
                         float forceVecMag =
-                            CalculateForces(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
+                            GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
                         currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint,
                             AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
                     }
@@ -363,7 +441,7 @@ namespace Barnes_Hut_GUI
                     {
                         int si = threadStartIndecies[i];
                         int ei = threadEndIndecies[i];
-                        Thread worker = new Thread((() => ForceCalculation(si, ei)));
+                        Thread worker = new Thread((() => BhAlgForceCalculation(si, ei)));
                         worker.Priority = ThreadPriority.Highest;
                         worker.Name = $"Thread_{i}";
                         workerThreads.Add(worker);
@@ -401,10 +479,10 @@ namespace Barnes_Hut_GUI
                             Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
 
-                            ForceTraversal(currentParticle, RootNode.SeChild);
-                            ForceTraversal(currentParticle, RootNode.NeChild);
-                            ForceTraversal(currentParticle, RootNode.NwChild);
-                            ForceTraversal(currentParticle, RootNode.SwChild);
+                            BhAlgApplyForceOnParticle(currentParticle, RootNode.SeChild);
+                            BhAlgApplyForceOnParticle(currentParticle, RootNode.NeChild);
+                            BhAlgApplyForceOnParticle(currentParticle, RootNode.NwChild);
+                            BhAlgApplyForceOnParticle(currentParticle, RootNode.SwChild);
                         });
                     m_Sw.Stop();
 
@@ -424,27 +502,15 @@ namespace Barnes_Hut_GUI
             m_Sw.Start();
             foreach (Particle currentParticle in AllParticles)
             {
-                ForceTraversal(currentParticle, RootNode.SeChild);
-                ForceTraversal(currentParticle, RootNode.NeChild);
-                ForceTraversal(currentParticle, RootNode.NwChild);
-                ForceTraversal(currentParticle, RootNode.SwChild);
+                BhAlgApplyForceOnParticle(currentParticle, RootNode.SeChild);
+                BhAlgApplyForceOnParticle(currentParticle, RootNode.NeChild);
+                BhAlgApplyForceOnParticle(currentParticle, RootNode.NwChild);
+                BhAlgApplyForceOnParticle(currentParticle, RootNode.SwChild);
             }
             m_Sw.Stop();
             return m_Sw.Elapsed;
         }
 
-        private void ForceCalculation(int startIndex, int endIndex)
-        {
-            for (int i = startIndex; i < endIndex; i++)
-            {
-                Particle currentParticle = AllParticles[i];
-                ForceTraversal(currentParticle, RootNode.SeChild);
-                ForceTraversal(currentParticle, RootNode.NeChild);
-                ForceTraversal(currentParticle, RootNode.NwChild);
-                ForceTraversal(currentParticle, RootNode.SwChild);
-            }
-
-        }
 
         public TimeSpan ParallelSingleFrameBHSimulation()
         {
@@ -460,12 +526,12 @@ namespace Barnes_Hut_GUI
                 currentStartIndex += particlesPerThread;
                 threadStartIndecies.Add(currentStartIndex);
             }
-            Thread firstThread = new Thread((() => ForceCalculation(threadStartIndecies[0], particlesPerThread)));
-            Thread secondThread = new Thread((() => ForceCalculation(threadStartIndecies[1], particlesPerThread)));
-            Thread thirdThread = new Thread((() => ForceCalculation(threadStartIndecies[2], particlesPerThread)));
-            Thread fourthThread = new Thread((() => ForceCalculation(threadStartIndecies[3], particlesPerThread)));
-            Thread fifthThread = new Thread((() => ForceCalculation(threadStartIndecies[4], particlesPerThread)));
-            Thread sixthThread = new Thread((() => ForceCalculation(threadStartIndecies[5], particlesPerThread)));
+            Thread firstThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[0], particlesPerThread)));
+            Thread secondThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[1], particlesPerThread)));
+            Thread thirdThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[2], particlesPerThread)));
+            Thread fourthThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[3], particlesPerThread)));
+            Thread fifthThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[4], particlesPerThread)));
+            Thread sixthThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[5], particlesPerThread)));
 
             m_Sw.Start();
 
@@ -524,7 +590,7 @@ namespace Barnes_Hut_GUI
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            ForceTraversal(currentParticle, startNode);
+            BhAlgApplyForceOnParticle(currentParticle, startNode);
             sw.Stop();
             if (thr.Name == "One")
             {
@@ -547,69 +613,8 @@ namespace Barnes_Hut_GUI
             }
         }
 
-        public void ForceTraversal(Particle currentParticle, Node startNode)
-        {
-
-
-            List<float> distanceToNodeInfo = new List<float>();
-
-            if (startNode.nodeParticles.Count == 0)
-            {
-                return;
-
-            }
-
-            if (startNode.nodeParticles.Count == 1)
-            {
-                distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.nodeParticles[0].CenterPoint);
-            }
-            else
-            {
-                distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.centerOfMass);
-            }
-
-            //if (startNode.IsLeaf)
-            //{
-            //    distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.nodeParticles[0].CenterPoint);
-
-            //}
-            //else
-            //{
-            //    distanceToNodeInfo = CalculateDistanceToNode(currentParticle, startNode.centerOfMass);
-            //}
-
-
-            if (LengthIsOverDouble(startNode.SideLength, distanceToNodeInfo[0]) || startNode.nodeParticles.Count == 1)
-            {
-
-                float force = CalculateForces(distanceToNodeInfo[0], currentParticle.Mass, startNode.TotalMass);
-                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint, startNode.centerOfMass, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
-                if (startNode.nodeParticles.Count == 1)
-                {
-                    forceVect = new ForceVector(currentParticle.CenterPoint, startNode.nodeParticles[0].CenterPoint, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
-                }
-
-                if (startNode.nodeParticles[0] != currentParticle)
-                {
-                    currentParticle.ForcesToApply.Add(forceVect);
-                }
-
-            }
-            else
-            {
-                ForceTraversal(currentParticle, startNode.SeChild);
-                ForceTraversal(currentParticle, startNode.NeChild);
-                ForceTraversal(currentParticle, startNode.NwChild);
-                ForceTraversal(currentParticle, startNode.SwChild);
-            }
-
-        }
-
-        float CalculateForces(float distance, float particleMass, float nodeMass)
-        {
-            float totalMass = particleMass * nodeMass;
-            return G * totalMass / (float)Math.Pow(distance, 2);
-        }
+      
+      
 
         bool LengthIsOverDouble(float nodeSideLength, float distanceToNode)
         {
