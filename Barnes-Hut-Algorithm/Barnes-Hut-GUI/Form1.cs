@@ -94,7 +94,7 @@ namespace Barnes_Hut_GUI
 
         private void Partition()
         {
-            m_partitionThread = new Thread(() => mainTree.ParitionSpace(), 1073741824);
+            m_partitionThread = new Thread(() => mainTree.PartitionSpace(), 1073741824);
             m_partitionThread.Name = "PartThread";
             m_partitionThread.Start();
         }

@@ -15,11 +15,7 @@ using System.Windows.Controls;
 
 namespace Barnes_Hut_GUI
 {
-
-
     public delegate void MyEventHandler(object source, MyEventArgs e);
-
-
 
     public class MyEventArgs : EventArgs
     {
@@ -68,15 +64,10 @@ namespace Barnes_Hut_GUI
         public bool DrawEmptyCells { get; set; }
         public bool DrawBhNodeGrouping { get; set; }
 
-
         #endregion
 
 
-
-
-
         #region Enums
-
         public enum threadMode
         {
             selfMade,
@@ -101,6 +92,81 @@ namespace Barnes_Hut_GUI
             RootNode.IsRoot = true;
             AllParticles = new List<Particle>();
 
+        }
+
+        /// <summary>
+        /// Partitions the space until there is only 1 particle per node.
+        /// </summary>
+        public void PartitionSpace()
+        {
+            for (int q = 0; q < AllParticles.Count; q++)
+            {
+                Debug.WriteLine($"Adding particle {q}...");
+                RootNode.AddParticle(AllParticles[q]);
+
+                if (q % 5 == 0)
+                {
+                    MyEventArgs args = new MyEventArgs(q);
+                    RaiseEventOnUIThread(OnProgress, new object[] { null, args });
+                }
+            }
+
+            RaiseEventOnUIThread(OnCompleted, new object[] { null, new EventArgs() });
+
+        }
+
+        /// <summary>
+        /// Generates unique particles based on the particle count passed to the function.
+        /// No duplicates are created.
+        /// </summary>
+        /// <param name="particleCount"></param>
+        public void GenerateParticles(int particleCount)
+        {
+            Random rand = new Random();
+            List<Point> testPoints = new List<Point>()
+            {
+                new Point(91, 395),
+                new Point(500, 10),
+                new Point(110, 605),
+                new Point(414, 695),
+                new Point(705, 295)
+            };
+
+            List<Point> testPoints2 = new List<Point>()
+            {
+                new Point(103, 89),
+                new Point(103, 88),
+                new Point(89, 396),
+                new Point(100, 395),
+                new Point(90, 400)
+            };
+            for (int i = 0; i < particleCount; i++)
+            {
+                Particle newParticle = new Particle();
+                int x = rand.Next(5, 730);
+                int y = rand.Next(5, 730);
+                bool pointSet = false;
+                int doubleHit = 0;
+                while (!pointSet)
+                {
+                    pointSet = false;
+                    if (!pointMap[x, y])
+                    {
+                        Point particleCenter = new Point(x, y);
+                        //newParticle.CenterPoint = testPoints2[i];
+                        newParticle.CenterPoint = particleCenter;
+                        AllParticles.Add(newParticle);
+                        pointMap[x, y] = true;
+                        pointSet = true;
+                    }
+                    else
+                    {
+                        x = rand.Next(5, 730);
+                        y = rand.Next(5, 730);
+                        doubleHit++;
+                    }
+                }
+            }
         }
 
         #endregion
@@ -249,7 +315,6 @@ namespace Barnes_Hut_GUI
 
                             workerThreads = null;
                             return m_Sw.Elapsed;
-                            break;
                         case threadMode.fromParallelLib:
                             Partitioner<Particle> rangePartitioner = Partitioner.Create(AllParticles, true);
                             //var rn = Partitioner.Create(0, AllParticles.Count, 10);
@@ -272,12 +337,10 @@ namespace Barnes_Hut_GUI
                             m_Sw.Stop();
 
                             return m_Sw.Elapsed;
-                            break;
                         default:
                             return new TimeSpan();
                     }
 
-                    break;
                 case false:
                     m_Sw.Reset();
                     m_Sw.Start();
@@ -482,14 +545,39 @@ namespace Barnes_Hut_GUI
         }
 
 
-        #endregion
+        /// <summary>
+        /// Shows how the BH algorithm has grouped the particles into nodes.
+        /// </summary>
+        /// <param name="particleNumber"></param>
+        /// <param name="currenctGraphics"></param>
+        /// <param name="graphicsPen"></param>
+        public void VisualizeGrouping(int particleNumber, Graphics currenctGraphics, Pen graphicsPen)
+        {
+            Pen drawPen = new Pen(Color.SkyBlue, 2.0f);
+            for (int i = 0; i < AllParticles[particleNumber].ForcesToApply.Count; i++)
+            {
+                float forceVecMag = AllParticles[particleNumber].ForcesToApply[i].Magnitude;
+                PointF forceVectStart = AllParticles[particleNumber].ForcesToApply[i].Start;
+                PointF forceVectEnd = AllParticles[particleNumber].ForcesToApply[i].EffectorCOM;
+
+                currenctGraphics.DrawLine(graphicsPen, forceVectStart, forceVectEnd);
+                currenctGraphics.DrawEllipse(drawPen, forceVectEnd.X - 4,
+                    forceVectEnd.Y - 4, 4 * 2, 4 * 2);
+                currenctGraphics.FillEllipse(Brushes.NavajoWhite, forceVectEnd.X - 0.5f,
+                    forceVectEnd.Y - 0.5f, 0.5f * 2, 0.5f * 2);
+            }
+        }
 
 
-
-
-
-
-
+        /// <summary>
+        /// Visualizes the force vectors acting upon a given particle.
+        /// The strongest vector is in red, the weakest in green and the rest in orange.
+        /// </summary>
+        /// <param name="particleNumber"></param>
+        /// <param name="currenctGraphics"></param>
+        /// <param name="minPen"></param>
+        /// <param name="midPen"></param>
+        /// <param name="maxPen"></param>
         public void VisualizeForceVectors(int particleNumber, Graphics currenctGraphics, Pen minPen, Pen midPen, Pen maxPen)
         {
 
@@ -510,23 +598,16 @@ namespace Barnes_Hut_GUI
                 else { currenctGraphics.DrawLine(midPen, forceVectStart, forceVectEnd); }
             }
         }
+        #endregion
 
-        public void VisualizeGrouping(int particleNumber, Graphics currenctGraphics, Pen graphicsPen)
-        {
-            Pen drawPen = new Pen(Color.SkyBlue, 2.0f);
-            for (int i = 0; i < AllParticles[particleNumber].ForcesToApply.Count; i++)
-            {
-                float forceVecMag = AllParticles[particleNumber].ForcesToApply[i].Magnitude;
-                PointF forceVectStart = AllParticles[particleNumber].ForcesToApply[i].Start;
-                PointF forceVectEnd = AllParticles[particleNumber].ForcesToApply[i].EffectorCOM;
 
-                currenctGraphics.DrawLine(graphicsPen, forceVectStart, forceVectEnd);
-                currenctGraphics.DrawEllipse(drawPen, forceVectEnd.X - 4,
-                    forceVectEnd.Y - 4, 4 * 2, 4 * 2);
-                currenctGraphics.FillEllipse(Brushes.NavajoWhite, forceVectEnd.X - 0.5f,
-                    forceVectEnd.Y - 0.5f, 0.5f * 2, 0.5f * 2);
-            }
-        }
+
+
+
+
+
+
+
 
         public void SingleBHStep(int targetParticle)
         {
@@ -601,72 +682,6 @@ namespace Barnes_Hut_GUI
 
 
 
-        public void ParitionSpace()
-        {
-            for (int q = 0; q < AllParticles.Count; q++)
-            {
-                Debug.WriteLine($"Adding particle {q}...");
-                RootNode.AddParticle(AllParticles[q]);
-
-                if (q % 5 == 0)
-                {
-                    MyEventArgs args = new MyEventArgs(q);
-                    RaiseEventOnUIThread(OnProgress, new object[] { null, args });
-                }
-            }
-
-            RaiseEventOnUIThread(OnCompleted, new object[] { null, new EventArgs() });
-
-        }
-
-        public void GenerateParticles(int particleCount)
-        {
-            Random rand = new Random();
-            List<Point> testPoints = new List<Point>()
-            {
-                new Point(91, 395),
-                new Point(500, 10),
-                new Point(110, 605),
-                new Point(414, 695),
-                new Point(705, 295)
-            };
-
-            List<Point> testPoints2 = new List<Point>()
-            {
-                new Point(103, 89),
-                new Point(103, 88),
-                new Point(89, 396),
-                new Point(100, 395),
-                new Point(90, 400)
-            };
-            for (int i = 0; i < particleCount; i++)
-            {
-                Particle newParticle = new Particle();
-                int x = rand.Next(5, 730);
-                int y = rand.Next(5, 730);
-                bool pointSet = false;
-                int doubleHit = 0;
-                while (!pointSet)
-                {
-                    pointSet = false;
-                    if (!pointMap[x, y])
-                    {
-                        Point particleCenter = new Point(x, y);
-                        //newParticle.CenterPoint = testPoints2[i];
-                        newParticle.CenterPoint = particleCenter;
-                        AllParticles.Add(newParticle);
-                        pointMap[x, y] = true;
-                        pointSet = true;
-                    }
-                    else
-                    {
-                        x = rand.Next(5, 730);
-                        y = rand.Next(5, 730);
-                        doubleHit++;
-                    }
-                }
-            }
-        }
 
 
         public void ClearParticles()
