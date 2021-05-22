@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using static System.Math;
 using System.Diagnostics;
 using System.Globalization;
+using System.Windows.Controls;
 
 
 namespace Barnes_Hut_GUI
@@ -71,12 +72,12 @@ namespace Barnes_Hut_GUI
         #endregion
 
 
-     
+
 
 
         #region Enums
 
-        public enum threadModes
+        public enum threadMode
         {
             selfMade,
             fromParallelLib
@@ -126,25 +127,169 @@ namespace Barnes_Hut_GUI
 
         #region Force Calculations
 
+
         /// <summary>
-        /// Calculate the forces on a particle using Pairwise interaction (brute force method)
+        /// Calculate a single frame of the N-Body simulation using Pairwise interation (brute force).
+        /// Returns the time required for the whole frame to be calculated.
         /// </summary>
-        public void PairwiseForceCalculation()
+        /// <returns>TimeSpan</returns>
+        public TimeSpan SingleFramePairwiseSimulation(bool isParalell)
+        {
+            switch (isParalell)
+            {
+                case true:
+                    m_Sw.Reset();
+                    m_Sw.Start();
+                    Parallel.ForEach(AllParticles, currentParticle =>
+                    {
+                        for (int j = 0; j < AllParticles.Count; j++)
+                        {
+                            if (AllParticles[j] != currentParticle)
+                            {
+                                List<float> distanceInfo =
+                                    CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
+                                float forceVecMag =
+                                    GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
+                                currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint,
+                                    AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
+                            }
+                        }
+                    });
+                    break;
+                case false: //Is the "default:" case false:?
+                    m_Sw.Reset();
+                    m_Sw.Start();
+                    foreach (Particle currentParticle in AllParticles)
+                    {
+                        for (int j = 0; j < AllParticles.Count; j++)
+                        {
+                            if (AllParticles[j] != currentParticle)
+                            {
+                                List<float> distanceInfo = CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
+                                float forceVecMag = GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
+                                currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            m_Sw.Stop();
+            return m_Sw.Elapsed;
+        }
+
+        /// <summary>
+        /// Calculate a single frame of the simulation using the BH algorithm. It can be executed sequentially or in parallel with the option
+        /// for selecting the number of threads being used as well as the multithreading implementation.
+        /// </summary>
+        /// <param name="isParallel"></param>
+        /// <param name="numberOfThreads"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        public TimeSpan SingleFrameBHSimulation(bool isParallel, int numberOfThreads = 1, threadMode mode = threadMode.fromParallelLib)
         {
 
-            for (int i = 0; i < AllParticles.Count; i++)
+            switch (isParallel)
             {
-                for (int j = 0; j < AllParticles.Count; j++)
-                {
-                    if (j != i)
+                case true:
+
+                    int particlesPerThread = AllParticles.Count / numberOfThreads;
+
+                    switch (mode)
                     {
-                        List<float> distanceInfo = CalculateDistanceToNode(AllParticles[i], AllParticles[j].CenterPoint);
-                        float forceVecMag = GravitationalForceCalculation(distanceInfo[0], AllParticles[i].Mass, AllParticles[j].Mass);
-                        AllParticles[i].AddForce(new ForceVector(AllParticles[i].CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
+                        case threadMode.selfMade:
+                            List<Thread> workerThreads = new List<Thread>();
+
+
+                            List<int> threadStartIndecencies = new List<int>();
+                            List<int> threadEndIndecencies = new List<int>();
+                            int currentStartIndex = 0;
+                            int endIndex;
+                            for (int i = 0; i < numberOfThreads; i++)
+                            {
+                                if (i != numberOfThreads - 1)
+                                {
+                                    threadStartIndecencies.Add(currentStartIndex);
+                                    endIndex = currentStartIndex + particlesPerThread;
+                                    threadEndIndecencies.Add(endIndex);
+                                    currentStartIndex = endIndex + 1;
+                                }
+                                else
+                                {
+                                    threadStartIndecencies.Add(currentStartIndex);
+                                    endIndex = AllParticles.Count;
+                                    threadEndIndecencies.Add(endIndex);
+                                }
+                            }
+
+                            for (int i = 0; i < numberOfThreads; i++)
+                            {
+                                int si = threadStartIndecencies[i];
+                                int ei = threadEndIndecencies[i];
+                                Thread worker = new Thread((() => BhAlgForceCalculation(si, ei)));
+                                worker.Priority = ThreadPriority.Highest;
+                                worker.Name = $"Thread_{i}";
+                                workerThreads.Add(worker);
+                            }
+
+                            m_Sw.Reset();
+                            m_Sw.Start();
+                            foreach (var workerThread in workerThreads)
+                            {
+                                workerThread.Start();
+                            }
+
+                            foreach (var workerThread in workerThreads)
+                            {
+                                workerThread.Join();
+                            }
+
+                            m_Sw.Stop();
+
+
+                            workerThreads = null;
+                            return m_Sw.Elapsed;
+                            break;
+                        case threadMode.fromParallelLib:
+                            Partitioner<Particle> rangePartitioner = Partitioner.Create(AllParticles, true);
+                            //var rn = Partitioner.Create(0, AllParticles.Count, 10);
+
+                            m_Sw.Reset();
+                            m_Sw.Start();
+                            Parallel.ForEach(rangePartitioner,
+                                new ParallelOptions { MaxDegreeOfParallelism = numberOfThreads },
+                                (currentParticle) =>
+                                {
+
+                                    Thread.CurrentThread.Priority = ThreadPriority.Highest;
+
+
+                                    BhAlgApplyForceOnParticle(currentParticle, RootNode.SeChild);
+                                    BhAlgApplyForceOnParticle(currentParticle, RootNode.NeChild);
+                                    BhAlgApplyForceOnParticle(currentParticle, RootNode.NwChild);
+                                    BhAlgApplyForceOnParticle(currentParticle, RootNode.SwChild);
+                                });
+                            m_Sw.Stop();
+
+                            return m_Sw.Elapsed;
+                            break;
+                        default:
+                            return new TimeSpan();
                     }
-                }
+
+                    break;
+                case false:
+                    m_Sw.Reset();
+                    m_Sw.Start();
+                    BhAlgForceCalculation(0, AllParticles.Count - 1);
+                    break;
             }
+
+
+            m_Sw.Stop();
+            return m_Sw.Elapsed;
         }
+
 
         /// <summary>
         /// Calculate the forces on the particles in the AllParticles array starting from index <startIndex> to <endIndex> (inclusive)
@@ -164,7 +309,6 @@ namespace Barnes_Hut_GUI
                 BhAlgApplyForceOnParticle(currentParticle, RootNode.NwChild);
                 BhAlgApplyForceOnParticle(currentParticle, RootNode.SwChild);
             }
-
         }
 
         #endregion
@@ -222,7 +366,7 @@ namespace Barnes_Hut_GUI
             }
 
         }
-        
+
         /// <summary>
         /// Calculate the gravitational forces on a particle based on the particle mass, the node its interacting with and the distance between them.
         /// </summary>
@@ -235,6 +379,42 @@ namespace Barnes_Hut_GUI
             float totalMass = particleMass * nodeMass;
             return G * totalMass / (float)Math.Pow(distance, 2);
         }
+
+
+        /// <summary>
+        /// Checks if the distance to a node is over double the side length of the node.
+        /// </summary>
+        /// <param name="nodeSideLength"></param>
+        /// <param name="distanceToNode"></param>
+        /// <returns>bool</returns>
+        bool LengthIsOverDouble(float nodeSideLength, float distanceToNode)
+        {
+
+            return distanceToNode > nodeSideLength * theta;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetParticle"></param>
+        /// <param name="targetPoint"></param>
+        /// <returns>
+        /// Returns a List<float>
+        /// first item = distance to node
+        /// second item = sin of the angle between the vector from center to center and the X axis
+        /// third item = cos of the angle between the vector from center to center and the X axis
+        /// </returns>
+        public List<float> CalculateDistanceToNode(Particle targetParticle, PointF targetPoint)
+        {
+            float sideA = targetPoint.X - targetParticle.CenterPoint.X;
+            float sideB = targetPoint.Y - targetParticle.CenterPoint.Y;
+            float distance = (float)Math.Sqrt(Math.Pow(sideA, 2) + Math.Pow(sideB, 2));
+            float angleSin = sideB / distance;
+            float angleCos = sideA / distance;
+            return new List<float>() { distance, angleSin, angleCos };
+        }
+
         #endregion
 
         #region Visualization
@@ -300,8 +480,8 @@ namespace Barnes_Hut_GUI
             VisualizeTreeNodes(nextNode.SwChild, currentGraphics, rectPen);
 
         }
-        
-        
+
+
         #endregion
 
 
@@ -347,7 +527,7 @@ namespace Barnes_Hut_GUI
                     forceVectEnd.Y - 0.5f, 0.5f * 2, 0.5f * 2);
             }
         }
-        
+
         public void SingleBHStep(int targetParticle)
         {
             BhAlgApplyForceOnParticle(AllParticles[targetParticle], RootNode.SeChild);
@@ -356,202 +536,6 @@ namespace Barnes_Hut_GUI
             BhAlgApplyForceOnParticle(AllParticles[targetParticle], RootNode.SwChild);
         }
 
-        public TimeSpan SingleFramePairwiseSimulation()
-        {
-            m_Sw.Reset();
-            m_Sw.Start();
-            foreach (Particle currentParticle in AllParticles)
-            {
-                for (int j = 0; j < AllParticles.Count; j++)
-                {
-                    if (AllParticles[j] != currentParticle)
-                    {
-                        List<float> distanceInfo = CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
-                        float forceVecMag = GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
-                        currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
-                    }
-                }
-            }
-            m_Sw.Stop();
-            return m_Sw.Elapsed;
-        }
-
-        public TimeSpan SingleFramePairwiseParallelSimulation()
-        {
-            m_Sw.Reset();
-            m_Sw.Start();
-            Parallel.ForEach(AllParticles, currentParticle =>
-            {
-                for (int j = 0; j < AllParticles.Count; j++)
-                {
-                    if (AllParticles[j] != currentParticle)
-                    {
-                        List<float> distanceInfo =
-                            CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
-                        float forceVecMag =
-                            GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
-                        currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint,
-                            AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
-                    }
-                }
-            });
-            m_Sw.Stop();
-            return m_Sw.Elapsed;
-        }
-
-
-
-
-        public TimeSpan SingleFrameParallelBHSimulationThreadControl(int numberOfThreads, threadModes mode)
-        {
-            int particlesPerThread = AllParticles.Count / numberOfThreads;
-
-            switch (mode)
-            {
-                case threadModes.selfMade:
-                    List<Thread> workerThreads = new List<Thread>();
-
-
-                    List<int> threadStartIndecies = new List<int>();
-                    List<int> threadEndIndecies = new List<int>();
-                    int currentStartIndex = 0;
-                    int endIndex;
-                    for (int i = 0; i < numberOfThreads; i++)
-                    {
-                        if (i != numberOfThreads - 1)
-                        {
-                            threadStartIndecies.Add(currentStartIndex);
-                            endIndex = currentStartIndex + particlesPerThread;
-                            threadEndIndecies.Add(endIndex);
-                            currentStartIndex = endIndex + 1;
-                        }
-                        else
-                        {
-                            threadStartIndecies.Add(currentStartIndex);
-                            endIndex = AllParticles.Count;
-                            threadEndIndecies.Add(endIndex);
-                        }
-
-
-
-
-                    }
-
-                    for (int i = 0; i < numberOfThreads; i++)
-                    {
-                        int si = threadStartIndecies[i];
-                        int ei = threadEndIndecies[i];
-                        Thread worker = new Thread((() => BhAlgForceCalculation(si, ei)));
-                        worker.Priority = ThreadPriority.Highest;
-                        worker.Name = $"Thread_{i}";
-                        workerThreads.Add(worker);
-                    }
-
-                    m_Sw.Reset();
-                    m_Sw.Start();
-                    foreach (var workerThread in workerThreads)
-                    {
-                        workerThread.Start();
-                    }
-
-                    foreach (var workerThread in workerThreads)
-                    {
-                        workerThread.Join();
-                    }
-
-                    m_Sw.Stop();
-
-
-                    workerThreads = null;
-                    return m_Sw.Elapsed;
-                    break;
-                case threadModes.fromParallelLib:
-                    Partitioner<Particle> rangePartitioner = Partitioner.Create(AllParticles, true);
-                    //var rn = Partitioner.Create(0, AllParticles.Count, 10);
-
-                    m_Sw.Reset();
-                    m_Sw.Start();
-                    Parallel.ForEach(rangePartitioner,
-                        new ParallelOptions { MaxDegreeOfParallelism = numberOfThreads },
-                        (currentParticle) =>
-                        {
-
-                            Thread.CurrentThread.Priority = ThreadPriority.Highest;
-
-
-                            BhAlgApplyForceOnParticle(currentParticle, RootNode.SeChild);
-                            BhAlgApplyForceOnParticle(currentParticle, RootNode.NeChild);
-                            BhAlgApplyForceOnParticle(currentParticle, RootNode.NwChild);
-                            BhAlgApplyForceOnParticle(currentParticle, RootNode.SwChild);
-                        });
-                    m_Sw.Stop();
-
-                    return m_Sw.Elapsed;
-                    break;
-                default:
-                    return new TimeSpan();
-                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
-            }
-
-
-        }
-
-        public TimeSpan SingleFrameBHSimulation()
-        {
-            m_Sw.Reset();
-            m_Sw.Start();
-            foreach (Particle currentParticle in AllParticles)
-            {
-                BhAlgApplyForceOnParticle(currentParticle, RootNode.SeChild);
-                BhAlgApplyForceOnParticle(currentParticle, RootNode.NeChild);
-                BhAlgApplyForceOnParticle(currentParticle, RootNode.NwChild);
-                BhAlgApplyForceOnParticle(currentParticle, RootNode.SwChild);
-            }
-            m_Sw.Stop();
-            return m_Sw.Elapsed;
-        }
-
-
-        public TimeSpan ParallelSingleFrameBHSimulation()
-        {
-            m_Sw.Reset();
-            int numberOfThreads = 6;
-            int particlesPerThread = AllParticles.Count / 6;
-
-            List<int> threadStartIndecies = new List<int>();
-            int currentStartIndex = 0;
-            threadStartIndecies.Add(currentStartIndex);
-            for (int i = 0; i < numberOfThreads - 1; i++)
-            {
-                currentStartIndex += particlesPerThread;
-                threadStartIndecies.Add(currentStartIndex);
-            }
-            Thread firstThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[0], particlesPerThread)));
-            Thread secondThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[1], particlesPerThread)));
-            Thread thirdThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[2], particlesPerThread)));
-            Thread fourthThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[3], particlesPerThread)));
-            Thread fifthThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[4], particlesPerThread)));
-            Thread sixthThread = new Thread((() => BhAlgForceCalculation(threadStartIndecies[5], particlesPerThread)));
-
-            m_Sw.Start();
-
-            firstThread.Start();
-            secondThread.Start();
-            thirdThread.Start();
-            fourthThread.Start();
-            fifthThread.Start();
-            sixthThread.Start();
-
-            firstThread.Join();
-            secondThread.Join();
-            thirdThread.Join();
-            fourthThread.Join();
-            fifthThread.Join();
-            sixthThread.Join();
-
-            m_Sw.Stop();
-            return m_Sw.Elapsed;
-        }
 
         public TimeSpan ParallelSingleParticleBH(int targetParticle)
         {
@@ -613,24 +597,9 @@ namespace Barnes_Hut_GUI
             }
         }
 
-      
-      
 
-        bool LengthIsOverDouble(float nodeSideLength, float distanceToNode)
-        {
 
-            return distanceToNode > nodeSideLength * theta;
-        }
 
-        public List<float> CalculateDistanceToNode(Particle targetParticle, PointF targetPoint)
-        {
-            float sideA = targetPoint.X - targetParticle.CenterPoint.X;
-            float sideB = targetPoint.Y - targetParticle.CenterPoint.Y;
-            float distance = (float)Math.Sqrt(Math.Pow(sideA, 2) + Math.Pow(sideB, 2));
-            float angleSin = sideB / distance;
-            float angleCos = sideA / distance;
-            return new List<float>() { distance, angleSin, angleCos };
-        }
 
         public void ParitionSpace()
         {

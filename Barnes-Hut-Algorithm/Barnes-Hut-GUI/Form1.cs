@@ -234,7 +234,7 @@ namespace Barnes_Hut_GUI
                     break;
                 case QuadTree.AlgToUse.PWI:
                     sw.Start();
-                    mainTree.PairwiseForceCalculation();
+                    mainTree.SingleFramePairwiseSimulation(isParalell: false);
                     sw.Stop();
                     l_TotalTimeValue.Text = sw.Elapsed.ToString();
                     l_PWITimeValue.Text = sw.Elapsed.ToString();
@@ -422,7 +422,7 @@ namespace Barnes_Hut_GUI
                 m_partitionThread.Join();
                 m_partitionThread = null;
 
-                execTime = mainTree.SingleFrameParallelBHSimulationThreadControl(j, QuadTree.threadModes.fromParallelLib);
+                execTime = mainTree.SingleFrameBHSimulation(isParallel:true , j, mode: QuadTree.threadMode.fromParallelLib);
                 threadComparison.Add(execTime.Milliseconds);
                 threadCounts.Add(j.ToString());
                 mainTree.ClearParticles();
@@ -491,7 +491,7 @@ namespace Barnes_Hut_GUI
             {
                 case QuadTree.AlgToUse.PWI:
                     sw.Start();
-                    time = mainTree.SingleFramePairwiseSimulation();
+                    time = mainTree.SingleFramePairwiseSimulation(isParalell: false);
                     sw.Stop();
                     l_TotalTimeValue.Text = time.ToString();
                     l_PWITimeValue.Text = time.ToString();
@@ -499,13 +499,13 @@ namespace Barnes_Hut_GUI
                     PWITicks = sw.Elapsed.Ticks;
                     break;
                 case QuadTree.AlgToUse.PPWI:
-                    time = mainTree.SingleFramePairwiseParallelSimulation();
+                    time = mainTree.SingleFramePairwiseSimulation(isParalell: true);
                     l_TotalTimeValue.Text = time.ToString();
                     l_PPWITimeValue.Text = time.ToString();
                     break;
                 case QuadTree.AlgToUse.BH:
                     mainTree.theta = float.Parse(tb_Theta.Text);
-                    time = mainTree.SingleFrameBHSimulation();
+                    time = mainTree.SingleFrameBHSimulation(isParallel: false, numberOfThreads:1, mode: QuadTree.threadMode.fromParallelLib);
                     l_TotalTimeValue.Text = time.ToString();
                     l_BHSingleStepTimeValue.Text = time.ToString();
                     //Clipboard.SetText(sw.Elapsed.ToString());
@@ -515,7 +515,7 @@ namespace Barnes_Hut_GUI
                 case QuadTree.AlgToUse.PBH:
 
                     mainTree.theta = float.Parse(tb_Theta.Text);
-                    time = mainTree.ParallelSingleFrameBHSimulation();
+                    time = mainTree.SingleFrameBHSimulation(isParallel: true, numberOfThreads: 6, mode: QuadTree.threadMode.fromParallelLib); 
                     l_TotalTimeValue.Text = time.ToString();
                     l_BHParlTimeValue.Text = time.ToString();
                     //Clipboard.SetText(time.ToString());
