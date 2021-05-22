@@ -40,7 +40,7 @@ namespace Barnes_Hut_GUI
         private bool ShowGrouping;
         private bool DrawGraphics;
         private bool isWorking;
-        private AlgToUse alg = AlgToUse.PWI;
+        private QuadTree.AlgToUse alg = QuadTree.AlgToUse.PWI;
         private Thread m_partitionThread;
         private int currentParticleValue = 0;
         private long PWITicks = 0;
@@ -64,7 +64,7 @@ namespace Barnes_Hut_GUI
             mainTree = new QuadTree();
             graphics = p_SimulationArea.CreateGraphics();
             forceVectGraphics = p_ForcePanel.CreateGraphics();
-            mainTree.alg = AlgToUse.PWI;
+            mainTree.alg = QuadTree.AlgToUse.PWI;
             cb_ShowGrouping.Enabled = false;
             rb_UsePWI.Checked = true;
             DrawGraphics = false;
@@ -105,7 +105,7 @@ namespace Barnes_Hut_GUI
             m_partitionThread = null;
             if (DrawGraphics)
             {
-                mainTree.Traverse(mainTree.RootNode, graphics, treePen);
+                mainTree.VisualizeTreeNodes(mainTree.RootNode, graphics, treePen);
                 for (int i = 0; i < mainTree.AllParticles.Count; i++)
                 {
                     graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
@@ -181,8 +181,8 @@ namespace Barnes_Hut_GUI
         {
             if (rb_UsePWI.Checked)
             {
-                alg = AlgToUse.PWI;
-                mainTree.alg = AlgToUse.PWI;
+                alg = QuadTree.AlgToUse.PWI;
+                mainTree.alg = QuadTree.AlgToUse.PWI;
                 cb_ShowGrouping.Enabled = false;
                 ShowGrouping = false;
                 mainTree.ShowGrouping = false;
@@ -194,8 +194,8 @@ namespace Barnes_Hut_GUI
         {
             if (rb_UseBH.Checked)
             {
-                alg = AlgToUse.BH;
-                mainTree.alg = AlgToUse.BH;
+                alg = QuadTree.AlgToUse.BH;
+                mainTree.alg = QuadTree.AlgToUse.BH;
                 cb_ShowGrouping.Enabled = true;
             }
         }
@@ -204,8 +204,8 @@ namespace Barnes_Hut_GUI
         {
             if (rb_ParlBH.Checked)
             {
-                alg = AlgToUse.PBH;
-                mainTree.alg = AlgToUse.PBH;
+                alg = QuadTree.AlgToUse.PBH;
+                mainTree.alg = QuadTree.AlgToUse.PBH;
                 cb_ShowGrouping.Enabled = true;
             }
         }
@@ -222,7 +222,7 @@ namespace Barnes_Hut_GUI
 
             switch (alg)
             {
-                case AlgToUse.BH:
+                case QuadTree.AlgToUse.BH:
                     sw.Start();
                     mainTree.theta = float.Parse(tb_Theta.Text);
                     mainTree.SingleBHStep(targetParticle);
@@ -232,7 +232,7 @@ namespace Barnes_Hut_GUI
                     //Clipboard.SetText(sw.Elapsed.ToString());
                     BHTicks = sw.Elapsed.Ticks;
                     break;
-                case AlgToUse.PWI:
+                case QuadTree.AlgToUse.PWI:
                     sw.Start();
                     mainTree.PairWiseForceCalculation();
                     sw.Stop();
@@ -241,7 +241,7 @@ namespace Barnes_Hut_GUI
                     //Clipboard.SetText(sw.Elapsed.ToString());
                     PWITicks = sw.Elapsed.Ticks;
                     break;
-                case AlgToUse.PBH:
+                case QuadTree.AlgToUse.PBH:
                     //sw.Start();
                     mainTree.theta = float.Parse(tb_Theta.Text);
                     TimeSpan time = mainTree.ParallelSingleParticleBH(targetParticle);
@@ -339,7 +339,7 @@ namespace Barnes_Hut_GUI
                 tb_TargetParticleNum.Text = "40";
 
 
-                alg = AlgToUse.PBH;
+                alg = QuadTree.AlgToUse.PBH;
 
                 //for (int j = 0; j < sampleSize; j++)
                 //{
@@ -372,7 +372,7 @@ namespace Barnes_Hut_GUI
 
 
                 //Run PWI
-                alg = AlgToUse.PWI;
+                alg = QuadTree.AlgToUse.PWI;
               //  execTime = mainTree.SingleFramePairwiseSimulation();
               //  pwiExecTimes.Add(execTime.Milliseconds);
 
@@ -489,7 +489,7 @@ namespace Barnes_Hut_GUI
             TimeSpan time;
             switch (alg)
             {
-                case AlgToUse.PWI:
+                case QuadTree.AlgToUse.PWI:
                     sw.Start();
                     time = mainTree.SingleFramePairwiseSimulation();
                     sw.Stop();
@@ -498,12 +498,12 @@ namespace Barnes_Hut_GUI
                     //Clipboard.SetText(sw.Elapsed.ToString());
                     PWITicks = sw.Elapsed.Ticks;
                     break;
-                case AlgToUse.PPWI:
+                case QuadTree.AlgToUse.PPWI:
                     time = mainTree.SingleFramePairwiseParallelSimulation();
                     l_TotalTimeValue.Text = time.ToString();
                     l_PPWITimeValue.Text = time.ToString();
                     break;
-                case AlgToUse.BH:
+                case QuadTree.AlgToUse.BH:
                     mainTree.theta = float.Parse(tb_Theta.Text);
                     time = mainTree.SingleFrameBHSimulation();
                     l_TotalTimeValue.Text = time.ToString();
@@ -512,7 +512,7 @@ namespace Barnes_Hut_GUI
                     BHTicks = sw.Elapsed.Ticks;
                     break;
 
-                case AlgToUse.PBH:
+                case QuadTree.AlgToUse.PBH:
 
                     mainTree.theta = float.Parse(tb_Theta.Text);
                     time = mainTree.ParallelSingleFrameBHSimulation();
@@ -530,8 +530,8 @@ namespace Barnes_Hut_GUI
         {
             if (rb_ParallelPWI.Checked)
             {
-                alg = AlgToUse.PPWI;
-                mainTree.alg = AlgToUse.PPWI;
+                alg = QuadTree.AlgToUse.PPWI;
+                mainTree.alg = QuadTree.AlgToUse.PPWI;
                 cb_ShowGrouping.Enabled = false;
             }
         }

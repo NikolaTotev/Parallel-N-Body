@@ -14,10 +14,7 @@ using System.Globalization;
 
 namespace Barnes_Hut_GUI
 {
-    enum AlgToUse
-    {
-        PWI, PPWI, BH, PBH
-    }
+
 
     public delegate void MyEventHandler(object source, MyEventArgs e);
 
@@ -47,10 +44,8 @@ namespace Barnes_Hut_GUI
         public float theta = 2f;
 
         public bool ShowTree { get; set; }
-        public bool ShowEmptyCells { get; set; }
         public bool ShowForceVect { get; set; }
 
-        public bool ShowGrouping { get; set; }
         public AlgToUse alg { get; set; }
 
         public event MyEventHandler OnProgress;
@@ -58,15 +53,44 @@ namespace Barnes_Hut_GUI
 
         bool[,] pointMap = new bool[737, 737];
 
-        public TimeSpan thread1Worktime;
-        public TimeSpan thread2Worktime;
-        public TimeSpan thread3Worktime;
-        public TimeSpan thread4Worktime;
-        Stopwatch sw = new Stopwatch();
-        private bool initialPartition = false;
+        public TimeSpan Thread1Worktime;
+        public TimeSpan Thread2Worktime;
+        public TimeSpan Thread3Worktime;
+        public TimeSpan Thread4Worktime;
+        private Stopwatch m_Sw = new Stopwatch();
+        private bool m_InitialPartition = false;
 
 
+        #region Visualization Variables
 
+        public bool DrawNodeCOG;
+        public bool DrawEmptyCells { get; set; }
+        public bool DrawBhNodeGrouping { get; set; }
+
+
+        #endregion
+
+
+     
+
+
+        #region Enums
+
+        public enum threadModes
+        {
+            selfMade,
+            fromParallelLib
+
+        };
+
+        public enum AlgToUse
+        {
+            PWI, PPWI, BH, PBH
+        }
+
+        #endregion
+
+        #region Initialization
 
         public QuadTree()
         {
@@ -77,6 +101,10 @@ namespace Barnes_Hut_GUI
             AllParticles = new List<Particle>();
 
         }
+
+        #endregion
+
+        #region Events
 
         private void RaiseEventOnUIThread(Delegate theEvent, object[] args)
         {
@@ -94,8 +122,22 @@ namespace Barnes_Hut_GUI
             }
         }
 
+        #endregion
 
-        public void Traverse(Node nextNode, Graphics currenctGraphics, Pen rectPen)
+        #region Force Calculations
+
+
+
+        #endregion
+
+        #region Core Fore Calculation Functions
+
+
+
+        #endregion
+
+        #region Visualization
+        public void VisualizeTreeNodes(Node nextNode, Graphics currentGraphics, Pen rectPen)
         {
             if (nextNode == null)
             {
@@ -104,60 +146,69 @@ namespace Barnes_Hut_GUI
 
             if (nextNode.nodeParticles.Count == 1)
             {
-                currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
-                currenctGraphics.FillEllipse(Brushes.MediumPurple, nextNode.centerOfMass.X - 5,
-                    nextNode.centerOfMass.Y - 5, 5 * 2, 5 * 2);
-                currenctGraphics.FillEllipse(Brushes.White, nextNode.centerOfMass.X - 0.5f,
-                    nextNode.centerOfMass.Y - 0.5f, 0.5f * 2, 0.5f * 2);
+                currentGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
+                if (DrawNodeCOG)
+                {
+                    currentGraphics.FillEllipse(Brushes.MediumPurple, nextNode.centerOfMass.X - 5,
+                            nextNode.centerOfMass.Y - 5, 5 * 2, 5 * 2);
+                    currentGraphics.FillEllipse(Brushes.White, nextNode.centerOfMass.X - 0.5f,
+                        nextNode.centerOfMass.Y - 0.5f, 0.5f * 2, 0.5f * 2);
+                }
                 return;
             }
 
-            if (nextNode.nodeParticles.Count == 0 && ShowEmptyCells)
+            if (nextNode.nodeParticles.Count == 0 && DrawEmptyCells)
             {
-                currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
-                currenctGraphics.FillRectangle(Brushes.IndianRed, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength - 10, nextNode.SideLength - 10);
+                currentGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
+                currentGraphics.FillRectangle(Brushes.IndianRed, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength - 10, nextNode.SideLength - 10);
             }
 
             else
             {
-                currenctGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
+                currentGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.SideLength, nextNode.SideLength);
 
-                if (nextNode.IsRoot)
+                if (DrawNodeCOG)
                 {
-                    currenctGraphics.FillEllipse(Brushes.Pink, nextNode.centerOfMass.X - 7,
-                        nextNode.centerOfMass.Y - 7, 7 * 2, 7 * 2);
-                    currenctGraphics.FillEllipse(Brushes.DarkBlue, nextNode.centerOfMass.X - 0.5f,
-                        nextNode.centerOfMass.Y - 0.5f, 0.5f * 2, 0.5f * 2);
-                }
-                else
-                {
-                    if (nextNode.nodeParticles.Count > 0)
+                    if (nextNode.IsRoot)
                     {
-                        currenctGraphics.FillEllipse(Brushes.Thistle, nextNode.centerOfMass.X - 8,
-                            nextNode.centerOfMass.Y - 8, 8 * 2, 8 * 2);
-                        currenctGraphics.FillEllipse(Brushes.DeepPink, nextNode.centerOfMass.X - 0.5f,
+                        currentGraphics.FillEllipse(Brushes.Pink, nextNode.centerOfMass.X - 7,
+                            nextNode.centerOfMass.Y - 7, 7 * 2, 7 * 2);
+                        currentGraphics.FillEllipse(Brushes.DarkBlue, nextNode.centerOfMass.X - 0.5f,
                             nextNode.centerOfMass.Y - 0.5f, 0.5f * 2, 0.5f * 2);
                     }
+                    else
+                    {
+                        if (nextNode.nodeParticles.Count > 0)
+                        {
+                            currentGraphics.FillEllipse(Brushes.Thistle, nextNode.centerOfMass.X - 8,
+                                nextNode.centerOfMass.Y - 8, 8 * 2, 8 * 2);
+                            currentGraphics.FillEllipse(Brushes.DeepPink, nextNode.centerOfMass.X - 0.5f,
+                                nextNode.centerOfMass.Y - 0.5f, 0.5f * 2, 0.5f * 2);
+                        }
 
+                    }
                 }
 
             }
 
 
 
-            Traverse(nextNode.SeChild, currenctGraphics, rectPen);
-            Traverse(nextNode.NeChild, currenctGraphics, rectPen);
-            Traverse(nextNode.NwChild, currenctGraphics, rectPen);
-            Traverse(nextNode.SwChild, currenctGraphics, rectPen);
+            VisualizeTreeNodes(nextNode.SeChild, currentGraphics, rectPen);
+            VisualizeTreeNodes(nextNode.NeChild, currentGraphics, rectPen);
+            VisualizeTreeNodes(nextNode.NwChild, currentGraphics, rectPen);
+            VisualizeTreeNodes(nextNode.SwChild, currentGraphics, rectPen);
 
         }
 
+        #endregion
+
+
+
+
+
+
         public void PairWiseForceCalculation()
         {
-            //if (AllParticles.Count > 100)
-            //{
-            //    return;
-            //}
 
             for (int i = 0; i < AllParticles.Count; i++)
             {
@@ -229,8 +280,8 @@ namespace Barnes_Hut_GUI
 
         public TimeSpan SingleFramePairwiseSimulation()
         {
-            sw.Reset();
-            sw.Start();
+            m_Sw.Reset();
+            m_Sw.Start();
             foreach (Particle currentParticle in AllParticles)
             {
                 for (int j = 0; j < AllParticles.Count; j++)
@@ -243,14 +294,14 @@ namespace Barnes_Hut_GUI
                     }
                 }
             }
-            sw.Stop();
-            return sw.Elapsed;
+            m_Sw.Stop();
+            return m_Sw.Elapsed;
         }
 
         public TimeSpan SingleFramePairwiseParallelSimulation()
         {
-            sw.Reset();
-            sw.Start();
+            m_Sw.Reset();
+            m_Sw.Start();
             Parallel.ForEach(AllParticles, currentParticle =>
             {
                 for (int j = 0; j < AllParticles.Count; j++)
@@ -266,17 +317,12 @@ namespace Barnes_Hut_GUI
                     }
                 }
             });
-            sw.Stop();
-            return sw.Elapsed;
+            m_Sw.Stop();
+            return m_Sw.Elapsed;
         }
 
 
-        public enum threadModes
-        {
-            selfMade,
-            fromParallelLib
 
-        };
 
         public TimeSpan SingleFrameParallelBHSimulationThreadControl(int numberOfThreads, threadModes mode)
         {
@@ -323,8 +369,8 @@ namespace Barnes_Hut_GUI
                         workerThreads.Add(worker);
                     }
 
-                    sw.Reset();
-                    sw.Start();
+                    m_Sw.Reset();
+                    m_Sw.Start();
                     foreach (var workerThread in workerThreads)
                     {
                         workerThread.Start();
@@ -335,18 +381,18 @@ namespace Barnes_Hut_GUI
                         workerThread.Join();
                     }
 
-                    sw.Stop();
+                    m_Sw.Stop();
 
 
                     workerThreads = null;
-                    return sw.Elapsed;
+                    return m_Sw.Elapsed;
                     break;
                 case threadModes.fromParallelLib:
                     Partitioner<Particle> rangePartitioner = Partitioner.Create(AllParticles, true);
                     //var rn = Partitioner.Create(0, AllParticles.Count, 10);
 
-                    sw.Reset();
-                    sw.Start();
+                    m_Sw.Reset();
+                    m_Sw.Start();
                     Parallel.ForEach(rangePartitioner,
                         new ParallelOptions { MaxDegreeOfParallelism = numberOfThreads },
                         (currentParticle) =>
@@ -360,9 +406,9 @@ namespace Barnes_Hut_GUI
                             ForceTraversal(currentParticle, RootNode.NwChild);
                             ForceTraversal(currentParticle, RootNode.SwChild);
                         });
-                    sw.Stop();
+                    m_Sw.Stop();
 
-                    return sw.Elapsed;
+                    return m_Sw.Elapsed;
                     break;
                 default:
                     return new TimeSpan();
@@ -374,8 +420,8 @@ namespace Barnes_Hut_GUI
 
         public TimeSpan SingleFrameBHSimulation()
         {
-            sw.Reset();
-            sw.Start();
+            m_Sw.Reset();
+            m_Sw.Start();
             foreach (Particle currentParticle in AllParticles)
             {
                 ForceTraversal(currentParticle, RootNode.SeChild);
@@ -383,8 +429,8 @@ namespace Barnes_Hut_GUI
                 ForceTraversal(currentParticle, RootNode.NwChild);
                 ForceTraversal(currentParticle, RootNode.SwChild);
             }
-            sw.Stop();
-            return sw.Elapsed;
+            m_Sw.Stop();
+            return m_Sw.Elapsed;
         }
 
         private void ForceCalculation(int startIndex, int endIndex)
@@ -402,7 +448,7 @@ namespace Barnes_Hut_GUI
 
         public TimeSpan ParallelSingleFrameBHSimulation()
         {
-            sw.Reset();
+            m_Sw.Reset();
             int numberOfThreads = 6;
             int particlesPerThread = AllParticles.Count / 6;
 
@@ -421,7 +467,7 @@ namespace Barnes_Hut_GUI
             Thread fifthThread = new Thread((() => ForceCalculation(threadStartIndecies[4], particlesPerThread)));
             Thread sixthThread = new Thread((() => ForceCalculation(threadStartIndecies[5], particlesPerThread)));
 
-            sw.Start();
+            m_Sw.Start();
 
             firstThread.Start();
             secondThread.Start();
@@ -437,13 +483,13 @@ namespace Barnes_Hut_GUI
             fifthThread.Join();
             sixthThread.Join();
 
-            sw.Stop();
-            return sw.Elapsed;
+            m_Sw.Stop();
+            return m_Sw.Elapsed;
         }
 
         public TimeSpan ParallelSingleParticleBH(int targetParticle)
         {
-            sw.Reset();
+            m_Sw.Reset();
             Thread SeThread = new Thread(new ThreadStart(() => ProxyForceTrav(AllParticles[targetParticle], RootNode.SeChild)
                 ));
             Thread NeThread = new Thread(new ThreadStart(() => ProxyForceTrav(AllParticles[targetParticle], RootNode.NeChild)
@@ -463,13 +509,13 @@ namespace Barnes_Hut_GUI
             NwThread.Start();
             SwThread.Start();
 
-            sw.Start();
+            m_Sw.Start();
             SeThread.Join();
             NeThread.Join();
             NwThread.Join();
             SwThread.Join();
-            sw.Stop();
-            return thread1Worktime + thread2Worktime + thread3Worktime + thread4Worktime;
+            m_Sw.Stop();
+            return Thread1Worktime + Thread2Worktime + Thread3Worktime + Thread4Worktime;
         }
 
         public void ProxyForceTrav(Particle currentParticle, Node startNode)
@@ -482,22 +528,22 @@ namespace Barnes_Hut_GUI
             sw.Stop();
             if (thr.Name == "One")
             {
-                thread1Worktime = sw.Elapsed;
+                Thread1Worktime = sw.Elapsed;
             }
 
             if (thr.Name == "Two")
             {
-                thread2Worktime = sw.Elapsed;
+                Thread2Worktime = sw.Elapsed;
             }
 
             if (thr.Name == "Three")
             {
-                thread3Worktime = sw.Elapsed;
+                Thread3Worktime = sw.Elapsed;
             }
 
             if (thr.Name == "Four")
             {
-                thread4Worktime = sw.Elapsed;
+                Thread4Worktime = sw.Elapsed;
             }
         }
 
