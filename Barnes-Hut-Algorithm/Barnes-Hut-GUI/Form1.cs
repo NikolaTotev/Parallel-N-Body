@@ -46,7 +46,7 @@ namespace Barnes_Hut_GUI
         private long PWITicks = 0;
         private long BHTicks = 0;
         private long PBHTicks = 0;
-
+        private bool canReset = true;
 
         List<Brush> Brushes = new List<Brush>()
         {
@@ -150,10 +150,6 @@ namespace Barnes_Hut_GUI
         #endregion
 
 
-
-
-
-
         private void MainTree_OnCompleted(object sender, EventArgs e)
         {
             if (DrawGraphics)
@@ -226,6 +222,12 @@ namespace Barnes_Hut_GUI
         private void btn_Reset_Click(object sender, EventArgs e)
         {
             mainTree.ClearParticles();
+            mainTree.RootNode = null;
+            PointF bottomLeft = new Point(0, 737);
+            PointF topRight = new Point(737, 0);
+            mainTree.RootNode = new Node(topRight, bottomLeft);
+            mainTree.RootNode.IsRoot = true;
+          
             graphics.Clear(Color.White);
 
         }
