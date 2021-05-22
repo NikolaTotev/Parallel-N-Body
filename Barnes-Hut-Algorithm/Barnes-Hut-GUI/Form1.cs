@@ -72,6 +72,88 @@ namespace Barnes_Hut_GUI
             mainTree.OnCompleted += MainTree_OnCompleted; ;
         }
 
+
+
+        #region RadioButton Functions
+        private void rb_UsePWI_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_UsePWI.Checked)
+            {
+                alg = QuadTree.AlgToUse.PWI;
+                mainTree.alg = QuadTree.AlgToUse.PWI;
+                cb_ShowGrouping.Enabled = false;
+                ShowGrouping = false;
+                mainTree.DrawBhNodeGrouping = false;
+
+            }
+        }
+
+        private void rb_UseBH_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_UseBH.Checked)
+            {
+                alg = QuadTree.AlgToUse.BH;
+                mainTree.alg = QuadTree.AlgToUse.BH;
+                cb_ShowGrouping.Enabled = true;
+            }
+        }
+
+        private void rb_ParlBH_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_ParlBH.Checked)
+            {
+                alg = QuadTree.AlgToUse.PBH;
+                mainTree.alg = QuadTree.AlgToUse.PBH;
+                cb_ShowGrouping.Enabled = true;
+            }
+        }
+
+        private void btn_CalcForces_Click(object sender, EventArgs e)
+        {
+            CalculateForces();
+        }
+        #endregion
+
+
+        #region CheckBox Functions
+
+        private void cb_ForceVect_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowForceVect = cb_ForceVect.Checked;
+            mainTree.ShowForceVect = cb_ForceVect.Checked;
+        }
+
+        private void cb_TreeOutline_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowForceVect = cb_TreeOutline.Checked;
+            mainTree.ShowForceVect = cb_TreeOutline.Checked;
+        }
+
+        private void cb_ShowEmptyCells_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowEmptyCells = cb_ShowEmptyCells.Checked;
+            mainTree.DrawBhNodeGrouping = cb_ShowEmptyCells.Checked;
+        }
+
+        private void cb_ShowGrouping_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowGrouping = cb_ShowGrouping.Checked;
+            mainTree.DrawBhNodeGrouping = cb_ShowGrouping.Checked;
+        }
+
+
+        private void cb_DrawGraphics_CheckedChanged(object sender, EventArgs e)
+        {
+            DrawGraphics = cb_DrawGraphics.Checked;
+        }
+
+        #endregion
+
+
+
+
+
+
         private void MainTree_OnCompleted(object sender, EventArgs e)
         {
             if (DrawGraphics)
@@ -153,67 +235,9 @@ namespace Barnes_Hut_GUI
 
         }
 
-        private void cb_ForceVect_CheckedChanged(object sender, EventArgs e)
-        {
-            ShowForceVect = cb_ForceVect.Checked;
-            mainTree.ShowForceVect = cb_ForceVect.Checked;
-        }
+      
 
-        private void cb_TreeOutline_CheckedChanged(object sender, EventArgs e)
-        {
-            ShowForceVect = cb_TreeOutline.Checked;
-            mainTree.ShowForceVect = cb_TreeOutline.Checked;
-        }
-
-        private void cb_ShowEmptyCells_CheckedChanged(object sender, EventArgs e)
-        {
-            ShowEmptyCells = cb_ShowEmptyCells.Checked;
-            mainTree.DrawBhNodeGrouping = cb_ShowEmptyCells.Checked;
-        }
-
-        private void cb_ShowGrouping_CheckedChanged(object sender, EventArgs e)
-        {
-            ShowGrouping = cb_ShowGrouping.Checked;
-            mainTree.DrawBhNodeGrouping = cb_ShowGrouping.Checked;
-        }
-
-        private void rb_UsePWI_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rb_UsePWI.Checked)
-            {
-                alg = QuadTree.AlgToUse.PWI;
-                mainTree.alg = QuadTree.AlgToUse.PWI;
-                cb_ShowGrouping.Enabled = false;
-                ShowGrouping = false;
-                mainTree.DrawBhNodeGrouping = false;
-
-            }
-        }
-
-        private void rb_UseBH_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rb_UseBH.Checked)
-            {
-                alg = QuadTree.AlgToUse.BH;
-                mainTree.alg = QuadTree.AlgToUse.BH;
-                cb_ShowGrouping.Enabled = true;
-            }
-        }
-
-        private void rb_ParlBH_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rb_ParlBH.Checked)
-            {
-                alg = QuadTree.AlgToUse.PBH;
-                mainTree.alg = QuadTree.AlgToUse.PBH;
-                cb_ShowGrouping.Enabled = true;
-            }
-        }
-
-        private void btn_CalcForces_Click(object sender, EventArgs e)
-        {
-            CalculateForces();
-        }
+       
 
         private void CalculateForces()
         {
@@ -265,11 +289,6 @@ namespace Barnes_Hut_GUI
             {
                 mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, midforceVectPen);
             }
-        }
-
-        private void cb_DrawGraphics_CheckedChanged(object sender, EventArgs e)
-        {
-            DrawGraphics = cb_DrawGraphics.Checked;
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -534,6 +553,36 @@ namespace Barnes_Hut_GUI
                 mainTree.alg = QuadTree.AlgToUse.PPWI;
                 cb_ShowGrouping.Enabled = false;
             }
+        }
+
+        private void panel3_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel8_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
