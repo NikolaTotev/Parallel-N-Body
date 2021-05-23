@@ -42,11 +42,11 @@ namespace Barnes_Hut_GUI
             this.label2 = new System.Windows.Forms.Label();
             this.tb_Theta = new System.Windows.Forms.TextBox();
             this.btn_Simulate = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
+            this.l_TimeStepsToSim = new System.Windows.Forms.Label();
             this.tb_TimeStepSim = new System.Windows.Forms.TextBox();
             this.btn_CalcForces = new System.Windows.Forms.Button();
             this.tb_TargetParticleNum = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.l_TgtParticle = new System.Windows.Forms.Label();
             this.cb_ShowResForce = new System.Windows.Forms.CheckBox();
             this.rb_ParlBH = new System.Windows.Forms.RadioButton();
             this.cb_ShowGrouping = new System.Windows.Forms.CheckBox();
@@ -75,57 +75,57 @@ namespace Barnes_Hut_GUI
             this.dia_SaveLocation = new System.Windows.Forms.SaveFileDialog();
             this.rb_ParallelPWI = new System.Windows.Forms.RadioButton();
             this.chart_ThreadComparison = new LiveCharts.WinForms.CartesianChart();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.label11 = new System.Windows.Forms.Label();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.label10 = new System.Windows.Forms.Label();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.label9 = new System.Windows.Forms.Label();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.label8 = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
+            this.p_ManualControls = new System.Windows.Forms.Panel();
+            this.l_ActionBtns = new System.Windows.Forms.Label();
+            this.p_ActionButtons = new System.Windows.Forms.Panel();
+            this.l_init = new System.Windows.Forms.Label();
+            this.p_Initialization = new System.Windows.Forms.Panel();
+            this.l_VisOpts = new System.Windows.Forms.Label();
+            this.p_Visualization = new System.Windows.Forms.Panel();
+            this.l_AlgSelection = new System.Windows.Forms.Label();
+            this.p_AlgSelection = new System.Windows.Forms.Panel();
             this.label7 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.panel8 = new System.Windows.Forms.Panel();
+            this.l_AutoControls = new System.Windows.Forms.Label();
+            this.p_ThreadControls = new System.Windows.Forms.Panel();
             this.rb_TPLThreads = new System.Windows.Forms.RadioButton();
             this.rb_CustomThreads = new System.Windows.Forms.RadioButton();
-            this.label15 = new System.Windows.Forms.Label();
+            this.l_MaxThreads = new System.Windows.Forms.Label();
             this.tb_MaxThreads = new System.Windows.Forms.TextBox();
             this.tb_AutoIncValue = new System.Windows.Forms.TextBox();
             this.tb_AutoIncStart = new System.Windows.Forms.TextBox();
             this.tb_AutoIncEnd = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
+            this.l_AutoEnd = new System.Windows.Forms.Label();
+            this.l_AutoStart = new System.Windows.Forms.Label();
             this.l_AutoProgress = new System.Windows.Forms.Label();
             this.l_Status = new System.Windows.Forms.Label();
             this.btn_AutoTest = new System.Windows.Forms.Button();
-            this.label13 = new System.Windows.Forms.Label();
-            this.panel7 = new System.Windows.Forms.Panel();
+            this.l_AutoInc = new System.Windows.Forms.Label();
+            this.p_AutoControls = new System.Windows.Forms.Panel();
             this.rb_SFPerformance = new System.Windows.Forms.RadioButton();
             this.rb_ThreadTesting = new System.Windows.Forms.RadioButton();
             this.rb_SFandTT = new System.Windows.Forms.RadioButton();
-            this.label14 = new System.Windows.Forms.Label();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.label16 = new System.Windows.Forms.Label();
-            this.panel9 = new System.Windows.Forms.Panel();
-            this.label18 = new System.Windows.Forms.Label();
+            this.l_ThreadControls = new System.Windows.Forms.Label();
+            this.p_SingleParticleDiagnostics = new System.Windows.Forms.Panel();
+            this.l_SimDiagnostics = new System.Windows.Forms.Label();
+            this.p_SimOptions = new System.Windows.Forms.Panel();
+            this.l_saveDirectory = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label17 = new System.Windows.Forms.Label();
+            this.l_SimOpts = new System.Windows.Forms.Label();
             this.chart_ExecTime = new LiveCharts.WinForms.CartesianChart();
             this.btn_SaveExecGraph = new System.Windows.Forms.Button();
             this.btn_SaveThreadComp = new System.Windows.Forms.Button();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ExecMetrics.SuspendLayout();
-            this.panel1.SuspendLayout();
-            this.panel5.SuspendLayout();
-            this.panel4.SuspendLayout();
-            this.panel3.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.panel8.SuspendLayout();
-            this.panel7.SuspendLayout();
-            this.panel6.SuspendLayout();
-            this.panel9.SuspendLayout();
+            this.p_ManualControls.SuspendLayout();
+            this.p_ActionButtons.SuspendLayout();
+            this.p_Initialization.SuspendLayout();
+            this.p_Visualization.SuspendLayout();
+            this.p_AlgSelection.SuspendLayout();
+            this.p_ThreadControls.SuspendLayout();
+            this.p_AutoControls.SuspendLayout();
+            this.p_SingleParticleDiagnostics.SuspendLayout();
+            this.p_SimOptions.SuspendLayout();
             this.SuspendLayout();
             // 
             // tb_ParticleCount
@@ -143,7 +143,6 @@ namespace Barnes_Hut_GUI
             this.label1.Size = new System.Drawing.Size(98, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Number of particles";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // btn_Partition
             // 
@@ -257,7 +256,6 @@ namespace Barnes_Hut_GUI
             this.tb_Theta.Size = new System.Drawing.Size(75, 20);
             this.tb_Theta.TabIndex = 12;
             this.tb_Theta.Text = "2";
-            this.tb_Theta.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // btn_Simulate
             // 
@@ -272,14 +270,14 @@ namespace Barnes_Hut_GUI
             this.btn_Simulate.UseVisualStyleBackColor = false;
             this.btn_Simulate.Click += new System.EventHandler(this.btn_Simulate_Click);
             // 
-            // label3
+            // l_TimeStepsToSim
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 14);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(110, 13);
-            this.label3.TabIndex = 16;
-            this.label3.Text = "Timesteps to Simulate";
+            this.l_TimeStepsToSim.AutoSize = true;
+            this.l_TimeStepsToSim.Location = new System.Drawing.Point(12, 14);
+            this.l_TimeStepsToSim.Name = "l_TimeStepsToSim";
+            this.l_TimeStepsToSim.Size = new System.Drawing.Size(110, 13);
+            this.l_TimeStepsToSim.TabIndex = 16;
+            this.l_TimeStepsToSim.Text = "Timesteps to Simulate";
             // 
             // tb_TimeStepSim
             // 
@@ -308,14 +306,14 @@ namespace Barnes_Hut_GUI
             this.tb_TargetParticleNum.Size = new System.Drawing.Size(122, 20);
             this.tb_TargetParticleNum.TabIndex = 18;
             // 
-            // label4
+            // l_TgtParticle
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(14, 13);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(76, 13);
-            this.label4.TabIndex = 19;
-            this.label4.Text = "Target Particle";
+            this.l_TgtParticle.AutoSize = true;
+            this.l_TgtParticle.Location = new System.Drawing.Point(14, 13);
+            this.l_TgtParticle.Name = "l_TgtParticle";
+            this.l_TgtParticle.Size = new System.Drawing.Size(76, 13);
+            this.l_TgtParticle.TabIndex = 19;
+            this.l_TgtParticle.Text = "Target Particle";
             // 
             // cb_ShowResForce
             // 
@@ -595,106 +593,104 @@ namespace Barnes_Hut_GUI
             this.chart_ThreadComparison.TabIndex = 43;
             this.chart_ThreadComparison.Text = "chart_Parallelism";
             // 
-            // panel1
+            // p_ManualControls
             // 
-            this.panel1.BackColor = System.Drawing.Color.Bisque;
-            this.panel1.Controls.Add(this.label11);
-            this.panel1.Controls.Add(this.panel5);
-            this.panel1.Controls.Add(this.label10);
-            this.panel1.Controls.Add(this.panel4);
-            this.panel1.Controls.Add(this.label9);
-            this.panel1.Controls.Add(this.panel3);
-            this.panel1.Controls.Add(this.label8);
-            this.panel1.Controls.Add(this.panel2);
-            this.panel1.Location = new System.Drawing.Point(776, 28);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(427, 275);
-            this.panel1.TabIndex = 44;
+            this.p_ManualControls.BackColor = System.Drawing.Color.Bisque;
+            this.p_ManualControls.Controls.Add(this.l_ActionBtns);
+            this.p_ManualControls.Controls.Add(this.p_ActionButtons);
+            this.p_ManualControls.Controls.Add(this.l_init);
+            this.p_ManualControls.Controls.Add(this.p_Initialization);
+            this.p_ManualControls.Controls.Add(this.l_VisOpts);
+            this.p_ManualControls.Controls.Add(this.p_Visualization);
+            this.p_ManualControls.Controls.Add(this.l_AlgSelection);
+            this.p_ManualControls.Controls.Add(this.p_AlgSelection);
+            this.p_ManualControls.Location = new System.Drawing.Point(776, 28);
+            this.p_ManualControls.Name = "p_ManualControls";
+            this.p_ManualControls.Size = new System.Drawing.Size(427, 275);
+            this.p_ManualControls.TabIndex = 44;
             // 
-            // label11
+            // l_ActionBtns
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(238, 137);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(76, 13);
-            this.label11.TabIndex = 52;
-            this.label11.Text = "Action Buttons";
+            this.l_ActionBtns.AutoSize = true;
+            this.l_ActionBtns.Location = new System.Drawing.Point(238, 137);
+            this.l_ActionBtns.Name = "l_ActionBtns";
+            this.l_ActionBtns.Size = new System.Drawing.Size(76, 13);
+            this.l_ActionBtns.TabIndex = 52;
+            this.l_ActionBtns.Text = "Action Buttons";
             // 
-            // panel5
+            // p_ActionButtons
             // 
-            this.panel5.BackColor = System.Drawing.Color.White;
-            this.panel5.Controls.Add(this.btn_GenerateParticles);
-            this.panel5.Controls.Add(this.btn_Partition);
-            this.panel5.Controls.Add(this.btn_Reset);
-            this.panel5.Location = new System.Drawing.Point(241, 153);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(167, 108);
-            this.panel5.TabIndex = 51;
+            this.p_ActionButtons.BackColor = System.Drawing.Color.White;
+            this.p_ActionButtons.Controls.Add(this.btn_GenerateParticles);
+            this.p_ActionButtons.Controls.Add(this.btn_Partition);
+            this.p_ActionButtons.Controls.Add(this.btn_Reset);
+            this.p_ActionButtons.Location = new System.Drawing.Point(241, 153);
+            this.p_ActionButtons.Name = "p_ActionButtons";
+            this.p_ActionButtons.Size = new System.Drawing.Size(167, 108);
+            this.p_ActionButtons.TabIndex = 51;
             // 
-            // label10
+            // l_init
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(20, 11);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(61, 13);
-            this.label10.TabIndex = 50;
-            this.label10.Text = "Initialization";
+            this.l_init.AutoSize = true;
+            this.l_init.Location = new System.Drawing.Point(20, 11);
+            this.l_init.Name = "l_init";
+            this.l_init.Size = new System.Drawing.Size(61, 13);
+            this.l_init.TabIndex = 50;
+            this.l_init.Text = "Initialization";
             // 
-            // panel4
+            // p_Initialization
             // 
-            this.panel4.BackColor = System.Drawing.Color.White;
-            this.panel4.Controls.Add(this.tb_ParticleCount);
-            this.panel4.Controls.Add(this.label1);
-            this.panel4.Controls.Add(this.btn_Gen100PlusParticles);
-            this.panel4.Controls.Add(this.tb_Theta);
-            this.panel4.Controls.Add(this.label2);
-            this.panel4.Location = new System.Drawing.Point(19, 27);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(207, 97);
-            this.panel4.TabIndex = 49;
+            this.p_Initialization.BackColor = System.Drawing.Color.White;
+            this.p_Initialization.Controls.Add(this.tb_ParticleCount);
+            this.p_Initialization.Controls.Add(this.label1);
+            this.p_Initialization.Controls.Add(this.btn_Gen100PlusParticles);
+            this.p_Initialization.Controls.Add(this.tb_Theta);
+            this.p_Initialization.Controls.Add(this.label2);
+            this.p_Initialization.Location = new System.Drawing.Point(19, 27);
+            this.p_Initialization.Name = "p_Initialization";
+            this.p_Initialization.Size = new System.Drawing.Size(207, 97);
+            this.p_Initialization.TabIndex = 49;
             // 
-            // label9
+            // l_VisOpts
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(238, 11);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(104, 13);
-            this.label9.TabIndex = 48;
-            this.label9.Text = "Visualization Options";
-            this.label9.Click += new System.EventHandler(this.label9_Click);
+            this.l_VisOpts.AutoSize = true;
+            this.l_VisOpts.Location = new System.Drawing.Point(238, 11);
+            this.l_VisOpts.Name = "l_VisOpts";
+            this.l_VisOpts.Size = new System.Drawing.Size(104, 13);
+            this.l_VisOpts.TabIndex = 48;
+            this.l_VisOpts.Text = "Visualization Options";
             // 
-            // panel3
+            // p_Visualization
             // 
-            this.panel3.BackColor = System.Drawing.Color.White;
-            this.panel3.Controls.Add(this.cb_ShowEmptyCells);
-            this.panel3.Controls.Add(this.cb_DrawGraphics);
-            this.panel3.Controls.Add(this.cb_TreeOutline);
-            this.panel3.Location = new System.Drawing.Point(241, 27);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(168, 97);
-            this.panel3.TabIndex = 47;
-            this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
+            this.p_Visualization.BackColor = System.Drawing.Color.White;
+            this.p_Visualization.Controls.Add(this.cb_ShowEmptyCells);
+            this.p_Visualization.Controls.Add(this.cb_DrawGraphics);
+            this.p_Visualization.Controls.Add(this.cb_TreeOutline);
+            this.p_Visualization.Location = new System.Drawing.Point(241, 27);
+            this.p_Visualization.Name = "p_Visualization";
+            this.p_Visualization.Size = new System.Drawing.Size(168, 97);
+            this.p_Visualization.TabIndex = 47;
             // 
-            // label8
+            // l_AlgSelection
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(16, 137);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(97, 13);
-            this.label8.TabIndex = 46;
-            this.label8.Text = "Algorithm Selection";
+            this.l_AlgSelection.AutoSize = true;
+            this.l_AlgSelection.Location = new System.Drawing.Point(16, 137);
+            this.l_AlgSelection.Name = "l_AlgSelection";
+            this.l_AlgSelection.Size = new System.Drawing.Size(97, 13);
+            this.l_AlgSelection.TabIndex = 46;
+            this.l_AlgSelection.Text = "Algorithm Selection";
             // 
-            // panel2
+            // p_AlgSelection
             // 
-            this.panel2.BackColor = System.Drawing.Color.White;
-            this.panel2.Controls.Add(this.rb_ParallelPWI);
-            this.panel2.Controls.Add(this.rb_UsePWI);
-            this.panel2.Controls.Add(this.rb_UseBH);
-            this.panel2.Controls.Add(this.rb_ParlBH);
-            this.panel2.Location = new System.Drawing.Point(18, 153);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(208, 108);
-            this.panel2.TabIndex = 4;
+            this.p_AlgSelection.BackColor = System.Drawing.Color.White;
+            this.p_AlgSelection.Controls.Add(this.rb_ParallelPWI);
+            this.p_AlgSelection.Controls.Add(this.rb_UsePWI);
+            this.p_AlgSelection.Controls.Add(this.rb_UseBH);
+            this.p_AlgSelection.Controls.Add(this.rb_ParlBH);
+            this.p_AlgSelection.Location = new System.Drawing.Point(18, 153);
+            this.p_AlgSelection.Name = "p_AlgSelection";
+            this.p_AlgSelection.Size = new System.Drawing.Size(208, 108);
+            this.p_AlgSelection.TabIndex = 4;
             // 
             // label7
             // 
@@ -705,27 +701,26 @@ namespace Barnes_Hut_GUI
             this.label7.TabIndex = 45;
             this.label7.Text = "Manual Controls";
             // 
-            // label12
+            // l_AutoControls
             // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(773, 311);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(70, 13);
-            this.label12.TabIndex = 47;
-            this.label12.Text = "Auto Controls";
+            this.l_AutoControls.AutoSize = true;
+            this.l_AutoControls.Location = new System.Drawing.Point(773, 311);
+            this.l_AutoControls.Name = "l_AutoControls";
+            this.l_AutoControls.Size = new System.Drawing.Size(70, 13);
+            this.l_AutoControls.TabIndex = 47;
+            this.l_AutoControls.Text = "Auto Controls";
             // 
-            // panel8
+            // p_ThreadControls
             // 
-            this.panel8.BackColor = System.Drawing.Color.Bisque;
-            this.panel8.Controls.Add(this.rb_TPLThreads);
-            this.panel8.Controls.Add(this.rb_CustomThreads);
-            this.panel8.Controls.Add(this.label15);
-            this.panel8.Controls.Add(this.tb_MaxThreads);
-            this.panel8.Location = new System.Drawing.Point(776, 451);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(427, 64);
-            this.panel8.TabIndex = 48;
-            this.panel8.Paint += new System.Windows.Forms.PaintEventHandler(this.panel8_Paint);
+            this.p_ThreadControls.BackColor = System.Drawing.Color.Bisque;
+            this.p_ThreadControls.Controls.Add(this.rb_TPLThreads);
+            this.p_ThreadControls.Controls.Add(this.rb_CustomThreads);
+            this.p_ThreadControls.Controls.Add(this.l_MaxThreads);
+            this.p_ThreadControls.Controls.Add(this.tb_MaxThreads);
+            this.p_ThreadControls.Location = new System.Drawing.Point(776, 451);
+            this.p_ThreadControls.Name = "p_ThreadControls";
+            this.p_ThreadControls.Size = new System.Drawing.Size(427, 64);
+            this.p_ThreadControls.TabIndex = 48;
             // 
             // rb_TPLThreads
             // 
@@ -753,14 +748,14 @@ namespace Barnes_Hut_GUI
             this.rb_CustomThreads.UseVisualStyleBackColor = false;
             this.rb_CustomThreads.CheckedChanged += new System.EventHandler(this.rb_CustomThreads_CheckedChanged);
             // 
-            // label15
+            // l_MaxThreads
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(12, 11);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(69, 13);
-            this.label15.TabIndex = 44;
-            this.label15.Text = "Max Threads";
+            this.l_MaxThreads.AutoSize = true;
+            this.l_MaxThreads.Location = new System.Drawing.Point(12, 11);
+            this.l_MaxThreads.Name = "l_MaxThreads";
+            this.l_MaxThreads.Size = new System.Drawing.Size(69, 13);
+            this.l_MaxThreads.TabIndex = 44;
+            this.l_MaxThreads.Text = "Max Threads";
             // 
             // tb_MaxThreads
             // 
@@ -794,24 +789,23 @@ namespace Barnes_Hut_GUI
             this.tb_AutoIncEnd.TabIndex = 37;
             this.tb_AutoIncEnd.Text = "1000";
             // 
-            // label5
+            // l_AutoEnd
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(104, 9);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(26, 13);
-            this.label5.TabIndex = 38;
-            this.label5.Text = "End";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
+            this.l_AutoEnd.AutoSize = true;
+            this.l_AutoEnd.Location = new System.Drawing.Point(104, 9);
+            this.l_AutoEnd.Name = "l_AutoEnd";
+            this.l_AutoEnd.Size = new System.Drawing.Size(26, 13);
+            this.l_AutoEnd.TabIndex = 38;
+            this.l_AutoEnd.Text = "End";
             // 
-            // label6
+            // l_AutoStart
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 9);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(29, 13);
-            this.label6.TabIndex = 39;
-            this.label6.Text = "Start";
+            this.l_AutoStart.AutoSize = true;
+            this.l_AutoStart.Location = new System.Drawing.Point(13, 9);
+            this.l_AutoStart.Name = "l_AutoStart";
+            this.l_AutoStart.Size = new System.Drawing.Size(29, 13);
+            this.l_AutoStart.TabIndex = 39;
+            this.l_AutoStart.Text = "Start";
             // 
             // l_AutoProgress
             // 
@@ -844,34 +838,34 @@ namespace Barnes_Hut_GUI
             this.btn_AutoTest.UseVisualStyleBackColor = false;
             this.btn_AutoTest.Click += new System.EventHandler(this.btn_AutoTest_Click);
             // 
-            // label13
+            // l_AutoInc
             // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(198, 9);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(22, 13);
-            this.label13.TabIndex = 42;
-            this.label13.Text = "Inc";
+            this.l_AutoInc.AutoSize = true;
+            this.l_AutoInc.Location = new System.Drawing.Point(198, 9);
+            this.l_AutoInc.Name = "l_AutoInc";
+            this.l_AutoInc.Size = new System.Drawing.Size(22, 13);
+            this.l_AutoInc.TabIndex = 42;
+            this.l_AutoInc.Text = "Inc";
             // 
-            // panel7
+            // p_AutoControls
             // 
-            this.panel7.BackColor = System.Drawing.Color.Bisque;
-            this.panel7.Controls.Add(this.rb_SFPerformance);
-            this.panel7.Controls.Add(this.rb_ThreadTesting);
-            this.panel7.Controls.Add(this.rb_SFandTT);
-            this.panel7.Controls.Add(this.label13);
-            this.panel7.Controls.Add(this.btn_AutoTest);
-            this.panel7.Controls.Add(this.l_Status);
-            this.panel7.Controls.Add(this.l_AutoProgress);
-            this.panel7.Controls.Add(this.label6);
-            this.panel7.Controls.Add(this.label5);
-            this.panel7.Controls.Add(this.tb_AutoIncEnd);
-            this.panel7.Controls.Add(this.tb_AutoIncStart);
-            this.panel7.Controls.Add(this.tb_AutoIncValue);
-            this.panel7.Location = new System.Drawing.Point(776, 327);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(427, 99);
-            this.panel7.TabIndex = 43;
+            this.p_AutoControls.BackColor = System.Drawing.Color.Bisque;
+            this.p_AutoControls.Controls.Add(this.rb_SFPerformance);
+            this.p_AutoControls.Controls.Add(this.rb_ThreadTesting);
+            this.p_AutoControls.Controls.Add(this.rb_SFandTT);
+            this.p_AutoControls.Controls.Add(this.l_AutoInc);
+            this.p_AutoControls.Controls.Add(this.btn_AutoTest);
+            this.p_AutoControls.Controls.Add(this.l_Status);
+            this.p_AutoControls.Controls.Add(this.l_AutoProgress);
+            this.p_AutoControls.Controls.Add(this.l_AutoStart);
+            this.p_AutoControls.Controls.Add(this.l_AutoEnd);
+            this.p_AutoControls.Controls.Add(this.tb_AutoIncEnd);
+            this.p_AutoControls.Controls.Add(this.tb_AutoIncStart);
+            this.p_AutoControls.Controls.Add(this.tb_AutoIncValue);
+            this.p_AutoControls.Location = new System.Drawing.Point(776, 327);
+            this.p_AutoControls.Name = "p_AutoControls";
+            this.p_AutoControls.Size = new System.Drawing.Size(427, 99);
+            this.p_AutoControls.TabIndex = 43;
             // 
             // rb_SFPerformance
             // 
@@ -908,75 +902,75 @@ namespace Barnes_Hut_GUI
             this.rb_SFandTT.UseVisualStyleBackColor = true;
             this.rb_SFandTT.CheckedChanged += new System.EventHandler(this.rb_SFandTT_CheckedChanged);
             // 
-            // label14
+            // l_ThreadControls
             // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(774, 435);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(82, 13);
-            this.label14.TabIndex = 49;
-            this.label14.Text = "Thread Controls";
+            this.l_ThreadControls.AutoSize = true;
+            this.l_ThreadControls.Location = new System.Drawing.Point(774, 435);
+            this.l_ThreadControls.Name = "l_ThreadControls";
+            this.l_ThreadControls.Size = new System.Drawing.Size(82, 13);
+            this.l_ThreadControls.TabIndex = 49;
+            this.l_ThreadControls.Text = "Thread Controls";
             // 
-            // panel6
+            // p_SingleParticleDiagnostics
             // 
-            this.panel6.BackColor = System.Drawing.Color.Bisque;
-            this.panel6.Controls.Add(this.cb_ShowResForce);
-            this.panel6.Controls.Add(this.cb_ForceVect);
-            this.panel6.Controls.Add(this.btn_CalcForces);
-            this.panel6.Controls.Add(this.tb_TargetParticleNum);
-            this.panel6.Controls.Add(this.label4);
-            this.panel6.Controls.Add(this.cb_ShowGrouping);
-            this.panel6.Location = new System.Drawing.Point(1218, 28);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(200, 275);
-            this.panel6.TabIndex = 50;
+            this.p_SingleParticleDiagnostics.BackColor = System.Drawing.Color.Bisque;
+            this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ShowResForce);
+            this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ForceVect);
+            this.p_SingleParticleDiagnostics.Controls.Add(this.btn_CalcForces);
+            this.p_SingleParticleDiagnostics.Controls.Add(this.tb_TargetParticleNum);
+            this.p_SingleParticleDiagnostics.Controls.Add(this.l_TgtParticle);
+            this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ShowGrouping);
+            this.p_SingleParticleDiagnostics.Location = new System.Drawing.Point(1218, 28);
+            this.p_SingleParticleDiagnostics.Name = "p_SingleParticleDiagnostics";
+            this.p_SingleParticleDiagnostics.Size = new System.Drawing.Size(200, 275);
+            this.p_SingleParticleDiagnostics.TabIndex = 50;
             // 
-            // label16
+            // l_SimDiagnostics
             // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(1215, 12);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(132, 13);
-            this.label16.TabIndex = 51;
-            this.label16.Text = "Single Particle Diagnostics";
+            this.l_SimDiagnostics.AutoSize = true;
+            this.l_SimDiagnostics.Location = new System.Drawing.Point(1215, 12);
+            this.l_SimDiagnostics.Name = "l_SimDiagnostics";
+            this.l_SimDiagnostics.Size = new System.Drawing.Size(132, 13);
+            this.l_SimDiagnostics.TabIndex = 51;
+            this.l_SimDiagnostics.Text = "Single Particle Diagnostics";
             // 
-            // panel9
+            // p_SimOptions
             // 
-            this.panel9.BackColor = System.Drawing.Color.Bisque;
-            this.panel9.Controls.Add(this.label18);
-            this.panel9.Controls.Add(this.textBox2);
-            this.panel9.Controls.Add(this.tb_TimeStepSim);
-            this.panel9.Controls.Add(this.btn_Simulate);
-            this.panel9.Controls.Add(this.label3);
-            this.panel9.Location = new System.Drawing.Point(1218, 330);
-            this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(200, 184);
-            this.panel9.TabIndex = 52;
+            this.p_SimOptions.BackColor = System.Drawing.Color.Bisque;
+            this.p_SimOptions.Controls.Add(this.l_saveDirectory);
+            this.p_SimOptions.Controls.Add(this.textBox2);
+            this.p_SimOptions.Controls.Add(this.tb_TimeStepSim);
+            this.p_SimOptions.Controls.Add(this.btn_Simulate);
+            this.p_SimOptions.Controls.Add(this.l_TimeStepsToSim);
+            this.p_SimOptions.Location = new System.Drawing.Point(1218, 330);
+            this.p_SimOptions.Name = "p_SimOptions";
+            this.p_SimOptions.Size = new System.Drawing.Size(200, 184);
+            this.p_SimOptions.TabIndex = 52;
             // 
-            // label18
+            // l_saveDirectory
             // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(14, 89);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(77, 13);
-            this.label18.TabIndex = 18;
-            this.label18.Text = "Save Directory";
+            this.l_saveDirectory.AutoSize = true;
+            this.l_saveDirectory.Location = new System.Drawing.Point(14, 89);
+            this.l_saveDirectory.Name = "l_saveDirectory";
+            this.l_saveDirectory.Size = new System.Drawing.Size(77, 13);
+            this.l_saveDirectory.TabIndex = 18;
+            this.l_saveDirectory.Text = "Save Directory";
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(17, 105);
+            this.textBox2.Location = new System.Drawing.Point(15, 105);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(175, 20);
             this.textBox2.TabIndex = 17;
             // 
-            // label17
+            // l_SimOpts
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(1215, 314);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(94, 13);
-            this.label17.TabIndex = 53;
-            this.label17.Text = "Simulation Options";
+            this.l_SimOpts.AutoSize = true;
+            this.l_SimOpts.Location = new System.Drawing.Point(1215, 314);
+            this.l_SimOpts.Name = "l_SimOpts";
+            this.l_SimOpts.Size = new System.Drawing.Size(94, 13);
+            this.l_SimOpts.TabIndex = 53;
+            this.l_SimOpts.Text = "Simulation Options";
             // 
             // chart_ExecTime
             // 
@@ -1037,14 +1031,14 @@ namespace Barnes_Hut_GUI
             this.Controls.Add(this.btn_SaveThreadComp);
             this.Controls.Add(this.btn_SaveExecGraph);
             this.Controls.Add(this.chart_ExecTime);
-            this.Controls.Add(this.label17);
-            this.Controls.Add(this.panel9);
-            this.Controls.Add(this.label16);
-            this.Controls.Add(this.panel6);
-            this.Controls.Add(this.label14);
-            this.Controls.Add(this.panel8);
-            this.Controls.Add(this.label12);
-            this.Controls.Add(this.panel7);
+            this.Controls.Add(this.l_SimOpts);
+            this.Controls.Add(this.p_SimOptions);
+            this.Controls.Add(this.l_SimDiagnostics);
+            this.Controls.Add(this.p_SingleParticleDiagnostics);
+            this.Controls.Add(this.l_ThreadControls);
+            this.Controls.Add(this.p_ThreadControls);
+            this.Controls.Add(this.l_AutoControls);
+            this.Controls.Add(this.p_AutoControls);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.chart_ThreadComparison);
             this.Controls.Add(this.l_Progress);
@@ -1053,7 +1047,7 @@ namespace Barnes_Hut_GUI
             this.Controls.Add(this.iL_ExecMetrics);
             this.Controls.Add(this.p_SimulationArea);
             this.Controls.Add(this.p_ExecMetrics);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.p_ManualControls);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -1062,23 +1056,23 @@ namespace Barnes_Hut_GUI
             this.Load += new System.EventHandler(this.Form1_Load);
             this.p_ExecMetrics.ResumeLayout(false);
             this.p_ExecMetrics.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            this.panel5.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
-            this.panel4.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
-            this.panel8.ResumeLayout(false);
-            this.panel8.PerformLayout();
-            this.panel7.ResumeLayout(false);
-            this.panel7.PerformLayout();
-            this.panel6.ResumeLayout(false);
-            this.panel6.PerformLayout();
-            this.panel9.ResumeLayout(false);
-            this.panel9.PerformLayout();
+            this.p_ManualControls.ResumeLayout(false);
+            this.p_ManualControls.PerformLayout();
+            this.p_ActionButtons.ResumeLayout(false);
+            this.p_Initialization.ResumeLayout(false);
+            this.p_Initialization.PerformLayout();
+            this.p_Visualization.ResumeLayout(false);
+            this.p_Visualization.PerformLayout();
+            this.p_AlgSelection.ResumeLayout(false);
+            this.p_AlgSelection.PerformLayout();
+            this.p_ThreadControls.ResumeLayout(false);
+            this.p_ThreadControls.PerformLayout();
+            this.p_AutoControls.ResumeLayout(false);
+            this.p_AutoControls.PerformLayout();
+            this.p_SingleParticleDiagnostics.ResumeLayout(false);
+            this.p_SingleParticleDiagnostics.PerformLayout();
+            this.p_SimOptions.ResumeLayout(false);
+            this.p_SimOptions.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1098,11 +1092,11 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tb_Theta;
         private System.Windows.Forms.Button btn_Simulate;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label l_TimeStepsToSim;
         private System.Windows.Forms.TextBox tb_TimeStepSim;
         private System.Windows.Forms.Button btn_CalcForces;
         private System.Windows.Forms.TextBox tb_TargetParticleNum;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label l_TgtParticle;
         private System.Windows.Forms.CheckBox cb_ShowResForce;
         private System.Windows.Forms.RadioButton rb_ParlBH;
         private System.Windows.Forms.CheckBox cb_ShowGrouping;
@@ -1132,42 +1126,42 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.Label l_PPWITimeValue;
         private System.Windows.Forms.Label iL_PPWI;
         private LiveCharts.WinForms.CartesianChart chart_ThreadComparison;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel p_ManualControls;
+        private System.Windows.Forms.Label l_VisOpts;
+        private System.Windows.Forms.Panel p_Visualization;
+        private System.Windows.Forms.Label l_AlgSelection;
+        private System.Windows.Forms.Panel p_AlgSelection;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.Panel p_Initialization;
+        private System.Windows.Forms.Panel p_ActionButtons;
+        private System.Windows.Forms.Label l_init;
+        private System.Windows.Forms.Label l_ActionBtns;
+        private System.Windows.Forms.Label l_AutoControls;
+        private System.Windows.Forms.Panel p_ThreadControls;
         private System.Windows.Forms.RadioButton rb_TPLThreads;
         private System.Windows.Forms.RadioButton rb_CustomThreads;
-        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label l_MaxThreads;
         private System.Windows.Forms.TextBox tb_MaxThreads;
         private System.Windows.Forms.TextBox tb_AutoIncValue;
         private System.Windows.Forms.TextBox tb_AutoIncStart;
         private System.Windows.Forms.TextBox tb_AutoIncEnd;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label l_AutoEnd;
+        private System.Windows.Forms.Label l_AutoStart;
         private System.Windows.Forms.Label l_AutoProgress;
         private System.Windows.Forms.Label l_Status;
         private System.Windows.Forms.Button btn_AutoTest;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label l_AutoInc;
+        private System.Windows.Forms.Panel p_AutoControls;
+        private System.Windows.Forms.Label l_ThreadControls;
         private System.Windows.Forms.RadioButton rb_SFandTT;
         private System.Windows.Forms.RadioButton rb_SFPerformance;
         private System.Windows.Forms.RadioButton rb_ThreadTesting;
-        private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Panel panel9;
-        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Panel p_SingleParticleDiagnostics;
+        private System.Windows.Forms.Label l_SimDiagnostics;
+        private System.Windows.Forms.Panel p_SimOptions;
+        private System.Windows.Forms.Label l_SimOpts;
         private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label l_saveDirectory;
         private System.Windows.Forms.TextBox textBox2;
         private LiveCharts.WinForms.CartesianChart chart_ExecTime;
         private System.Windows.Forms.Button btn_SaveExecGraph;

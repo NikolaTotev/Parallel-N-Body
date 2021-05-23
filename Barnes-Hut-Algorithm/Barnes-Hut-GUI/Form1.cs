@@ -364,77 +364,9 @@ namespace Barnes_Hut_GUI
 
         }
 
-        private void DrawExecutionTimesChart(List<string> xAxisVals, List<int> bhExecTimes, List<int> pbhExecTimes)
-        {
-            chart_ExecTime.AxisX.Add(new LiveCharts.Wpf.Axis()
-            {
-                Title = "Particle Count",
-                Labels = xAxisVals
-            });
+        
 
-            chart_ExecTime.AxisY.Add(new LiveCharts.Wpf.Axis()
-            {
-                Title = "Execution Time",
-            });
-
-            chart_ExecTime.LegendLocation = LiveCharts.LegendLocation.Bottom;
-            chart_ExecTime.Series.Clear();
-            SeriesCollection execTimes = new SeriesCollection();
-
-            execTimes.Add(new LineSeries()
-            {
-                Title = "BH",
-                Values = new ChartValues<int>(bhExecTimes),
-                PointGeometry = DefaultGeometries.Diamond
-            });
-            execTimes.Add(new LineSeries()
-            {
-                Title = "PBH",
-                Values = new ChartValues<int>(pbhExecTimes),
-                PointGeometry = DefaultGeometries.Triangle,
-            });
-            chart_ExecTime.Series = execTimes;
-        }
-
-        private void DrawThreadComparisonChart(List<string> threadCounts, List<int> threadComparison)
-        {
-            chart_ThreadComparison.AxisX.RemoveAt(0);
-            chart_ThreadComparison.AxisX.Add(new LiveCharts.Wpf.Axis()
-            {
-                Title = "Thread Count",
-                Labels = threadCounts
-            });
-            chart_ThreadComparison.AxisY.RemoveAt(0);
-            chart_ThreadComparison.AxisY.Add(new LiveCharts.Wpf.Axis()
-            {
-                Title = "Level of Parallelism",
-            });
-            chart_ThreadComparison.LegendLocation = LiveCharts.LegendLocation.Bottom;
-            chart_ThreadComparison.Series.Clear();
-            SeriesCollection parlComp = new SeriesCollection();
-
-            List<double> parlLevels = new List<double>();
-
-
-            for (int i = 0; i < threadComparison.Count; i++)
-            {
-                //float p = threadCountComparison[0] / threadCountComparison[i];
-                //float pm1 = 1 - p;
-                //float pover = p / float.Parse(threadCounts[i]);
-                //float speedup = 1 / (pm1 + pover);
-                double speedUp = (double)threadComparison[0] / (double)threadComparison[i];
-                parlLevels.Add(speedUp);
-            }
-
-            parlComp.Add(new LineSeries()
-            {
-                Title = "Level of Parallelism",
-                Values = new ChartValues<double>(parlLevels),
-                PointGeometry = DefaultGeometries.Circle
-            });
-
-            chart_ThreadComparison.Series = parlComp;
-        }
+       
 
         private void ThreadTesting(int endParticleCount, int maxThreadCount, ref List<int> threadComparison, ref List<string> threadCounts)
         {
@@ -514,6 +446,95 @@ namespace Barnes_Hut_GUI
         #endregion
 
 
+        #region Visualization
+
+        /// <summary>
+        /// Visualize the chart showing the level of parallelism. 
+        /// </summary>
+        /// <param name="threadCounts"></param>
+        /// <param name="threadComparison"></param>
+        private void DrawThreadComparisonChart(List<string> threadCounts, List<int> threadComparison)
+        {
+            chart_ThreadComparison.AxisX.RemoveAt(0);
+            chart_ThreadComparison.AxisX.Add(new LiveCharts.Wpf.Axis()
+            {
+                Title = "Thread Count",
+                Labels = threadCounts,
+            });
+            chart_ThreadComparison.AxisY.RemoveAt(0);
+            chart_ThreadComparison.AxisY.Add(new LiveCharts.Wpf.Axis()
+            {
+                Title = "Level of Parallelism",
+            });
+            chart_ThreadComparison.LegendLocation = LiveCharts.LegendLocation.Bottom;
+            chart_ThreadComparison.Series.Clear();
+            SeriesCollection parlComp = new SeriesCollection();
+
+            List<double> parlLevels = new List<double>();
+
+
+            for (int i = 0; i < threadComparison.Count; i++)
+            {
+                //float p = threadCountComparison[0] / threadCountComparison[i];
+                //float pm1 = 1 - p;
+                //float pover = p / float.Parse(threadCounts[i]);
+                //float speedup = 1 / (pm1 + pover);
+                double speedUp = (double)threadComparison[0] / (double)threadComparison[i];
+                parlLevels.Add(speedUp);
+            }
+
+            parlComp.Add(new LineSeries()
+            {
+                Title = "Level of Parallelism",
+                Values = new ChartValues<double>(parlLevels),
+                PointGeometry = DefaultGeometries.Circle
+            });
+
+            chart_ThreadComparison.Series = parlComp;
+        }
+
+        /// <summary>
+        /// Visualize the execution times for different amounts of particles. 
+        /// </summary>
+        /// <param name="xAxisVals"></param>
+        /// <param name="bhExecTimes"></param>
+        /// <param name="pbhExecTimes"></param>
+        private void DrawExecutionTimesChart(List<string> xAxisVals, List<int> bhExecTimes, List<int> pbhExecTimes)
+        {
+            chart_ExecTime.AxisX.Add(new LiveCharts.Wpf.Axis()
+            {
+                Title = "Particle Count",
+                Labels = xAxisVals
+            });
+
+            chart_ExecTime.AxisY.Add(new LiveCharts.Wpf.Axis()
+            {
+                Title = "Execution Time",
+            });
+
+            chart_ExecTime.LegendLocation = LiveCharts.LegendLocation.Bottom;
+            chart_ExecTime.Series.Clear();
+            SeriesCollection execTimes = new SeriesCollection();
+
+            execTimes.Add(new LineSeries()
+            {
+                Title = "BH",
+                Values = new ChartValues<int>(bhExecTimes),
+                PointGeometry = DefaultGeometries.Diamond
+            });
+            execTimes.Add(new LineSeries()
+            {
+                Title = "PBH",
+                Values = new ChartValues<int>(pbhExecTimes),
+                PointGeometry = DefaultGeometries.Triangle,
+            });
+            chart_ExecTime.Series = execTimes;
+        }
+
+        
+        /// <summary>
+        /// Visualize the tree and re-draw particles to avoid them being covered by the nodes.
+        /// </summary>
         private void DrawTree()
         {
             m_partitionThread.Join(500);
@@ -536,7 +557,10 @@ namespace Barnes_Hut_GUI
             }
         }
 
-
+        /// <summary>
+        /// Draw all the particles.
+        /// </summary>
+        /// <param name="particleCount"></param>
         private void DrawParticles(int particleCount)
         {
             for (int i = 0; i < particleCount; i++)
@@ -550,12 +574,9 @@ namespace Barnes_Hut_GUI
             }
         }
 
+        #endregion
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-        }
-
-
+        #region Single Particles Diagnostics
         private void CalculateForces()
         {
             int targetParticle = int.Parse(tb_TargetParticleNum.Text);
@@ -607,6 +628,30 @@ namespace Barnes_Hut_GUI
                 mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, m_MidforceVectPen);
             }
         }
+
+
+        #endregion
+
+        #region Thread Mode Configuration
+
+        private void rb_CustomThreads_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_CustomThreads.Checked)
+            {
+                m_currentMode = threadMode.selfMade;
+            }
+        }
+
+        private void rb_TPLThreads_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_TPLThreads.Checked)
+            {
+                m_currentMode = threadMode.fromParallelLib;
+            }
+        }
+
+        #endregion
+
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -672,71 +717,11 @@ namespace Barnes_Hut_GUI
             }
         }
 
-
-        private void panel3_Paint(object sender, PaintEventArgs e)
-        {
-        }
-
-        private void label9_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void label5_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void panel8_Paint(object sender, PaintEventArgs e)
-        {
-        }
-
-        private void rb_CustomThreads_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rb_CustomThreads.Checked)
-            {
-                m_currentMode = threadMode.selfMade;
-            }
-        }
-
-        private void rb_TPLThreads_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rb_TPLThreads.Checked)
-            {
-                m_currentMode = threadMode.fromParallelLib;
-            }
-        }
+      
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //chart_ThreadComparison.AxisX.Add(new LiveCharts.Wpf.Axis()
-            //{
-            //    Title = "",
-            //    Labels = new string[0]
-
-
-            //});
-
-            //chart_ThreadComparison.AxisY.Add(new LiveCharts.Wpf.Axis()
-            //{
-            //    Title = "",
-            //    Labels = new string[0]
-            //});
-
-
-            //chart_ExecTime.AxisX.Add(new LiveCharts.Wpf.Axis()
-            //{
-            //    Title = "",
-            //    Labels = new string[0]
-            //});
-
-            //chart_ExecTime.AxisY.Add(new LiveCharts.Wpf.Axis()
-            //{
-            //    Title = "",
-            //    Labels = new string[0]
-            //});
+          
         }
 
         private void btn_SaveExecGraph_Click(object sender, EventArgs e)
