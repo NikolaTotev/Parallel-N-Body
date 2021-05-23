@@ -20,34 +20,21 @@ namespace Barnes_Hut_GUI
 {
     public partial class Form1 : Form
     {
-        private QuadTree mainTree;
-        private Graphics graphics;
-        private Graphics forceVectGraphics;
-        private Pen particlePen = new Pen(Color.White);
-        private Pen treePen = new Pen(Color.LightBlue);
-        private Pen minforceVectPen = new Pen(Color.ForestGreen);
-        private Pen midforceVectPen = new Pen(Color.SandyBrown);
-        private Pen maxforceVectPen = new Pen(Color.OrangeRed);
+        #region Pens
+
+        private Pen m_ParticlePen = new Pen(Color.White);
+        private Pen m_TreePen = new Pen(Color.LightBlue);
+        private Pen m_MinforceVectPen = new Pen(Color.ForestGreen);
+        private Pen m_MidforceVectPen = new Pen(Color.SandyBrown);
+        private Pen m_MaxforceVectPen = new Pen(Color.OrangeRed);
+
+        #endregion
+
+        #region Brushes
+
         private Brush particleBrush = new SolidBrush(Color.CornflowerBlue);
         private Brush particleBrushRed = new SolidBrush(Color.Red);
         private Brush particleBrushYellow = new SolidBrush(Color.Yellow);
-        private int ElipseRadius1 = 3;
-        private int ElipseRadius2 = 2;
-        private float ElipseRadius3 = 0.5f;
-        private bool ShowTree;
-        private bool ShowEmptyCells;
-        private bool ShowForceVect;
-        private bool ShowGrouping;
-        private bool DrawGraphics;
-        private bool isWorking;
-        private QuadTree.AlgToUse alg = QuadTree.AlgToUse.PWI;
-        private Thread m_partitionThread;
-        private int currentParticleValue = 0;
-        private long PWITicks = 0;
-        private long BHTicks = 0;
-        private long PBHTicks = 0;
-        private bool canReset = true;
-
         List<Brush> Brushes = new List<Brush>()
         {
             new SolidBrush(Color.Green),
@@ -55,8 +42,48 @@ namespace Barnes_Hut_GUI
             new SolidBrush(Color.BlueViolet),
             new SolidBrush(Color.Red),
             new SolidBrush(Color.CornflowerBlue)
-
         };
+
+        #endregion
+
+        #region Graphics
+
+        private Graphics graphics;
+        private Graphics forceVectGraphics;
+
+        #endregion
+
+        #region Draw Flags
+
+        private bool ShowTree;
+        private bool ShowEmptyCells;
+        private bool ShowForceVect;
+        private bool ShowGrouping;
+        private bool DrawGraphics;
+
+        #endregion
+
+        #region Thread Vairables
+
+        private Thread m_partitionThread;
+        private bool isWorking;
+        private bool canReset = true;
+
+        #endregion
+
+        private QuadTree mainTree;
+
+
+        private int ElipseRadius1 = 3;
+        private int ElipseRadius2 = 2;
+        private float ElipseRadius3 = 0.5f;
+
+        private QuadTree.AlgToUse alg = QuadTree.AlgToUse.PWI;
+        private int currentParticleValue = 0;
+        private long PWITicks = 0;
+        private long BHTicks = 0;
+        private long PBHTicks = 0;
+
 
         public Form1()
         {
@@ -69,12 +96,13 @@ namespace Barnes_Hut_GUI
             rb_UsePWI.Checked = true;
             DrawGraphics = false;
             mainTree.OnProgress += MainTree_OnProgress;
-            mainTree.OnCompleted += MainTree_OnCompleted; ;
+            mainTree.OnCompleted += MainTree_OnCompleted;
+            ;
         }
 
 
-
         #region RadioButton Functions
+
         private void rb_UsePWI_CheckedChanged(object sender, EventArgs e)
         {
             if (rb_UsePWI.Checked)
@@ -84,7 +112,6 @@ namespace Barnes_Hut_GUI
                 cb_ShowGrouping.Enabled = false;
                 ShowGrouping = false;
                 mainTree.DrawBhNodeGrouping = false;
-
             }
         }
 
@@ -112,6 +139,7 @@ namespace Barnes_Hut_GUI
         {
             CalculateForces();
         }
+
         #endregion
 
 
@@ -156,7 +184,6 @@ namespace Barnes_Hut_GUI
             {
                 DrawTree();
             }
-
         }
 
         private void MainTree_OnProgress(object source, MyEventArgs e)
@@ -183,10 +210,10 @@ namespace Barnes_Hut_GUI
             m_partitionThread = null;
             if (DrawGraphics)
             {
-                mainTree.VisualizeTreeNodes(mainTree.RootNode, graphics, treePen);
+                mainTree.VisualizeTreeNodes(mainTree.RootNode, graphics, m_TreePen);
                 for (int i = 0; i < mainTree.AllParticles.Count; i++)
                 {
-                    graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
+                    graphics.DrawEllipse(m_ParticlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
                         mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1 * 2);
                     graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2,
                         mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
@@ -203,14 +230,13 @@ namespace Barnes_Hut_GUI
             mainTree.GenerateParticles(particleCount);
 
             DrawParticles(particleCount);
-
         }
 
         private void DrawParticles(int particleCount)
         {
             for (int i = 0; i < particleCount; i++)
             {
-                graphics.DrawEllipse(particlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
+                graphics.DrawEllipse(m_ParticlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
                     mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1 * 2);
                 graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2,
                     mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
@@ -227,19 +253,14 @@ namespace Barnes_Hut_GUI
             PointF topRight = new Point(737, 0);
             mainTree.RootNode = new Node(topRight, bottomLeft);
             mainTree.RootNode.IsRoot = true;
-          
-            graphics.Clear(Color.White);
 
+            graphics.Clear(Color.White);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-
         }
 
-      
-
-       
 
         private void CalculateForces()
         {
@@ -283,13 +304,13 @@ namespace Barnes_Hut_GUI
 
             if (ShowForceVect && DrawGraphics)
             {
-                mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, minforceVectPen, midforceVectPen,
-                    maxforceVectPen);
+                mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, m_MinforceVectPen, m_MidforceVectPen,
+                    m_MaxforceVectPen);
             }
 
             if (ShowGrouping && DrawGraphics)
             {
-                mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, midforceVectPen);
+                mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, m_MidforceVectPen);
             }
         }
 
@@ -354,7 +375,6 @@ namespace Barnes_Hut_GUI
 
             for (int i = 0; i < numberOfSteps; i++)
             {
-
                 l_Status.Text = "Status: Generating Particles";
                 mainTree.GenerateParticles(currentParticleCount);
                 tb_TargetParticleNum.Text = "40";
@@ -394,12 +414,12 @@ namespace Barnes_Hut_GUI
 
                 //Run PWI
                 alg = QuadTree.AlgToUse.PWI;
-              //  execTime = mainTree.SingleFramePairwiseSimulation();
-              //  pwiExecTimes.Add(execTime.Milliseconds);
+                //  execTime = mainTree.SingleFramePairwiseSimulation();
+                //  pwiExecTimes.Add(execTime.Milliseconds);
 
                 //Run PPWI
-             //   execTime = mainTree.SingleFramePairwiseParallelSimulation();
-              //  ppwiExecTimes.Add(execTime.Milliseconds);
+                //   execTime = mainTree.SingleFramePairwiseParallelSimulation();
+                //  ppwiExecTimes.Add(execTime.Milliseconds);
                 //Partition
                 //Partition();
                 //m_partitionThread.Join();
@@ -423,9 +443,7 @@ namespace Barnes_Hut_GUI
 
 
                 //l_AutoProgress.Text = $"Progress: {i} Total: {numberOfSteps} Particles: {currentParticleCount}";
-
             }
-            
 
 
             mainTree.ClearParticles();
@@ -443,14 +461,14 @@ namespace Barnes_Hut_GUI
                 m_partitionThread.Join();
                 m_partitionThread = null;
 
-                execTime = mainTree.SingleFrameBHSimulation(isParallel:true , j, mode: QuadTree.threadMode.fromParallelLib);
+                execTime = mainTree.SingleFrameBHSimulation(isParallel: true, j,
+                    mode: QuadTree.threadMode.fromParallelLib);
                 threadComparison.Add(execTime.Milliseconds);
                 threadCounts.Add(j.ToString());
                 mainTree.ClearParticles();
             }
 
-            
-      
+
             //chart_ThreadComparison.AxisX.Clear();
             //chart_ThreadComparison.AxisY.Clear();
             chart_ThreadComparison.AxisX.Add(new LiveCharts.Wpf.Axis()
@@ -526,7 +544,8 @@ namespace Barnes_Hut_GUI
                     break;
                 case QuadTree.AlgToUse.BH:
                     mainTree.theta = float.Parse(tb_Theta.Text);
-                    time = mainTree.SingleFrameBHSimulation(isParallel: false, numberOfThreads:1, mode: QuadTree.threadMode.fromParallelLib);
+                    time = mainTree.SingleFrameBHSimulation(isParallel: false, numberOfThreads: 1,
+                        mode: QuadTree.threadMode.fromParallelLib);
                     l_TotalTimeValue.Text = time.ToString();
                     l_BHSingleStepTimeValue.Text = time.ToString();
                     //Clipboard.SetText(sw.Elapsed.ToString());
@@ -536,7 +555,8 @@ namespace Barnes_Hut_GUI
                 case QuadTree.AlgToUse.PBH:
 
                     mainTree.theta = float.Parse(tb_Theta.Text);
-                    time = mainTree.SingleFrameBHSimulation(isParallel: true, numberOfThreads: 6, mode: QuadTree.threadMode.fromParallelLib); 
+                    time = mainTree.SingleFrameBHSimulation(isParallel: true, numberOfThreads: 6,
+                        mode: QuadTree.threadMode.fromParallelLib);
                     l_TotalTimeValue.Text = time.ToString();
                     l_BHParlTimeValue.Text = time.ToString();
                     //Clipboard.SetText(time.ToString());
@@ -559,32 +579,26 @@ namespace Barnes_Hut_GUI
 
         private void panel3_Paint(object sender, PaintEventArgs e)
         {
-
         }
 
         private void label9_Click(object sender, EventArgs e)
         {
-
         }
 
         private void label1_Click(object sender, EventArgs e)
         {
-
         }
 
         private void label5_Click(object sender, EventArgs e)
         {
-
         }
 
         private void panel8_Paint(object sender, PaintEventArgs e)
         {
-
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
-
         }
     }
 
