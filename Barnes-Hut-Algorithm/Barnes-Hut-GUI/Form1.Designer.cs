@@ -56,6 +56,7 @@ namespace Barnes_Hut_GUI
             this.iL_End = new System.Windows.Forms.Label();
             this.iL_Total = new System.Windows.Forms.Label();
             this.p_ExecMetrics = new System.Windows.Forms.Panel();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.l_PPWITimeValue = new System.Windows.Forms.Label();
             this.iL_PPWI = new System.Windows.Forms.Label();
             this.l_BHParlTimeValue = new System.Windows.Forms.Label();
@@ -75,17 +76,21 @@ namespace Barnes_Hut_GUI
             this.rb_ParallelPWI = new System.Windows.Forms.RadioButton();
             this.chart_ThreadComparison = new LiveCharts.WinForms.CartesianChart();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label7 = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.label8 = new System.Windows.Forms.Label();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.label9 = new System.Windows.Forms.Label();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.label10 = new System.Windows.Forms.Label();
-            this.panel5 = new System.Windows.Forms.Panel();
             this.label11 = new System.Windows.Forms.Label();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.label10 = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.label9 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.label8 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.label7 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.rb_TPLThreads = new System.Windows.Forms.RadioButton();
+            this.rb_CustomThreads = new System.Windows.Forms.RadioButton();
+            this.label15 = new System.Windows.Forms.Label();
+            this.tb_MaxThreads = new System.Windows.Forms.TextBox();
             this.tb_AutoIncValue = new System.Windows.Forms.TextBox();
             this.tb_AutoIncStart = new System.Windows.Forms.TextBox();
             this.tb_AutoIncEnd = new System.Windows.Forms.TextBox();
@@ -96,29 +101,27 @@ namespace Barnes_Hut_GUI
             this.btn_AutoTest = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
             this.panel7 = new System.Windows.Forms.Panel();
+            this.rb_SFPerformance = new System.Windows.Forms.RadioButton();
+            this.rb_ThreadTesting = new System.Windows.Forms.RadioButton();
+            this.rb_SFandTT = new System.Windows.Forms.RadioButton();
             this.label14 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
-            this.radioButton5 = new System.Windows.Forms.RadioButton();
             this.panel6 = new System.Windows.Forms.Panel();
             this.label16 = new System.Windows.Forms.Label();
             this.panel9 = new System.Windows.Forms.Panel();
+            this.label18 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
+            this.chart_ExecTime = new LiveCharts.WinForms.CartesianChart();
+            this.btn_SaveExecGraph = new System.Windows.Forms.Button();
+            this.btn_SaveThreadComp = new System.Windows.Forms.Button();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.p_ExecMetrics.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.panel4.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.panel8.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -144,7 +147,7 @@ namespace Barnes_Hut_GUI
             // 
             // btn_Partition
             // 
-            this.btn_Partition.BackColor = System.Drawing.Color.Purple;
+            this.btn_Partition.BackColor = System.Drawing.Color.DarkSlateBlue;
             this.btn_Partition.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Partition.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btn_Partition.Location = new System.Drawing.Point(19, 43);
@@ -157,7 +160,7 @@ namespace Barnes_Hut_GUI
             // 
             // btn_GenerateParticles
             // 
-            this.btn_GenerateParticles.BackColor = System.Drawing.Color.Purple;
+            this.btn_GenerateParticles.BackColor = System.Drawing.Color.DarkSlateBlue;
             this.btn_GenerateParticles.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_GenerateParticles.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btn_GenerateParticles.Location = new System.Drawing.Point(19, 76);
@@ -170,7 +173,7 @@ namespace Barnes_Hut_GUI
             // 
             // btn_Reset
             // 
-            this.btn_Reset.BackColor = System.Drawing.Color.Purple;
+            this.btn_Reset.BackColor = System.Drawing.Color.DarkSlateBlue;
             this.btn_Reset.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Reset.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btn_Reset.Location = new System.Drawing.Point(20, 10);
@@ -258,7 +261,7 @@ namespace Barnes_Hut_GUI
             // 
             // btn_Simulate
             // 
-            this.btn_Simulate.BackColor = System.Drawing.Color.Purple;
+            this.btn_Simulate.BackColor = System.Drawing.Color.DarkSlateBlue;
             this.btn_Simulate.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Simulate.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btn_Simulate.Location = new System.Drawing.Point(15, 54);
@@ -287,7 +290,7 @@ namespace Barnes_Hut_GUI
             // 
             // btn_CalcForces
             // 
-            this.btn_CalcForces.BackColor = System.Drawing.Color.Purple;
+            this.btn_CalcForces.BackColor = System.Drawing.Color.DarkSlateBlue;
             this.btn_CalcForces.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_CalcForces.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btn_CalcForces.Location = new System.Drawing.Point(15, 124);
@@ -323,6 +326,7 @@ namespace Barnes_Hut_GUI
             this.cb_ShowResForce.TabIndex = 20;
             this.cb_ShowResForce.Text = "Show Resultant Force";
             this.cb_ShowResForce.UseVisualStyleBackColor = true;
+            this.cb_ShowResForce.CheckedChanged += new System.EventHandler(this.cb_ShowResForce_CheckedChanged);
             // 
             // rb_ParlBH
             // 
@@ -394,7 +398,7 @@ namespace Barnes_Hut_GUI
             // 
             // p_ExecMetrics
             // 
-            this.p_ExecMetrics.BackColor = System.Drawing.Color.White;
+            this.p_ExecMetrics.BackColor = System.Drawing.Color.Bisque;
             this.p_ExecMetrics.Controls.Add(this.checkBox1);
             this.p_ExecMetrics.Controls.Add(this.l_PPWITimeValue);
             this.p_ExecMetrics.Controls.Add(this.iL_PPWI);
@@ -415,6 +419,16 @@ namespace Barnes_Hut_GUI
             this.p_ExecMetrics.Name = "p_ExecMetrics";
             this.p_ExecMetrics.Size = new System.Drawing.Size(376, 204);
             this.p_ExecMetrics.TabIndex = 30;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(17, 179);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(115, 17);
+            this.checkBox1.TabIndex = 32;
+            this.checkBox1.Text = "Show exec metrics";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // l_PPWITimeValue
             // 
@@ -546,7 +560,7 @@ namespace Barnes_Hut_GUI
             // 
             // btn_Gen100PlusParticles
             // 
-            this.btn_Gen100PlusParticles.BackColor = System.Drawing.Color.Purple;
+            this.btn_Gen100PlusParticles.BackColor = System.Drawing.Color.DarkSlateBlue;
             this.btn_Gen100PlusParticles.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Gen100PlusParticles.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btn_Gen100PlusParticles.Location = new System.Drawing.Point(128, 27);
@@ -575,15 +589,15 @@ namespace Barnes_Hut_GUI
             // 
             // chart_ThreadComparison
             // 
-            this.chart_ThreadComparison.Location = new System.Drawing.Point(41, 774);
+            this.chart_ThreadComparison.Location = new System.Drawing.Point(12, 764);
             this.chart_ThreadComparison.Name = "chart_ThreadComparison";
-            this.chart_ThreadComparison.Size = new System.Drawing.Size(117, 39);
+            this.chart_ThreadComparison.Size = new System.Drawing.Size(737, 277);
             this.chart_ThreadComparison.TabIndex = 43;
             this.chart_ThreadComparison.Text = "chart_Parallelism";
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.Color.White;
+            this.panel1.BackColor = System.Drawing.Color.Bisque;
             this.panel1.Controls.Add(this.label11);
             this.panel1.Controls.Add(this.panel5);
             this.panel1.Controls.Add(this.label10);
@@ -597,57 +611,34 @@ namespace Barnes_Hut_GUI
             this.panel1.Size = new System.Drawing.Size(427, 275);
             this.panel1.TabIndex = 44;
             // 
-            // label7
+            // label11
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(773, 12);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(83, 13);
-            this.label7.TabIndex = 45;
-            this.label7.Text = "Manual Controls";
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(238, 137);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(76, 13);
+            this.label11.TabIndex = 52;
+            this.label11.Text = "Action Buttons";
             // 
-            // panel2
+            // panel5
             // 
-            this.panel2.BackColor = System.Drawing.Color.White;
-            this.panel2.Controls.Add(this.rb_ParallelPWI);
-            this.panel2.Controls.Add(this.rb_UsePWI);
-            this.panel2.Controls.Add(this.rb_UseBH);
-            this.panel2.Controls.Add(this.rb_ParlBH);
-            this.panel2.Location = new System.Drawing.Point(18, 153);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(208, 108);
-            this.panel2.TabIndex = 4;
+            this.panel5.BackColor = System.Drawing.Color.White;
+            this.panel5.Controls.Add(this.btn_GenerateParticles);
+            this.panel5.Controls.Add(this.btn_Partition);
+            this.panel5.Controls.Add(this.btn_Reset);
+            this.panel5.Location = new System.Drawing.Point(241, 153);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(167, 108);
+            this.panel5.TabIndex = 51;
             // 
-            // label8
+            // label10
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(16, 137);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(97, 13);
-            this.label8.TabIndex = 46;
-            this.label8.Text = "Algorithm Selection";
-            // 
-            // panel3
-            // 
-            this.panel3.BackColor = System.Drawing.Color.White;
-            this.panel3.Controls.Add(this.cb_ShowEmptyCells);
-            this.panel3.Controls.Add(this.cb_DrawGraphics);
-            this.panel3.Controls.Add(this.cb_TreeOutline);
-            this.panel3.Location = new System.Drawing.Point(241, 27);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(168, 97);
-            this.panel3.TabIndex = 47;
-            this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(238, 11);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(104, 13);
-            this.label9.TabIndex = 48;
-            this.label9.Text = "Visualization Options";
-            this.label9.Click += new System.EventHandler(this.label9_Click);
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(20, 11);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(61, 13);
+            this.label10.TabIndex = 50;
+            this.label10.Text = "Initialization";
             // 
             // panel4
             // 
@@ -662,34 +653,57 @@ namespace Barnes_Hut_GUI
             this.panel4.Size = new System.Drawing.Size(207, 97);
             this.panel4.TabIndex = 49;
             // 
-            // label10
+            // label9
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(20, 11);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(61, 13);
-            this.label10.TabIndex = 50;
-            this.label10.Text = "Initialization";
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(238, 11);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(104, 13);
+            this.label9.TabIndex = 48;
+            this.label9.Text = "Visualization Options";
+            this.label9.Click += new System.EventHandler(this.label9_Click);
             // 
-            // panel5
+            // panel3
             // 
-            this.panel5.BackColor = System.Drawing.Color.White;
-            this.panel5.Controls.Add(this.btn_GenerateParticles);
-            this.panel5.Controls.Add(this.btn_Partition);
-            this.panel5.Controls.Add(this.btn_Reset);
-            this.panel5.Location = new System.Drawing.Point(241, 153);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(167, 108);
-            this.panel5.TabIndex = 51;
+            this.panel3.BackColor = System.Drawing.Color.White;
+            this.panel3.Controls.Add(this.cb_ShowEmptyCells);
+            this.panel3.Controls.Add(this.cb_DrawGraphics);
+            this.panel3.Controls.Add(this.cb_TreeOutline);
+            this.panel3.Location = new System.Drawing.Point(241, 27);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(168, 97);
+            this.panel3.TabIndex = 47;
+            this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
             // 
-            // label11
+            // label8
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(238, 137);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(76, 13);
-            this.label11.TabIndex = 52;
-            this.label11.Text = "Action Buttons";
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(16, 137);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(97, 13);
+            this.label8.TabIndex = 46;
+            this.label8.Text = "Algorithm Selection";
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.White;
+            this.panel2.Controls.Add(this.rb_ParallelPWI);
+            this.panel2.Controls.Add(this.rb_UsePWI);
+            this.panel2.Controls.Add(this.rb_UseBH);
+            this.panel2.Controls.Add(this.rb_ParlBH);
+            this.panel2.Location = new System.Drawing.Point(18, 153);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(208, 108);
+            this.panel2.TabIndex = 4;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(773, 12);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(83, 13);
+            this.label7.TabIndex = 45;
+            this.label7.Text = "Manual Controls";
             // 
             // label12
             // 
@@ -702,16 +716,59 @@ namespace Barnes_Hut_GUI
             // 
             // panel8
             // 
-            this.panel8.BackColor = System.Drawing.Color.White;
-            this.panel8.Controls.Add(this.radioButton1);
-            this.panel8.Controls.Add(this.radioButton2);
+            this.panel8.BackColor = System.Drawing.Color.Bisque;
+            this.panel8.Controls.Add(this.rb_TPLThreads);
+            this.panel8.Controls.Add(this.rb_CustomThreads);
             this.panel8.Controls.Add(this.label15);
-            this.panel8.Controls.Add(this.textBox1);
+            this.panel8.Controls.Add(this.tb_MaxThreads);
             this.panel8.Location = new System.Drawing.Point(776, 451);
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(427, 64);
             this.panel8.TabIndex = 48;
             this.panel8.Paint += new System.Windows.Forms.PaintEventHandler(this.panel8_Paint);
+            // 
+            // rb_TPLThreads
+            // 
+            this.rb_TPLThreads.AutoSize = true;
+            this.rb_TPLThreads.Checked = true;
+            this.rb_TPLThreads.Location = new System.Drawing.Point(280, 28);
+            this.rb_TPLThreads.Name = "rb_TPLThreads";
+            this.rb_TPLThreads.Size = new System.Drawing.Size(87, 17);
+            this.rb_TPLThreads.TabIndex = 44;
+            this.rb_TPLThreads.TabStop = true;
+            this.rb_TPLThreads.Text = "TPL Threads";
+            this.rb_TPLThreads.UseVisualStyleBackColor = true;
+            this.rb_TPLThreads.CheckedChanged += new System.EventHandler(this.rb_TPLThreads_CheckedChanged);
+            // 
+            // rb_CustomThreads
+            // 
+            this.rb_CustomThreads.AutoSize = true;
+            this.rb_CustomThreads.BackColor = System.Drawing.Color.Transparent;
+            this.rb_CustomThreads.ForeColor = System.Drawing.SystemColors.Desktop;
+            this.rb_CustomThreads.Location = new System.Drawing.Point(174, 28);
+            this.rb_CustomThreads.Name = "rb_CustomThreads";
+            this.rb_CustomThreads.Size = new System.Drawing.Size(102, 17);
+            this.rb_CustomThreads.TabIndex = 43;
+            this.rb_CustomThreads.Text = "Custom Threads";
+            this.rb_CustomThreads.UseVisualStyleBackColor = false;
+            this.rb_CustomThreads.CheckedChanged += new System.EventHandler(this.rb_CustomThreads_CheckedChanged);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(12, 11);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(69, 13);
+            this.label15.TabIndex = 44;
+            this.label15.Text = "Max Threads";
+            // 
+            // tb_MaxThreads
+            // 
+            this.tb_MaxThreads.Location = new System.Drawing.Point(12, 27);
+            this.tb_MaxThreads.Name = "tb_MaxThreads";
+            this.tb_MaxThreads.Size = new System.Drawing.Size(156, 20);
+            this.tb_MaxThreads.TabIndex = 43;
+            this.tb_MaxThreads.Text = "12";
             // 
             // tb_AutoIncValue
             // 
@@ -759,7 +816,7 @@ namespace Barnes_Hut_GUI
             // l_AutoProgress
             // 
             this.l_AutoProgress.AutoSize = true;
-            this.l_AutoProgress.Location = new System.Drawing.Point(217, 53);
+            this.l_AutoProgress.Location = new System.Drawing.Point(152, 51);
             this.l_AutoProgress.Name = "l_AutoProgress";
             this.l_AutoProgress.Size = new System.Drawing.Size(51, 13);
             this.l_AutoProgress.TabIndex = 40;
@@ -776,7 +833,7 @@ namespace Barnes_Hut_GUI
             // 
             // btn_AutoTest
             // 
-            this.btn_AutoTest.BackColor = System.Drawing.Color.Purple;
+            this.btn_AutoTest.BackColor = System.Drawing.Color.DarkSlateBlue;
             this.btn_AutoTest.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_AutoTest.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btn_AutoTest.Location = new System.Drawing.Point(288, 21);
@@ -798,10 +855,10 @@ namespace Barnes_Hut_GUI
             // 
             // panel7
             // 
-            this.panel7.BackColor = System.Drawing.Color.White;
-            this.panel7.Controls.Add(this.radioButton5);
-            this.panel7.Controls.Add(this.radioButton4);
-            this.panel7.Controls.Add(this.radioButton3);
+            this.panel7.BackColor = System.Drawing.Color.Bisque;
+            this.panel7.Controls.Add(this.rb_SFPerformance);
+            this.panel7.Controls.Add(this.rb_ThreadTesting);
+            this.panel7.Controls.Add(this.rb_SFandTT);
             this.panel7.Controls.Add(this.label13);
             this.panel7.Controls.Add(this.btn_AutoTest);
             this.panel7.Controls.Add(this.l_Status);
@@ -816,6 +873,41 @@ namespace Barnes_Hut_GUI
             this.panel7.Size = new System.Drawing.Size(427, 99);
             this.panel7.TabIndex = 43;
             // 
+            // rb_SFPerformance
+            // 
+            this.rb_SFPerformance.AutoSize = true;
+            this.rb_SFPerformance.Location = new System.Drawing.Point(112, 72);
+            this.rb_SFPerformance.Name = "rb_SFPerformance";
+            this.rb_SFPerformance.Size = new System.Drawing.Size(101, 17);
+            this.rb_SFPerformance.TabIndex = 47;
+            this.rb_SFPerformance.Text = "SF Performance";
+            this.rb_SFPerformance.UseVisualStyleBackColor = true;
+            this.rb_SFPerformance.CheckedChanged += new System.EventHandler(this.rb_SFPerformance_CheckedChanged);
+            // 
+            // rb_ThreadTesting
+            // 
+            this.rb_ThreadTesting.AutoSize = true;
+            this.rb_ThreadTesting.Checked = true;
+            this.rb_ThreadTesting.Location = new System.Drawing.Point(16, 72);
+            this.rb_ThreadTesting.Name = "rb_ThreadTesting";
+            this.rb_ThreadTesting.Size = new System.Drawing.Size(97, 17);
+            this.rb_ThreadTesting.TabIndex = 46;
+            this.rb_ThreadTesting.TabStop = true;
+            this.rb_ThreadTesting.Text = "Thread Testing";
+            this.rb_ThreadTesting.UseVisualStyleBackColor = true;
+            this.rb_ThreadTesting.CheckedChanged += new System.EventHandler(this.rb_ThreadTesting_CheckedChanged);
+            // 
+            // rb_SFandTT
+            // 
+            this.rb_SFandTT.AutoSize = true;
+            this.rb_SFandTT.Location = new System.Drawing.Point(16, 49);
+            this.rb_SFandTT.Name = "rb_SFandTT";
+            this.rb_SFandTT.Size = new System.Drawing.Size(130, 17);
+            this.rb_SFandTT.TabIndex = 45;
+            this.rb_SFandTT.Text = "SF Perf + Thread Test";
+            this.rb_SFandTT.UseVisualStyleBackColor = true;
+            this.rb_SFandTT.CheckedChanged += new System.EventHandler(this.rb_SFandTT_CheckedChanged);
+            // 
             // label14
             // 
             this.label14.AutoSize = true;
@@ -825,84 +917,9 @@ namespace Barnes_Hut_GUI
             this.label14.TabIndex = 49;
             this.label14.Text = "Thread Controls";
             // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(12, 11);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(69, 13);
-            this.label15.TabIndex = 44;
-            this.label15.Text = "Max Threads";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(12, 27);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(156, 20);
-            this.textBox1.TabIndex = 43;
-            this.textBox1.Text = "1";
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(280, 28);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(87, 17);
-            this.radioButton1.TabIndex = 44;
-            this.radioButton1.Text = "TPL Threads";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.BackColor = System.Drawing.Color.White;
-            this.radioButton2.Checked = true;
-            this.radioButton2.ForeColor = System.Drawing.SystemColors.Desktop;
-            this.radioButton2.Location = new System.Drawing.Point(174, 28);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(102, 17);
-            this.radioButton2.TabIndex = 43;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Custom Threads";
-            this.radioButton2.UseVisualStyleBackColor = false;
-            // 
-            // radioButton3
-            // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(16, 49);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(130, 17);
-            this.radioButton3.TabIndex = 45;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "SF Perf + Thread Test";
-            this.radioButton3.UseVisualStyleBackColor = true;
-            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
-            // 
-            // radioButton4
-            // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.Location = new System.Drawing.Point(16, 72);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(97, 17);
-            this.radioButton4.TabIndex = 46;
-            this.radioButton4.TabStop = true;
-            this.radioButton4.Text = "Thread Testing";
-            this.radioButton4.UseVisualStyleBackColor = true;
-            // 
-            // radioButton5
-            // 
-            this.radioButton5.AutoSize = true;
-            this.radioButton5.Location = new System.Drawing.Point(112, 72);
-            this.radioButton5.Name = "radioButton5";
-            this.radioButton5.Size = new System.Drawing.Size(101, 17);
-            this.radioButton5.TabIndex = 47;
-            this.radioButton5.TabStop = true;
-            this.radioButton5.Text = "SF Performance";
-            this.radioButton5.UseVisualStyleBackColor = true;
-            // 
             // panel6
             // 
-            this.panel6.BackColor = System.Drawing.Color.White;
+            this.panel6.BackColor = System.Drawing.Color.Bisque;
             this.panel6.Controls.Add(this.cb_ShowResForce);
             this.panel6.Controls.Add(this.cb_ForceVect);
             this.panel6.Controls.Add(this.btn_CalcForces);
@@ -925,7 +942,7 @@ namespace Barnes_Hut_GUI
             // 
             // panel9
             // 
-            this.panel9.BackColor = System.Drawing.Color.White;
+            this.panel9.BackColor = System.Drawing.Color.Bisque;
             this.panel9.Controls.Add(this.label18);
             this.panel9.Controls.Add(this.textBox2);
             this.panel9.Controls.Add(this.tb_TimeStepSim);
@@ -936,6 +953,22 @@ namespace Barnes_Hut_GUI
             this.panel9.Size = new System.Drawing.Size(200, 184);
             this.panel9.TabIndex = 52;
             // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(14, 89);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(77, 13);
+            this.label18.TabIndex = 18;
+            this.label18.Text = "Save Directory";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(17, 105);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(175, 20);
+            this.textBox2.TabIndex = 17;
+            // 
             // label17
             // 
             this.label17.AutoSize = true;
@@ -944,6 +977,40 @@ namespace Barnes_Hut_GUI
             this.label17.Size = new System.Drawing.Size(94, 13);
             this.label17.TabIndex = 53;
             this.label17.Text = "Simulation Options";
+            // 
+            // chart_ExecTime
+            // 
+            this.chart_ExecTime.Location = new System.Drawing.Point(776, 764);
+            this.chart_ExecTime.Name = "chart_ExecTime";
+            this.chart_ExecTime.Size = new System.Drawing.Size(661, 277);
+            this.chart_ExecTime.TabIndex = 54;
+            this.chart_ExecTime.Text = "chart_Parallelism";
+            // 
+            // btn_SaveExecGraph
+            // 
+            this.btn_SaveExecGraph.BackColor = System.Drawing.Color.DarkSlateBlue;
+            this.btn_SaveExecGraph.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_SaveExecGraph.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btn_SaveExecGraph.Location = new System.Drawing.Point(1362, 1047);
+            this.btn_SaveExecGraph.Name = "btn_SaveExecGraph";
+            this.btn_SaveExecGraph.Size = new System.Drawing.Size(75, 23);
+            this.btn_SaveExecGraph.TabIndex = 19;
+            this.btn_SaveExecGraph.Text = "Save";
+            this.btn_SaveExecGraph.UseVisualStyleBackColor = false;
+            this.btn_SaveExecGraph.Click += new System.EventHandler(this.btn_SaveExecGraph_Click);
+            // 
+            // btn_SaveThreadComp
+            // 
+            this.btn_SaveThreadComp.BackColor = System.Drawing.Color.DarkSlateBlue;
+            this.btn_SaveThreadComp.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_SaveThreadComp.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btn_SaveThreadComp.Location = new System.Drawing.Point(674, 1047);
+            this.btn_SaveThreadComp.Name = "btn_SaveThreadComp";
+            this.btn_SaveThreadComp.Size = new System.Drawing.Size(75, 23);
+            this.btn_SaveThreadComp.TabIndex = 55;
+            this.btn_SaveThreadComp.Text = "Save";
+            this.btn_SaveThreadComp.UseVisualStyleBackColor = false;
+            this.btn_SaveThreadComp.Click += new System.EventHandler(this.btn_SaveThreadComp_Click);
             // 
             // p_TreePanel
             // 
@@ -961,38 +1028,15 @@ namespace Barnes_Hut_GUI
             this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
             this.p_ForcePanel.TabIndex = 24;
             // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(17, 105);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(175, 20);
-            this.textBox2.TabIndex = 17;
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(14, 89);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(77, 13);
-            this.label18.TabIndex = 18;
-            this.label18.Text = "Save Directory";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(17, 179);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(115, 17);
-            this.checkBox1.TabIndex = 32;
-            this.checkBox1.Text = "Show exec metrics";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1452, 1103);
+            this.ClientSize = new System.Drawing.Size(1452, 1084);
+            this.Controls.Add(this.btn_SaveThreadComp);
+            this.Controls.Add(this.btn_SaveExecGraph);
+            this.Controls.Add(this.chart_ExecTime);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.panel9);
             this.Controls.Add(this.label16);
@@ -1012,19 +1056,21 @@ namespace Barnes_Hut_GUI
             this.Controls.Add(this.panel1);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.p_ExecMetrics.ResumeLayout(false);
             this.p_ExecMetrics.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
+            this.panel5.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
-            this.panel5.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.panel8.ResumeLayout(false);
             this.panel8.PerformLayout();
             this.panel7.ResumeLayout(false);
@@ -1098,10 +1144,10 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Panel panel8;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton rb_TPLThreads;
+        private System.Windows.Forms.RadioButton rb_CustomThreads;
         private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox tb_MaxThreads;
         private System.Windows.Forms.TextBox tb_AutoIncValue;
         private System.Windows.Forms.TextBox tb_AutoIncStart;
         private System.Windows.Forms.TextBox tb_AutoIncEnd;
@@ -1113,9 +1159,9 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.RadioButton radioButton3;
-        private System.Windows.Forms.RadioButton radioButton5;
-        private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.RadioButton rb_SFandTT;
+        private System.Windows.Forms.RadioButton rb_SFPerformance;
+        private System.Windows.Forms.RadioButton rb_ThreadTesting;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Panel panel9;
@@ -1123,6 +1169,9 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox textBox2;
+        private LiveCharts.WinForms.CartesianChart chart_ExecTime;
+        private System.Windows.Forms.Button btn_SaveExecGraph;
+        private System.Windows.Forms.Button btn_SaveThreadComp;
     }
 }
 
