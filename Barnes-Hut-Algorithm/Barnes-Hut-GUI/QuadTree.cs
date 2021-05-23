@@ -31,7 +31,20 @@ namespace Barnes_Hut_GUI
             return EventInfo;
         }
     }
+    #region Enums
+    public enum threadMode
+    {
+        selfMade,
+        fromParallelLib
 
+    };
+
+    public enum AlgToUse
+    {
+        PWI, PPWI, BH, PBH
+    }
+
+    #endregion
     class QuadTree
     {
         public List<Particle> AllParticles { get; set; }
@@ -67,20 +80,7 @@ namespace Barnes_Hut_GUI
         #endregion
 
 
-        #region Enums
-        public enum threadMode
-        {
-            selfMade,
-            fromParallelLib
-
-        };
-
-        public enum AlgToUse
-        {
-            PWI, PPWI, BH, PBH
-        }
-
-        #endregion
+       
 
         #region Initialization
 
@@ -364,7 +364,7 @@ namespace Barnes_Hut_GUI
         /// <param name="endIndex"></param>
         private void BhAlgForceCalculation(int startIndex, int endIndex)
         {
-            for (int i = startIndex; i <= endIndex; i++)
+            for (int i = startIndex; i < endIndex; i++)
             {
                 Particle currentParticle = AllParticles[i];
                 BhAlgApplyForceOnParticle(currentParticle, RootNode.SeChild);
@@ -684,13 +684,15 @@ namespace Barnes_Hut_GUI
 
 
 
-        public void ClearParticles()
+        public void Reset()
         {
             AllParticles.Clear();
-            Point bottomLeft = new Point(0, 737);
-            Point topRight = new Point(737, 0);
+            RootNode = null;
+            PointF bottomLeft = new Point(0, 737);
+            PointF topRight = new Point(737, 0);
             RootNode = new Node(topRight, bottomLeft);
             RootNode.IsRoot = true;
+            
         }
     }
 }

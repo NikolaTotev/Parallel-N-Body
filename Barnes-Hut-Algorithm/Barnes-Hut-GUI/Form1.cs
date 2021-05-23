@@ -8,12 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Threading;
 using CsvHelper;
 using LiveCharts;
 using LiveCharts.Wpf;
+using CartesianChart = LiveCharts.WinForms.CartesianChart;
 
 
 namespace Barnes_Hut_GUI
@@ -35,6 +37,7 @@ namespace Barnes_Hut_GUI
         private Brush particleBrush = new SolidBrush(Color.CornflowerBlue);
         private Brush particleBrushRed = new SolidBrush(Color.Red);
         private Brush particleBrushYellow = new SolidBrush(Color.Yellow);
+
         List<Brush> Brushes = new List<Brush>()
         {
             new SolidBrush(Color.Green),
@@ -43,6 +46,14 @@ namespace Barnes_Hut_GUI
             new SolidBrush(Color.Red),
             new SolidBrush(Color.CornflowerBlue)
         };
+
+        #endregion
+
+        #region Drawing Constants
+
+        private const int m_ElipseRadius1 = 3;
+        private const int m_ElipseRadius2 = 2;
+        private const float m_ElipseRadius3 = 0.5f;
 
         #endregion
 
@@ -68,21 +79,26 @@ namespace Barnes_Hut_GUI
         private Thread m_partitionThread;
         private bool isWorking;
         private bool canReset = true;
+        private long PWITicks = 0;
+        private long BHTicks = 0;
+        private long PBHTicks = 0;
+        private threadMode m_currentMode = threadMode.fromParallelLib;
+        private TestingMode m_currentTestingMode = TestingMode.ThreadTest;
+
+        enum TestingMode
+        {
+            SingleFrame,
+            ThreadTest,
+            SingleFramePlusThreadTest
+        }
 
         #endregion
 
         private QuadTree mainTree;
 
 
-        private int ElipseRadius1 = 3;
-        private int ElipseRadius2 = 2;
-        private float ElipseRadius3 = 0.5f;
-
-        private QuadTree.AlgToUse alg = QuadTree.AlgToUse.PWI;
+        private AlgToUse alg = AlgToUse.PWI;
         private int currentParticleValue = 0;
-        private long PWITicks = 0;
-        private long BHTicks = 0;
-        private long PBHTicks = 0;
 
 
         public Form1()
@@ -91,7 +107,7 @@ namespace Barnes_Hut_GUI
             mainTree = new QuadTree();
             graphics = p_SimulationArea.CreateGraphics();
             forceVectGraphics = p_ForcePanel.CreateGraphics();
-            mainTree.alg = QuadTree.AlgToUse.PWI;
+            mainTree.alg = AlgToUse.PWI;
             cb_ShowGrouping.Enabled = false;
             rb_UsePWI.Checked = true;
             DrawGraphics = false;
@@ -100,83 +116,7 @@ namespace Barnes_Hut_GUI
             ;
         }
 
-
-        #region RadioButton Functions
-
-        private void rb_UsePWI_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rb_UsePWI.Checked)
-            {
-                alg = QuadTree.AlgToUse.PWI;
-                mainTree.alg = QuadTree.AlgToUse.PWI;
-                cb_ShowGrouping.Enabled = false;
-                ShowGrouping = false;
-                mainTree.DrawBhNodeGrouping = false;
-            }
-        }
-
-        private void rb_UseBH_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rb_UseBH.Checked)
-            {
-                alg = QuadTree.AlgToUse.BH;
-                mainTree.alg = QuadTree.AlgToUse.BH;
-                cb_ShowGrouping.Enabled = true;
-            }
-        }
-
-        private void rb_ParlBH_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rb_ParlBH.Checked)
-            {
-                alg = QuadTree.AlgToUse.PBH;
-                mainTree.alg = QuadTree.AlgToUse.PBH;
-                cb_ShowGrouping.Enabled = true;
-            }
-        }
-
-        private void btn_CalcForces_Click(object sender, EventArgs e)
-        {
-            CalculateForces();
-        }
-
-        #endregion
-
-
-        #region CheckBox Functions
-
-        private void cb_ForceVect_CheckedChanged(object sender, EventArgs e)
-        {
-            ShowForceVect = cb_ForceVect.Checked;
-            mainTree.ShowForceVect = cb_ForceVect.Checked;
-        }
-
-        private void cb_TreeOutline_CheckedChanged(object sender, EventArgs e)
-        {
-            ShowForceVect = cb_TreeOutline.Checked;
-            mainTree.ShowForceVect = cb_TreeOutline.Checked;
-        }
-
-        private void cb_ShowEmptyCells_CheckedChanged(object sender, EventArgs e)
-        {
-            ShowEmptyCells = cb_ShowEmptyCells.Checked;
-            mainTree.DrawBhNodeGrouping = cb_ShowEmptyCells.Checked;
-        }
-
-        private void cb_ShowGrouping_CheckedChanged(object sender, EventArgs e)
-        {
-            ShowGrouping = cb_ShowGrouping.Checked;
-            mainTree.DrawBhNodeGrouping = cb_ShowGrouping.Checked;
-        }
-
-
-        private void cb_DrawGraphics_CheckedChanged(object sender, EventArgs e)
-        {
-            DrawGraphics = cb_DrawGraphics.Checked;
-        }
-
-        #endregion
-
+        #region Event subscriber functions
 
         private void MainTree_OnCompleted(object sender, EventArgs e)
         {
@@ -191,37 +131,96 @@ namespace Barnes_Hut_GUI
             l_Progress.Text = e.GetInfo().ToString();
         }
 
-        private void btn_Partition_Click(object sender, EventArgs e)
+        #endregion
+
+        #region Manual Controls Panel
+
+        #region Initialization Controls
+
+        private void btn_Gen100PlusParticles_Click(object sender, EventArgs e)
         {
-            Partition();
-            isWorking = true;
+            mainTree.Reset();
+            graphics.Clear(Color.White);
+            currentParticleValue += 100;
+            tb_ParticleCount.Text = currentParticleValue.ToString();
+            mainTree.GenerateParticles(currentParticleValue);
+            DrawParticles(currentParticleValue);
+            CalculateForces();
         }
 
-        private void Partition()
+        #endregion
+
+        #region Visualization Options
+
+        private void cb_TreeOutline_CheckedChanged(object sender, EventArgs e)
         {
-            m_partitionThread = new Thread(() => mainTree.PartitionSpace(), 1073741824);
-            m_partitionThread.Name = "PartThread";
-            m_partitionThread.Start();
+            ShowForceVect = cb_TreeOutline.Checked;
+            mainTree.ShowForceVect = cb_TreeOutline.Checked;
         }
 
-        private void DrawTree()
+
+        private void cb_ShowEmptyCells_CheckedChanged(object sender, EventArgs e)
         {
-            m_partitionThread.Join(500);
-            m_partitionThread = null;
-            if (DrawGraphics)
+            ShowEmptyCells = cb_ShowEmptyCells.Checked;
+            mainTree.DrawBhNodeGrouping = cb_ShowEmptyCells.Checked;
+        }
+
+        private void cb_DrawGraphics_CheckedChanged(object sender, EventArgs e)
+        {
+            DrawGraphics = cb_DrawGraphics.Checked;
+        }
+
+        #endregion
+
+
+        #region Algorithm Selection
+
+        private void rb_UsePWI_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_UsePWI.Checked)
             {
-                mainTree.VisualizeTreeNodes(mainTree.RootNode, graphics, m_TreePen);
-                for (int i = 0; i < mainTree.AllParticles.Count; i++)
-                {
-                    graphics.DrawEllipse(m_ParticlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
-                        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1 * 2);
-                    graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2,
-                        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
-                    graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3,
-                        mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
-                }
+                alg = AlgToUse.PWI;
+                mainTree.alg = AlgToUse.PWI;
+                cb_ShowGrouping.Enabled = false;
+                ShowGrouping = false;
+                mainTree.DrawBhNodeGrouping = false;
             }
         }
+
+        private void rb_ParallelPWI_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_ParallelPWI.Checked)
+            {
+                alg = AlgToUse.PPWI;
+                mainTree.alg = AlgToUse.PPWI;
+                cb_ShowGrouping.Enabled = false;
+            }
+        }
+
+        private void rb_UseBH_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_UseBH.Checked)
+            {
+                alg = AlgToUse.BH;
+                mainTree.alg = AlgToUse.BH;
+                cb_ShowGrouping.Enabled = true;
+            }
+        }
+
+        private void rb_ParlBH_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_ParlBH.Checked)
+            {
+                alg = AlgToUse.PBH;
+                mainTree.alg = AlgToUse.PBH;
+                cb_ShowGrouping.Enabled = true;
+            }
+        }
+
+        #endregion
+
+
+        #region Action Buttons
 
         private void btn_GenerateParticles_Click(object sender, EventArgs e)
         {
@@ -232,30 +231,325 @@ namespace Barnes_Hut_GUI
             DrawParticles(particleCount);
         }
 
-        private void DrawParticles(int particleCount)
+
+        private void btn_Partition_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < particleCount; i++)
-            {
-                graphics.DrawEllipse(m_ParticlePen, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius1,
-                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius1, ElipseRadius1 * 2, ElipseRadius1 * 2);
-                graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius2,
-                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius2, ElipseRadius2 * 2, ElipseRadius2 * 2);
-                graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - ElipseRadius3,
-                    mainTree.AllParticles[i].CenterPoint.Y - ElipseRadius3, ElipseRadius3 * 2, ElipseRadius3 * 2);
-            }
+            Partition();
+            isWorking = true;
+        }
+
+
+        private void Partition()
+        {
+            m_partitionThread = new Thread(() => mainTree.PartitionSpace(), 1073741824);
+            m_partitionThread.Name = "PartThread";
+            m_partitionThread.Start();
         }
 
         private void btn_Reset_Click(object sender, EventArgs e)
         {
-            mainTree.ClearParticles();
-            mainTree.RootNode = null;
-            PointF bottomLeft = new Point(0, 737);
-            PointF topRight = new Point(737, 0);
-            mainTree.RootNode = new Node(topRight, bottomLeft);
-            mainTree.RootNode.IsRoot = true;
+            mainTree.Reset();
+
 
             graphics.Clear(Color.White);
         }
+
+        #endregion
+
+        #endregion Manual Controls Panel
+
+
+        #region Single Particle Diagnostics Panel
+
+        private void cb_ForceVect_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowForceVect = cb_ForceVect.Checked;
+            mainTree.ShowForceVect = cb_ForceVect.Checked;
+        }
+
+
+        private void cb_ShowGrouping_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowGrouping = cb_ShowGrouping.Checked;
+            mainTree.DrawBhNodeGrouping = cb_ShowGrouping.Checked;
+        }
+
+        private void cb_ShowResForce_CheckedChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void btn_CalcForces_Click(object sender, EventArgs e)
+        {
+            CalculateForces();
+        }
+
+        #endregion
+
+
+        #region Auto Testing
+
+        private void rb_ThreadTesting_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_ThreadTesting.Checked)
+            {
+                m_currentTestingMode = TestingMode.ThreadTest;
+            }
+        }
+
+        private void rb_SFandTT_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_SFandTT.Checked)
+            {
+                m_currentTestingMode = TestingMode.SingleFramePlusThreadTest;
+            }
+        }
+
+        private void rb_SFPerformance_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_SFPerformance.Checked)
+            {
+                m_currentTestingMode = TestingMode.SingleFrame;
+            }
+        }
+
+        private void btn_AutoTest_Click(object sender, EventArgs e)
+        {
+            int startParticleCount = int.Parse(tb_AutoIncStart.Text);
+            int endParticleCount = int.Parse(tb_AutoIncEnd.Text);
+            int stepSize = int.Parse(tb_AutoIncValue.Text);
+            int maxThreadCount = int.Parse(tb_MaxThreads.Text);
+            int numberOfSteps = (endParticleCount - startParticleCount) / stepSize;
+
+            int currentParticleCount = startParticleCount;
+
+            List<string> xAxisVals = new List<string>();
+            List<int> pwiExecTimes = new List<int>();
+            List<int> ppwiExecTimes = new List<int>();
+            List<int> bhExecTimes = new List<int>();
+            List<int> pbhExecTimes = new List<int>();
+            List<int> threadComparison = new List<int>();
+            List<string> threadCounts = new List<string>();
+
+            TimeSpan execTime = new TimeSpan();
+
+            switch (m_currentTestingMode)
+            {
+                case TestingMode.SingleFrame:
+                    SingleFrame(numberOfSteps, ref currentParticleCount,
+                        stepSize, ref execTime, ref pwiExecTimes,
+                        ref ppwiExecTimes, ref bhExecTimes, ref pbhExecTimes, ref xAxisVals);
+
+                    break;
+                case TestingMode.ThreadTest:
+                    ThreadTesting(endParticleCount, maxThreadCount, ref threadComparison, ref threadCounts);
+                    break;
+                case TestingMode.SingleFramePlusThreadTest:
+
+                    SingleFrame(numberOfSteps, ref currentParticleCount,
+                        stepSize, ref execTime, ref pwiExecTimes,
+                        ref ppwiExecTimes, ref bhExecTimes, ref pbhExecTimes, ref xAxisVals);
+                    ThreadTesting(endParticleCount, maxThreadCount, ref threadComparison, ref threadCounts);
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            DrawThreadComparisonChart(threadCounts, threadComparison);
+
+            DrawExecutionTimesChart(xAxisVals, bhExecTimes, pbhExecTimes);
+
+            //ChartWindow chartWindow = new ChartWindow(xAxisVals, threadComparison, threadCounts, pwiExecTimes, ppwiExecTimes, bhExecTimes, pbhExecTimes, startParticleCount, endParticleCount);
+            //chartWindow.Show();
+
+        }
+
+        private void DrawExecutionTimesChart(List<string> xAxisVals, List<int> bhExecTimes, List<int> pbhExecTimes)
+        {
+            chart_ExecTime.AxisX.Add(new LiveCharts.Wpf.Axis()
+            {
+                Title = "Particle Count",
+                Labels = xAxisVals
+            });
+
+            chart_ExecTime.AxisY.Add(new LiveCharts.Wpf.Axis()
+            {
+                Title = "Execution Time",
+            });
+
+            chart_ExecTime.LegendLocation = LiveCharts.LegendLocation.Bottom;
+            chart_ExecTime.Series.Clear();
+            SeriesCollection execTimes = new SeriesCollection();
+
+            execTimes.Add(new LineSeries()
+            {
+                Title = "BH",
+                Values = new ChartValues<int>(bhExecTimes),
+                PointGeometry = DefaultGeometries.Diamond
+            });
+            execTimes.Add(new LineSeries()
+            {
+                Title = "PBH",
+                Values = new ChartValues<int>(pbhExecTimes),
+                PointGeometry = DefaultGeometries.Triangle,
+            });
+            chart_ExecTime.Series = execTimes;
+        }
+
+        private void DrawThreadComparisonChart(List<string> threadCounts, List<int> threadComparison)
+        {
+            chart_ThreadComparison.AxisX.RemoveAt(0);
+            chart_ThreadComparison.AxisX.Add(new LiveCharts.Wpf.Axis()
+            {
+                Title = "Thread Count",
+                Labels = threadCounts
+            });
+            chart_ThreadComparison.AxisY.RemoveAt(0);
+            chart_ThreadComparison.AxisY.Add(new LiveCharts.Wpf.Axis()
+            {
+                Title = "Level of Parallelism",
+            });
+            chart_ThreadComparison.LegendLocation = LiveCharts.LegendLocation.Bottom;
+            chart_ThreadComparison.Series.Clear();
+            SeriesCollection parlComp = new SeriesCollection();
+
+            List<double> parlLevels = new List<double>();
+
+
+            for (int i = 0; i < threadComparison.Count; i++)
+            {
+                //float p = threadCountComparison[0] / threadCountComparison[i];
+                //float pm1 = 1 - p;
+                //float pover = p / float.Parse(threadCounts[i]);
+                //float speedup = 1 / (pm1 + pover);
+                double speedUp = (double)threadComparison[0] / (double)threadComparison[i];
+                parlLevels.Add(speedUp);
+            }
+
+            parlComp.Add(new LineSeries()
+            {
+                Title = "Level of Parallelism",
+                Values = new ChartValues<double>(parlLevels),
+                PointGeometry = DefaultGeometries.Circle
+            });
+
+            chart_ThreadComparison.Series = parlComp;
+        }
+
+        private void ThreadTesting(int endParticleCount, int maxThreadCount, ref List<int> threadComparison, ref List<string> threadCounts)
+        {
+            int currentParticleCount;
+            TimeSpan execTime;
+            mainTree.Reset();
+            currentParticleCount = endParticleCount;
+            l_Status.Text = "Status: Starting thread testing.";
+
+            Partition();
+            m_partitionThread.Join();
+            for (int j = 1; j < maxThreadCount + 1; j++)
+            {
+                mainTree.GenerateParticles(currentParticleCount);
+                l_Status.Text = "Status: Partitioning...";
+                Partition();
+                m_partitionThread.Join();
+                m_partitionThread = null;
+
+                l_Status.Text = "Status: Starting BH sim...";
+                execTime = mainTree.SingleFrameBHSimulation(isParallel: true, j,
+                    mode: m_currentMode);
+                threadComparison.Add(execTime.Milliseconds);
+                threadCounts.Add(j.ToString());
+                l_AutoProgress.Text = $"Progress: Comparing thread performance. Thread:{j}";
+
+                mainTree.Reset();
+            }
+        }
+
+        void SingleFrame(int numberOfSteps, ref int currentParticleCount, int stepSize,
+            ref TimeSpan execTime, ref List<int> pwiExecTimes,
+            ref List<int> ppwiExecTimes, ref List<int> bhExecTimes,
+            ref List<int> pbhExecTimes, ref List<string> xAxisVals)
+        {
+            for (int i = 0; i < numberOfSteps; i++)
+            {
+                l_Status.Text = "Status: Generating Particles";
+                mainTree.GenerateParticles(currentParticleCount);
+
+
+
+                //Run PWI
+                l_Status.Text = "Status: Running PWI...";
+                execTime = mainTree.SingleFramePairwiseSimulation(isParalell: false);
+                pwiExecTimes.Add(execTime.Milliseconds);
+
+                //Run PPWI
+                l_Status.Text = "Status: Running PPWI...";
+                execTime = mainTree.SingleFramePairwiseSimulation(isParalell: true);
+                ppwiExecTimes.Add(execTime.Milliseconds);
+                //Partition
+                l_Status.Text = "Status: Partitioning...";
+                Partition();
+                m_partitionThread.Join();
+                m_partitionThread = null;
+
+                //Run BH
+                l_Status.Text = "Status: Running BH...";
+                execTime = mainTree.SingleFrameBHSimulation(isParallel: false);
+                bhExecTimes.Add(execTime.Milliseconds);
+
+                //Run PBH
+                l_Status.Text = "Status: Running Parallel BH...";
+                execTime = mainTree.SingleFrameBHSimulation(isParallel: true, numberOfThreads: 6, mode: m_currentMode);
+                pbhExecTimes.Add(execTime.Milliseconds);
+
+
+                xAxisVals.Add(currentParticleCount.ToString());
+                l_AutoProgress.Text = $"Progress: {i} Total: {numberOfSteps} Particles: {currentParticleCount}";
+
+                mainTree.Reset();
+                currentParticleCount += stepSize;
+            }
+        }
+
+        #endregion
+
+
+        private void DrawTree()
+        {
+            m_partitionThread.Join(500);
+            m_partitionThread = null;
+            if (DrawGraphics)
+            {
+                mainTree.VisualizeTreeNodes(mainTree.RootNode, graphics, m_TreePen);
+                for (int i = 0; i < mainTree.AllParticles.Count; i++)
+                {
+                    graphics.DrawEllipse(m_ParticlePen, mainTree.AllParticles[i].CenterPoint.X - m_ElipseRadius1,
+                        mainTree.AllParticles[i].CenterPoint.Y - m_ElipseRadius1, m_ElipseRadius1 * 2,
+                        m_ElipseRadius1 * 2);
+                    graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - m_ElipseRadius2,
+                        mainTree.AllParticles[i].CenterPoint.Y - m_ElipseRadius2, m_ElipseRadius2 * 2,
+                        m_ElipseRadius2 * 2);
+                    graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - m_ElipseRadius3,
+                        mainTree.AllParticles[i].CenterPoint.Y - m_ElipseRadius3, m_ElipseRadius3 * 2,
+                        m_ElipseRadius3 * 2);
+                }
+            }
+        }
+
+
+        private void DrawParticles(int particleCount)
+        {
+            for (int i = 0; i < particleCount; i++)
+            {
+                graphics.DrawEllipse(m_ParticlePen, mainTree.AllParticles[i].CenterPoint.X - m_ElipseRadius1,
+                    mainTree.AllParticles[i].CenterPoint.Y - m_ElipseRadius1, m_ElipseRadius1 * 2, m_ElipseRadius1 * 2);
+                graphics.FillEllipse(particleBrushRed, mainTree.AllParticles[i].CenterPoint.X - m_ElipseRadius2,
+                    mainTree.AllParticles[i].CenterPoint.Y - m_ElipseRadius2, m_ElipseRadius2 * 2, m_ElipseRadius2 * 2);
+                graphics.FillEllipse(particleBrushYellow, mainTree.AllParticles[i].CenterPoint.X - m_ElipseRadius3,
+                    mainTree.AllParticles[i].CenterPoint.Y - m_ElipseRadius3, m_ElipseRadius3 * 2, m_ElipseRadius3 * 2);
+            }
+        }
+
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -269,7 +563,7 @@ namespace Barnes_Hut_GUI
 
             switch (alg)
             {
-                case QuadTree.AlgToUse.BH:
+                case AlgToUse.BH:
                     sw.Start();
                     mainTree.theta = float.Parse(tb_Theta.Text);
                     mainTree.SingleBHStep(targetParticle);
@@ -279,7 +573,7 @@ namespace Barnes_Hut_GUI
                     //Clipboard.SetText(sw.Elapsed.ToString());
                     BHTicks = sw.Elapsed.Ticks;
                     break;
-                case QuadTree.AlgToUse.PWI:
+                case AlgToUse.PWI:
                     sw.Start();
                     mainTree.SingleFramePairwiseSimulation(isParalell: false);
                     sw.Stop();
@@ -288,7 +582,7 @@ namespace Barnes_Hut_GUI
                     //Clipboard.SetText(sw.Elapsed.ToString());
                     PWITicks = sw.Elapsed.Ticks;
                     break;
-                case QuadTree.AlgToUse.PBH:
+                case AlgToUse.PBH:
                     //sw.Start();
                     mainTree.theta = float.Parse(tb_Theta.Text);
                     TimeSpan time = mainTree.ParallelSingleParticleBH(targetParticle);
@@ -332,195 +626,6 @@ namespace Barnes_Hut_GUI
             }
         }
 
-        private void btn_Gen100PlusParticles_Click(object sender, EventArgs e)
-        {
-            mainTree.ClearParticles();
-            graphics.Clear(Color.White);
-            currentParticleValue += 100;
-            tb_ParticleCount.Text = currentParticleValue.ToString();
-            mainTree.GenerateParticles(currentParticleValue);
-            DrawParticles(currentParticleValue);
-            CalculateForces();
-        }
-
-        private void btn_AutoTest_Click(object sender, EventArgs e)
-        {
-            int startParticleCount = int.Parse(tb_AutoIncStart.Text);
-            int endParticleCount = int.Parse(tb_AutoIncEnd.Text);
-            int stepSize = int.Parse(tb_AutoIncValue.Text);
-            int maxThreadCount = 12;
-            int numberOfSteps = (endParticleCount - startParticleCount) / stepSize;
-
-            int currentParticleCount = startParticleCount;
-
-            List<string> xAxisVals = new List<string>();
-            List<int> pwiExecTimes = new List<int>();
-            List<int> ppwiExecTimes = new List<int>();
-            List<int> bhExecTimes = new List<int>();
-            List<int> pbhExecTimes = new List<int>();
-            List<int> threadComparison = new List<int>();
-            List<string> threadCounts = new List<string>();
-
-            TimeSpan execTime;
-            //long pbhAvgSum = 0;
-            //long pbhAvg = 0;
-
-            //long bhAvgSum = 0;
-            //long bhAvg = 0;
-
-            //long bhMin;
-            //long pbhMin;
-
-            //int sampleSize = 20;
-
-            for (int i = 0; i < numberOfSteps; i++)
-            {
-                l_Status.Text = "Status: Generating Particles";
-                mainTree.GenerateParticles(currentParticleCount);
-                tb_TargetParticleNum.Text = "40";
-
-
-                alg = QuadTree.AlgToUse.PBH;
-
-                //for (int j = 0; j < sampleSize; j++)
-                //{
-                //    CalculateForces();
-                //    if (PBHTicks < pbhMin)
-                //    {
-                //        pbhMin = PBHTicks;
-                //    }
-                //    //pbhAvgSum += PBHTicks;
-                //    //  Thread.Sleep(500);
-                //}
-
-                //pbhAvg = pbhAvgSum / sampleSize;
-
-                //alg = AlgToUse.BH;
-                //l_Status.Text = "Status: Partitioning";
-
-                //for (int j = 0; j < sampleSize; j++)
-                //{
-                //    CalculateForces();
-                //    if (BHTicks < bhMin)
-                //    {
-                //        bhMin = BHTicks;
-                //    }
-                //    //bhAvgSum += BHTicks;
-                //    // Thread.Sleep(500);
-                //}
-
-                //bhAvg = bhAvgSum / sampleSize;
-
-
-                //Run PWI
-                alg = QuadTree.AlgToUse.PWI;
-                //  execTime = mainTree.SingleFramePairwiseSimulation();
-                //  pwiExecTimes.Add(execTime.Milliseconds);
-
-                //Run PPWI
-                //   execTime = mainTree.SingleFramePairwiseParallelSimulation();
-                //  ppwiExecTimes.Add(execTime.Milliseconds);
-                //Partition
-                //Partition();
-                //m_partitionThread.Join();
-                //m_partitionThread = null;
-
-                ////Run BH
-                //execTime = mainTree.SingleFrameBHSimulation();
-                //bhExecTimes.Add(execTime.Milliseconds);
-
-                ////Run PBH
-
-
-                //execTime = mainTree.ParallelSingleFrameBHSimulation();
-                //pbhExecTimes.Add(execTime.Milliseconds);
-
-
-                //xAxisVals.Add(currentParticleCount.ToString());
-
-                //mainTree.ClearParticles();
-                //currentParticleCount += stepSize;
-
-
-                //l_AutoProgress.Text = $"Progress: {i} Total: {numberOfSteps} Particles: {currentParticleCount}";
-            }
-
-
-            mainTree.ClearParticles();
-            currentParticleCount = endParticleCount;
-            l_Status.Text = "Status: Comparing thread performance.";
-            tb_TargetParticleNum.Text = $"{currentParticleCount}";
-
-            Partition();
-            m_partitionThread.Join();
-            for (int j = 1; j < maxThreadCount + 1; j++)
-            {
-                l_Status.Text = $"Status: Comparing thread performance. Thread:{j}";
-                mainTree.GenerateParticles(currentParticleCount);
-                Partition();
-                m_partitionThread.Join();
-                m_partitionThread = null;
-
-                execTime = mainTree.SingleFrameBHSimulation(isParallel: true, j,
-                    mode: QuadTree.threadMode.fromParallelLib);
-                threadComparison.Add(execTime.Milliseconds);
-                threadCounts.Add(j.ToString());
-                mainTree.ClearParticles();
-            }
-
-
-            //chart_ThreadComparison.AxisX.Clear();
-            //chart_ThreadComparison.AxisY.Clear();
-            chart_ThreadComparison.AxisX.Add(new LiveCharts.Wpf.Axis()
-            {
-                Title = "Thread Count",
-                Labels = threadCounts
-            });
-
-            chart_ThreadComparison.AxisY.Add(new LiveCharts.Wpf.Axis()
-            {
-                Title = "Level of Parallelism",
-            });
-            chart_ThreadComparison.LegendLocation = LiveCharts.LegendLocation.Bottom;
-            chart_ThreadComparison.Series.Clear();
-            SeriesCollection parlComp = new SeriesCollection();
-
-            List<double> parlLevels = new List<double>();
-
-
-            for (int i = 0; i < threadComparison.Count; i++)
-            {
-                //float p = threadCountComparison[0] / threadCountComparison[i];
-                //float pm1 = 1 - p;
-                //float pover = p / float.Parse(threadCounts[i]);
-                //float speedup = 1 / (pm1 + pover);
-                double speedUp = (double)threadComparison[0] / (double)threadComparison[i];
-                parlLevels.Add(speedUp);
-            }
-
-            parlComp.Add(new LineSeries()
-            {
-                Title = "Level of Parallelism",
-                Values = new ChartValues<double>(parlLevels),
-                PointGeometry = DefaultGeometries.Circle
-            });
-
-            chart_ThreadComparison.Series = parlComp;
-
-            //ChartWindow chartWindow = new ChartWindow(xAxisVals, threadComparison, threadCounts, pwiExecTimes, ppwiExecTimes, bhExecTimes, pbhExecTimes, startParticleCount, endParticleCount);
-            //chartWindow.Show();
-            //Debug.WriteLine("Moving to save");
-            //dia_SaveLocation.AddExtension = true;
-            //dia_SaveLocation.DefaultExt = ".csv";
-            //Debug.WriteLine("Dialogue Setting Set");
-            //dia_SaveLocation.ShowDialog();
-            //string savePath = dia_SaveLocation.FileName;
-            //using (var writer = new StreamWriter(savePath))
-            //using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            //{
-            //    csv.WriteRecords(records);
-            //}
-        }
 
         private void btn_Simulate_Click(object sender, EventArgs e)
         {
@@ -528,7 +633,7 @@ namespace Barnes_Hut_GUI
             TimeSpan time;
             switch (alg)
             {
-                case QuadTree.AlgToUse.PWI:
+                case AlgToUse.PWI:
                     sw.Start();
                     time = mainTree.SingleFramePairwiseSimulation(isParalell: false);
                     sw.Stop();
@@ -537,26 +642,26 @@ namespace Barnes_Hut_GUI
                     //Clipboard.SetText(sw.Elapsed.ToString());
                     PWITicks = sw.Elapsed.Ticks;
                     break;
-                case QuadTree.AlgToUse.PPWI:
+                case AlgToUse.PPWI:
                     time = mainTree.SingleFramePairwiseSimulation(isParalell: true);
                     l_TotalTimeValue.Text = time.ToString();
                     l_PPWITimeValue.Text = time.ToString();
                     break;
-                case QuadTree.AlgToUse.BH:
+                case AlgToUse.BH:
                     mainTree.theta = float.Parse(tb_Theta.Text);
                     time = mainTree.SingleFrameBHSimulation(isParallel: false, numberOfThreads: 1,
-                        mode: QuadTree.threadMode.fromParallelLib);
+                        mode: m_currentMode);
                     l_TotalTimeValue.Text = time.ToString();
                     l_BHSingleStepTimeValue.Text = time.ToString();
                     //Clipboard.SetText(sw.Elapsed.ToString());
                     BHTicks = sw.Elapsed.Ticks;
                     break;
 
-                case QuadTree.AlgToUse.PBH:
+                case AlgToUse.PBH:
 
                     mainTree.theta = float.Parse(tb_Theta.Text);
                     time = mainTree.SingleFrameBHSimulation(isParallel: true, numberOfThreads: 6,
-                        mode: QuadTree.threadMode.fromParallelLib);
+                        mode: m_currentMode);
                     l_TotalTimeValue.Text = time.ToString();
                     l_BHParlTimeValue.Text = time.ToString();
                     //Clipboard.SetText(time.ToString());
@@ -567,15 +672,6 @@ namespace Barnes_Hut_GUI
             }
         }
 
-        private void rb_ParallelPWI_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rb_ParallelPWI.Checked)
-            {
-                alg = QuadTree.AlgToUse.PPWI;
-                mainTree.alg = QuadTree.AlgToUse.PPWI;
-                cb_ShowGrouping.Enabled = false;
-            }
-        }
 
         private void panel3_Paint(object sender, PaintEventArgs e)
         {
@@ -597,19 +693,88 @@ namespace Barnes_Hut_GUI
         {
         }
 
-        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        private void rb_CustomThreads_CheckedChanged(object sender, EventArgs e)
         {
+            if (rb_CustomThreads.Checked)
+            {
+                m_currentMode = threadMode.selfMade;
+            }
+        }
+
+        private void rb_TPLThreads_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_TPLThreads.Checked)
+            {
+                m_currentMode = threadMode.fromParallelLib;
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            //chart_ThreadComparison.AxisX.Add(new LiveCharts.Wpf.Axis()
+            //{
+            //    Title = "",
+            //    Labels = new string[0]
+
+
+            //});
+
+            //chart_ThreadComparison.AxisY.Add(new LiveCharts.Wpf.Axis()
+            //{
+            //    Title = "",
+            //    Labels = new string[0]
+            //});
+
+
+            //chart_ExecTime.AxisX.Add(new LiveCharts.Wpf.Axis()
+            //{
+            //    Title = "",
+            //    Labels = new string[0]
+            //});
+
+            //chart_ExecTime.AxisY.Add(new LiveCharts.Wpf.Axis()
+            //{
+            //    Title = "",
+            //    Labels = new string[0]
+            //});
+        }
+
+        private void btn_SaveExecGraph_Click(object sender, EventArgs e)
+        {
+            dia_SaveLocation.DefaultExt = ".png";
+            dia_SaveLocation.FileName = $"{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}_{int.Parse(tb_AutoIncStart.Text)}_{tb_AutoIncEnd.Text}p_execData";
+            dia_SaveLocation.ShowDialog();
+            string fileName = dia_SaveLocation.FileName;
+            SaveToPng(chart_ExecTime, fileName);
+            SaveToPng(chart_ExecTime,
+                fileName);
+        }
+
+        private void btn_SaveThreadComp_Click(object sender, EventArgs e)
+        {
+            dia_SaveLocation.FileName = $"{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}_{int.Parse(tb_AutoIncEnd.Text)}p_threadComp";
+            dia_SaveLocation.DefaultExt = ".png";
+            dia_SaveLocation.ShowDialog();
+            string fileName = dia_SaveLocation.FileName;
+            SaveToPng(chart_ThreadComparison, fileName);
+        }
+
+        public void SaveToPng(CartesianChart chart, string fileName)
+        {
+            Bitmap bmp = new Bitmap(chart.Width, chart.Height);
+            chart.DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+            bmp.Save(fileName, ImageFormat.Png);
         }
     }
 
-    class AutoPerformancClass
+    class AutoPerformanceClass
     {
         public int particleCount { get; set; }
         public TimeSpan pwiTicks { get; set; }
         public TimeSpan bhTicks { get; set; }
         public TimeSpan pbhTicks { get; set; }
 
-        public AutoPerformancClass(int pCount, TimeSpan pwTick, TimeSpan bhTick, TimeSpan pbhTick)
+        public AutoPerformanceClass(int pCount, TimeSpan pwTick, TimeSpan bhTick, TimeSpan pbhTick)
         {
             particleCount = pCount;
             pwiTicks = pwTick;
