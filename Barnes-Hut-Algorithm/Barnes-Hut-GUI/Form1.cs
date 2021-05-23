@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
+using System.Runtime;
 using System.Threading;
 using CsvHelper;
 using LiveCharts;
@@ -341,6 +342,7 @@ namespace Barnes_Hut_GUI
 
                     break;
                 case TestingMode.ThreadTest:
+                    
                     ThreadTesting(endParticleCount, maxThreadCount, ref threadComparison, ref threadCounts);
                     break;
                 case TestingMode.SingleFramePlusThreadTest:
@@ -387,6 +389,7 @@ namespace Barnes_Hut_GUI
                 m_partitionThread = null;
 
                 l_Status.Text = "Status: Starting BH sim...";
+                
                 execTime = mainTree.SingleFrameBHSimulation(isParallel: true, j,
                     mode: m_currentMode);
                 threadComparison.Add(execTime.Milliseconds);
@@ -671,6 +674,38 @@ namespace Barnes_Hut_GUI
             }
         }
 
+        #region Image Saving Functionality
+
+
+        private void btn_SaveExecGraph_Click(object sender, EventArgs e)
+        {
+            dia_SaveLocation.DefaultExt = ".png";
+            dia_SaveLocation.FileName = $"{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}_{int.Parse(tb_AutoIncStart.Text)}_{tb_AutoIncEnd.Text}p_execData";
+            dia_SaveLocation.ShowDialog();
+            string fileName = dia_SaveLocation.FileName;
+            SaveToPng(chart_ExecTime, fileName);
+            SaveToPng(chart_ExecTime,
+                fileName);
+        }
+
+        private void btn_SaveThreadComp_Click(object sender, EventArgs e)
+        {
+            dia_SaveLocation.FileName = $"{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}_{int.Parse(tb_AutoIncEnd.Text)}p_threadComp";
+            dia_SaveLocation.DefaultExt = ".png";
+            dia_SaveLocation.ShowDialog();
+            string fileName = dia_SaveLocation.FileName;
+            SaveToPng(chart_ThreadComparison, fileName);
+        }
+
+        public void SaveToPng(CartesianChart chart, string fileName)
+        {
+            Bitmap bmp = new Bitmap(chart.Width, chart.Height);
+            chart.DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+            bmp.Save(fileName, ImageFormat.Png);
+        }
+
+        #endregion
+
 
         private void btn_Simulate_Click(object sender, EventArgs e)
         {
@@ -724,47 +759,5 @@ namespace Barnes_Hut_GUI
           
         }
 
-        private void btn_SaveExecGraph_Click(object sender, EventArgs e)
-        {
-            dia_SaveLocation.DefaultExt = ".png";
-            dia_SaveLocation.FileName = $"{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}_{int.Parse(tb_AutoIncStart.Text)}_{tb_AutoIncEnd.Text}p_execData";
-            dia_SaveLocation.ShowDialog();
-            string fileName = dia_SaveLocation.FileName;
-            SaveToPng(chart_ExecTime, fileName);
-            SaveToPng(chart_ExecTime,
-                fileName);
-        }
-
-        private void btn_SaveThreadComp_Click(object sender, EventArgs e)
-        {
-            dia_SaveLocation.FileName = $"{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}_{int.Parse(tb_AutoIncEnd.Text)}p_threadComp";
-            dia_SaveLocation.DefaultExt = ".png";
-            dia_SaveLocation.ShowDialog();
-            string fileName = dia_SaveLocation.FileName;
-            SaveToPng(chart_ThreadComparison, fileName);
-        }
-
-        public void SaveToPng(CartesianChart chart, string fileName)
-        {
-            Bitmap bmp = new Bitmap(chart.Width, chart.Height);
-            chart.DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
-            bmp.Save(fileName, ImageFormat.Png);
-        }
-    }
-
-    class AutoPerformanceClass
-    {
-        public int particleCount { get; set; }
-        public TimeSpan pwiTicks { get; set; }
-        public TimeSpan bhTicks { get; set; }
-        public TimeSpan pbhTicks { get; set; }
-
-        public AutoPerformanceClass(int pCount, TimeSpan pwTick, TimeSpan bhTick, TimeSpan pbhTick)
-        {
-            particleCount = pCount;
-            pwiTicks = pwTick;
-            bhTicks = bhTick;
-            pbhTicks = pbhTick;
-        }
     }
 }

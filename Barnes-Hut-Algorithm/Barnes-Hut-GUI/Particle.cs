@@ -54,10 +54,10 @@ namespace Barnes_Hut_GUI
                 MidForce = (MaxForce - MinForce) / 2;
             }
 
-            lock (listLock)
-            {
+            //lock (listLock)
+            //{
                 ForcesToApply.Add(currentVector);
-            }
+            //}
             
         }
 

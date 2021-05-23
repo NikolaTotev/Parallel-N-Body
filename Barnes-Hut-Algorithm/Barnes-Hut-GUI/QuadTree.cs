@@ -267,7 +267,7 @@ namespace Barnes_Hut_GUI
                             List<Thread> workerThreads = new List<Thread>();
 
 
-                            List<int> threadStartIndecencies = new List<int>();
+                            List<int> threadStartIndecencies = new List<int>(numberOfThreads);
                             List<int> threadEndIndecencies = new List<int>();
                             int currentStartIndex = 0;
                             int endIndex;
@@ -345,12 +345,11 @@ namespace Barnes_Hut_GUI
                     m_Sw.Reset();
                     m_Sw.Start();
                     BhAlgForceCalculation(0, AllParticles.Count - 1);
+                    m_Sw.Stop();
                     break;
             }
-
-
-            m_Sw.Stop();
             return m_Sw.Elapsed;
+
         }
 
 
