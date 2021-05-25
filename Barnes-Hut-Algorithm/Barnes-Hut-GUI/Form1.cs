@@ -382,6 +382,10 @@ namespace Barnes_Hut_GUI
             m_partitionThread.Join();
             for (int j = 1; j < maxThreadCount + 1; j++)
             {
+                switch (alg)
+                {
+                    
+                }
                 mainTree.GenerateParticles(currentParticleCount);
                 l_Status.Text = "Status: Partitioning...";
                 Partition();
