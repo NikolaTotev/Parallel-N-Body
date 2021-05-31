@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Math;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Windows.Controls;
 
@@ -52,6 +53,7 @@ namespace Barnes_Hut_GUI
         public Node RootNode { get; set; }
         private const float G = 9.8f;
         public float theta = 2f;
+        public bool UseStaticPoints;
 
         public bool ShowTree { get; set; }
         public bool ShowForceVect { get; set; }
@@ -76,11 +78,13 @@ namespace Barnes_Hut_GUI
         public bool DrawNodeCOG { get; set; }
         public bool DrawEmptyCells { get; set; }
         public bool DrawBhNodeGrouping { get; set; }
+        public bool ShowResultantForce { get; set; }
+        public bool ShowShiftedVectors { get; set; }
 
         #endregion
 
 
-       
+
 
         #region Initialization
 
@@ -135,10 +139,10 @@ namespace Barnes_Hut_GUI
             List<Point> testPoints2 = new List<Point>()
             {
                 new Point(103, 89),
-                new Point(103, 88),
+                new Point(153, 88),
                 new Point(89, 396),
-                new Point(100, 395),
-                new Point(90, 400)
+                new Point(50, 395),
+                new Point(250, 400)
             };
             for (int i = 0; i < particleCount; i++)
             {
@@ -153,8 +157,14 @@ namespace Barnes_Hut_GUI
                     if (!pointMap[x, y])
                     {
                         Point particleCenter = new Point(x, y);
-                        //newParticle.CenterPoint = testPoints2[i];
-                        newParticle.CenterPoint = particleCenter;
+                        if (UseStaticPoints)
+                        {
+                            newParticle.CenterPoint = testPoints2[i];
+                        }
+                        else
+                        {
+                            newParticle.CenterPoint = particleCenter;
+                        }
                         AllParticles.Add(newParticle);
                         pointMap[x, y] = true;
                         pointSet = true;
@@ -407,11 +417,11 @@ namespace Barnes_Hut_GUI
             if (LengthIsOverDouble(startNode.SideLength, distanceToNodeInfo[0]) || startNode.nodeParticles.Count == 1)
             {
 
-                float force = GravitationalForceCalculation(distanceToNodeInfo[0], currentParticle.Mass, startNode.TotalMass);
-                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint, startNode.centerOfMass, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
+                float force = GravitationalForceCalculation(distanceToNodeInfo[0], currentParticle.Mass, startNode.totalWeight);
+                ForceVector forceVect = new ForceVector(currentParticle.CenterPoint, startNode.centerOfMass, mag: force, sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
                 if (startNode.nodeParticles.Count == 1)
                 {
-                    forceVect = new ForceVector(currentParticle.CenterPoint, startNode.nodeParticles[0].CenterPoint, mag: distanceToNodeInfo[0], sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
+                    forceVect = new ForceVector(currentParticle.CenterPoint, startNode.nodeParticles[0].CenterPoint, mag: force, sinAng: distanceToNodeInfo[1], cosAng: distanceToNodeInfo[2]);
                 }
 
                 if (startNode.nodeParticles[0] != currentParticle)
@@ -427,6 +437,22 @@ namespace Barnes_Hut_GUI
                 BhAlgApplyForceOnParticle(currentParticle, startNode.NwChild);
                 BhAlgApplyForceOnParticle(currentParticle, startNode.SwChild);
             }
+
+        }
+
+        public void CalculateResultantVector(Particle currentParticle)
+        {
+            PointF resultantVectorStart = currentParticle.CenterPoint;
+            PointF resultantVectorEnd = currentParticle.CenterPoint;
+
+            foreach (ForceVector forceVector in currentParticle.ForcesToApply)
+            {
+                forceVector.ShiftEndPoint(resultantVectorEnd);
+                resultantVectorEnd = forceVector.ShiftedEnd;
+            }
+
+            currentParticle.ResultantVectorStart = resultantVectorStart;
+            currentParticle.ResultantVectorEnd = resultantVectorEnd;
 
         }
 
@@ -560,7 +586,7 @@ namespace Barnes_Hut_GUI
                 PointF forceVectStart = AllParticles[particleNumber].ForcesToApply[i].Start;
                 PointF forceVectEnd = AllParticles[particleNumber].ForcesToApply[i].EffectorCOM;
 
-                currenctGraphics.DrawLine(graphicsPen, forceVectStart, forceVectEnd);
+              currenctGraphics.DrawLine(graphicsPen, forceVectStart, forceVectEnd);
                 currenctGraphics.DrawEllipse(drawPen, forceVectEnd.X - 4,
                     forceVectEnd.Y - 4, 4 * 2, 4 * 2);
                 currenctGraphics.FillEllipse(Brushes.NavajoWhite, forceVectEnd.X - 0.5f,
@@ -580,33 +606,49 @@ namespace Barnes_Hut_GUI
         /// <param name="maxPen"></param>
         public void VisualizeForceVectors(int particleNumber, Graphics currenctGraphics, Pen minPen, Pen midPen, Pen maxPen)
         {
+            PointF ResultantStart = AllParticles[particleNumber].ResultantVectorStart;
+            PointF ResultantEnd = AllParticles[particleNumber].ResultantVectorEnd;
+
+            if (ShowResultantForce)
+            {
+                Pen resultantPen = new Pen(Brushes.Indigo, 2.0f);
+                currenctGraphics.DrawLine(resultantPen, ResultantStart, ResultantEnd);
+            }
 
             for (int i = 0; i < AllParticles[particleNumber].ForcesToApply.Count; i++)
             {
                 float forceVecMag = AllParticles[particleNumber].ForcesToApply[i].Magnitude;
                 PointF forceVectStart = AllParticles[particleNumber].ForcesToApply[i].Start;
                 PointF forceVectEnd = AllParticles[particleNumber].ForcesToApply[i].End;
+                PointF ShiftedVectorStart = AllParticles[particleNumber].ForcesToApply[i].ShiftedStart;
+                PointF ShiftedVectorEnd = AllParticles[particleNumber].ForcesToApply[i].ShiftedEnd;
 
-                if (forceVecMag == AllParticles[particleNumber].MinForce)
+
+                if (ShowForceVect)
                 {
-                    currenctGraphics.DrawLine(minPen, forceVectStart, forceVectEnd);
+                    if (forceVecMag == AllParticles[particleNumber].MinForce)
+                    {
+                        currenctGraphics.DrawLine(minPen, forceVectStart, forceVectEnd);
+                    }
+                    else if (forceVecMag == AllParticles[particleNumber].MaxForce)
+                    {
+                        currenctGraphics.DrawLine(maxPen, forceVectStart, forceVectEnd);
+                    }
+                    else { currenctGraphics.DrawLine(midPen, forceVectStart, forceVectEnd); }
                 }
-                else if (forceVecMag == AllParticles[particleNumber].MaxForce)
+
+
+
+                if (ShowShiftedVectors)
                 {
-                    currenctGraphics.DrawLine(maxPen, forceVectStart, forceVectEnd);
+                    Pen resultantPen = new Pen(Brushes.Red, 2.0f);
+                    resultantPen.DashStyle = DashStyle.DashDot;
+                    resultantPen.DashCap = DashCap.Triangle;
+                    currenctGraphics.DrawLine(resultantPen, ShiftedVectorStart, ShiftedVectorEnd);
                 }
-                else { currenctGraphics.DrawLine(midPen, forceVectStart, forceVectEnd); }
             }
         }
         #endregion
-
-
-
-
-
-
-
-
 
 
         public void SingleBHStep(int targetParticle)
@@ -692,7 +734,7 @@ namespace Barnes_Hut_GUI
             PointF topRight = new Point(737, 0);
             RootNode = new Node(topRight, bottomLeft);
             RootNode.IsRoot = true;
-            
+
         }
     }
 }

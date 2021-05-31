@@ -18,7 +18,6 @@ namespace Barnes_Hut_GUI
         public List<Particle> nodeParticles { get; set; }
         public PointF BottomLeftCorner { get; set; }
         public PointF TopRightCorner { get; set; }
-        public float TotalMass { get; set; }
 
         public float SideLength { get; }
 
@@ -35,7 +34,7 @@ namespace Barnes_Hut_GUI
 
         public PointF centerOfMass { get; set; }
 
-        public float totalWeight = 0;
+        public float totalWeight;
 
         public float topCenterOfMassCoefX = 0;
         public float topCenterOfMassCoefY = 0;
@@ -48,6 +47,7 @@ namespace Barnes_Hut_GUI
             nodeParticles = new List<Particle>();
             IsInternal = false;
             IsLeaf = true;
+            totalWeight = 0;
         }
 
 

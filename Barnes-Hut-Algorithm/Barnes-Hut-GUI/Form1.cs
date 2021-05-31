@@ -74,6 +74,8 @@ namespace Barnes_Hut_GUI
         private bool ShowTree;
         private bool ShowEmptyCells;
         private bool ShowForceVect;
+        private bool ShowResultantForce;
+        private bool ShowShiftedVectors;
         private bool ShowGrouping;
         private bool DrawGraphics;
 
@@ -104,6 +106,7 @@ namespace Barnes_Hut_GUI
 
         private AlgToUse alg = AlgToUse.PWI;
         private int currentParticleValue = 0;
+        private bool UseStaticPoints;
 
 
         public Form1()
@@ -125,8 +128,12 @@ namespace Barnes_Hut_GUI
             mainTree.ShowForceVect = cb_TreeOutline.Checked;
             DrawGraphics = cb_DrawGraphics.Checked;
             ShowGrouping = cb_ShowGrouping.Checked;
-
-
+            ShowResultantForce = cb_ShowResForce.Checked;
+            mainTree.ShowResultantForce = ShowResultantForce;
+            ShowShiftedVectors = cb_ShowShiftedVect.Checked;
+            mainTree.ShowShiftedVectors = ShowShiftedVectors;
+            UseStaticPoints = cb_UseStaticPoints.Checked;
+            mainTree.UseStaticPoints = UseStaticPoints;
         }
 
         #region Event subscriber functions
@@ -289,6 +296,8 @@ namespace Barnes_Hut_GUI
 
         private void cb_ShowResForce_CheckedChanged(object sender, EventArgs e)
         {
+            ShowResultantForce =  cb_ShowResForce.Checked;
+            mainTree.ShowResultantForce = ShowResultantForce;
         }
 
         private void btn_CalcForces_Click(object sender, EventArgs e)
@@ -650,14 +659,17 @@ namespace Barnes_Hut_GUI
                     l_TotalTimeValue.Text = sw.Elapsed.ToString();
                     l_BHSingleStepTimeValue.Text = sw.Elapsed.ToString();
                     //Clipboard.SetText(sw.Elapsed.ToString());
+                   // mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
                     BHTicks = sw.Elapsed.Ticks;
                     break;
                 case AlgToUse.PWI:
                     sw.Start();
                     mainTree.SingleFramePairwiseSimulation(isParalell: false);
                     sw.Stop();
+                    //mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
                     l_TotalTimeValue.Text = sw.Elapsed.ToString();
                     l_PWITimeValue.Text = sw.Elapsed.ToString();
+
                     //Clipboard.SetText(sw.Elapsed.ToString());
                     PWITicks = sw.Elapsed.Ticks;
                     break;
@@ -666,6 +678,8 @@ namespace Barnes_Hut_GUI
                     mainTree.theta = float.Parse(tb_Theta.Text);
                     TimeSpan time = mainTree.ParallelSingleParticleBH(targetParticle);
                     //sw.Stop();
+                  //  mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
+
                     l_TotalTimeValue.Text = time.ToString();
                     l_BHParlTimeValue.Text = time.ToString();
                     //Clipboard.SetText(time.ToString());
@@ -677,13 +691,12 @@ namespace Barnes_Hut_GUI
 
             if (ShowForceVect && DrawGraphics)
             {
-                mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, m_MinforceVectPen, m_MidforceVectPen,
-                    m_MaxforceVectPen);
+               mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, m_MinforceVectPen, m_MidforceVectPen,m_MaxforceVectPen);
             }
 
             if (ShowGrouping && DrawGraphics)
             {
-                mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, m_MidforceVectPen);
+               // mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, m_MidforceVectPen);
             }
         }
 
@@ -818,6 +831,18 @@ namespace Barnes_Hut_GUI
         {
             forceVectGraphics.DrawEllipse(Pens.Blue, 100, 100, 5, 5);
             p_ForcePanel = new TransparentPanel();
+        }
+
+        private void cb_ShowShiftedVect_CheckedChanged(object sender, EventArgs e)
+        {
+            ShowShiftedVectors = cb_ShowShiftedVect.Checked;
+            mainTree.ShowShiftedVectors = ShowShiftedVectors;
+        }
+
+        private void cb_UseStaticPoints_CheckedChanged(object sender, EventArgs e)
+        {
+            UseStaticPoints = cb_UseStaticPoints.Checked;
+            mainTree.UseStaticPoints = UseStaticPoints;
         }
     }
 }

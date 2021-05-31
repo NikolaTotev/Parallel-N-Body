@@ -21,6 +21,8 @@ namespace Barnes_Hut_GUI
 
         private readonly object listLock = new object();
         
+        public PointF ResultantVectorStart { get; set; }
+        public PointF ResultantVectorEnd { get; set; }
 
         public Particle()
         {

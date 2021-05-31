@@ -10,7 +10,9 @@ namespace Barnes_Hut_GUI
     class ForceVector
     {
         public PointF Start { get; set; }
+        public PointF ShiftedStart { get; set; }
         public PointF End { get; set;  }
+        public PointF ShiftedEnd { get; set;  }
         public PointF EffectorCOM { get; set;  }
         public float Magnitude { get; set; }
         public float sinAngle { get; set; }
@@ -46,6 +48,14 @@ namespace Barnes_Hut_GUI
             xLen = cosAngle * Magnitude;
             yLen = sinAngle * Magnitude;
             End = new PointF(Start.X+xLen, Start.Y+yLen);
+        }
+
+        public void ShiftEndPoint (PointF newStart)
+        {
+            xLen = cosAngle * Magnitude;
+            yLen = sinAngle * Magnitude;
+            ShiftedEnd = new PointF(newStart.X + xLen, newStart.Y + yLen);
+            ShiftedStart = newStart;
         }
     }
 }

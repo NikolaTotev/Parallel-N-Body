@@ -115,8 +115,10 @@ namespace Barnes_Hut_GUI
             this.chart_ExecTime = new LiveCharts.WinForms.CartesianChart();
             this.btn_SaveExecGraph = new System.Windows.Forms.Button();
             this.btn_SaveThreadComp = new System.Windows.Forms.Button();
+            this.cb_ShowShiftedVect = new System.Windows.Forms.CheckBox();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
+            this.cb_UseStaticPoints = new System.Windows.Forms.CheckBox();
             this.p_ExecMetrics.SuspendLayout();
             this.p_ManualControls.SuspendLayout();
             this.p_ActionButtons.SuspendLayout();
@@ -135,7 +137,7 @@ namespace Barnes_Hut_GUI
             this.tb_ParticleCount.Name = "tb_ParticleCount";
             this.tb_ParticleCount.Size = new System.Drawing.Size(106, 20);
             this.tb_ParticleCount.TabIndex = 0;
-            this.tb_ParticleCount.Text = "10";
+            this.tb_ParticleCount.Text = "5";
             // 
             // label1
             // 
@@ -297,7 +299,7 @@ namespace Barnes_Hut_GUI
             this.btn_CalcForces.BackColor = System.Drawing.Color.DarkSlateBlue;
             this.btn_CalcForces.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_CalcForces.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btn_CalcForces.Location = new System.Drawing.Point(15, 153);
+            this.btn_CalcForces.Location = new System.Drawing.Point(15, 170);
             this.btn_CalcForces.Name = "btn_CalcForces";
             this.btn_CalcForces.Size = new System.Drawing.Size(131, 23);
             this.btn_CalcForces.TabIndex = 17;
@@ -350,7 +352,7 @@ namespace Barnes_Hut_GUI
             this.cb_ShowGrouping.AutoSize = true;
             this.cb_ShowGrouping.Checked = true;
             this.cb_ShowGrouping.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_ShowGrouping.Location = new System.Drawing.Point(15, 101);
+            this.cb_ShowGrouping.Location = new System.Drawing.Point(15, 124);
             this.cb_ShowGrouping.Name = "cb_ShowGrouping";
             this.cb_ShowGrouping.Size = new System.Drawing.Size(99, 17);
             this.cb_ShowGrouping.TabIndex = 22;
@@ -652,6 +654,7 @@ namespace Barnes_Hut_GUI
             // p_Initialization
             // 
             this.p_Initialization.BackColor = System.Drawing.Color.White;
+            this.p_Initialization.Controls.Add(this.cb_UseStaticPoints);
             this.p_Initialization.Controls.Add(this.tb_ParticleCount);
             this.p_Initialization.Controls.Add(this.label1);
             this.p_Initialization.Controls.Add(this.btn_Gen100PlusParticles);
@@ -925,6 +928,7 @@ namespace Barnes_Hut_GUI
             // p_SingleParticleDiagnostics
             // 
             this.p_SingleParticleDiagnostics.BackColor = System.Drawing.Color.Bisque;
+            this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ShowShiftedVect);
             this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ShowCOG);
             this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ShowResForce);
             this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ForceVect);
@@ -942,7 +946,7 @@ namespace Barnes_Hut_GUI
             this.cb_ShowCOG.AutoSize = true;
             this.cb_ShowCOG.Checked = true;
             this.cb_ShowCOG.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_ShowCOG.Location = new System.Drawing.Point(15, 124);
+            this.cb_ShowCOG.Location = new System.Drawing.Point(15, 147);
             this.cb_ShowCOG.Name = "cb_ShowCOG";
             this.cb_ShowCOG.Size = new System.Drawing.Size(79, 17);
             this.cb_ShowCOG.TabIndex = 23;
@@ -1031,6 +1035,17 @@ namespace Barnes_Hut_GUI
             this.btn_SaveThreadComp.UseVisualStyleBackColor = false;
             this.btn_SaveThreadComp.Click += new System.EventHandler(this.btn_SaveThreadComp_Click);
             // 
+            // cb_ShowShiftedVect
+            // 
+            this.cb_ShowShiftedVect.AutoSize = true;
+            this.cb_ShowShiftedVect.Location = new System.Drawing.Point(15, 101);
+            this.cb_ShowShiftedVect.Name = "cb_ShowShiftedVect";
+            this.cb_ShowShiftedVect.Size = new System.Drawing.Size(128, 17);
+            this.cb_ShowShiftedVect.TabIndex = 24;
+            this.cb_ShowShiftedVect.Text = "Show Shifted Vectors";
+            this.cb_ShowShiftedVect.UseVisualStyleBackColor = true;
+            this.cb_ShowShiftedVect.CheckedChanged += new System.EventHandler(this.cb_ShowShiftedVect_CheckedChanged);
+            // 
             // p_TreePanel
             // 
             this.p_TreePanel.Location = new System.Drawing.Point(12, 12);
@@ -1046,6 +1061,17 @@ namespace Barnes_Hut_GUI
             this.p_ForcePanel.Opacity = 0;
             this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
             this.p_ForcePanel.TabIndex = 24;
+            // 
+            // cb_UseStaticPoints
+            // 
+            this.cb_UseStaticPoints.AutoSize = true;
+            this.cb_UseStaticPoints.Location = new System.Drawing.Point(93, 70);
+            this.cb_UseStaticPoints.Name = "cb_UseStaticPoints";
+            this.cb_UseStaticPoints.Size = new System.Drawing.Size(107, 17);
+            this.cb_UseStaticPoints.TabIndex = 32;
+            this.cb_UseStaticPoints.Text = "Use Static Points";
+            this.cb_UseStaticPoints.UseVisualStyleBackColor = true;
+            this.cb_UseStaticPoints.CheckedChanged += new System.EventHandler(this.cb_UseStaticPoints_CheckedChanged);
             // 
             // Form1
             // 
@@ -1192,6 +1218,8 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.Button btn_SaveExecGraph;
         private System.Windows.Forms.Button btn_SaveThreadComp;
         private System.Windows.Forms.CheckBox cb_ShowCOG;
+        private System.Windows.Forms.CheckBox cb_ShowShiftedVect;
+        private System.Windows.Forms.CheckBox cb_UseStaticPoints;
     }
 }
 
