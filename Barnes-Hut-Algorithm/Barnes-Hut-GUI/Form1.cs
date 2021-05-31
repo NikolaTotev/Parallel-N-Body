@@ -307,10 +307,9 @@ namespace Barnes_Hut_GUI
 
         private void cb_ShowCOG_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_ShowCOG.Checked)
-            {
+            
                 mainTree.DrawNodeCOG = cb_ShowCOG.Checked;
-            }
+            
         }
 
         #endregion
@@ -659,14 +658,14 @@ namespace Barnes_Hut_GUI
                     l_TotalTimeValue.Text = sw.Elapsed.ToString();
                     l_BHSingleStepTimeValue.Text = sw.Elapsed.ToString();
                     //Clipboard.SetText(sw.Elapsed.ToString());
-                   // mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
+                    mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
                     BHTicks = sw.Elapsed.Ticks;
                     break;
                 case AlgToUse.PWI:
                     sw.Start();
                     mainTree.SingleFramePairwiseSimulation(isParalell: false);
                     sw.Stop();
-                    //mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
+                    mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
                     l_TotalTimeValue.Text = sw.Elapsed.ToString();
                     l_PWITimeValue.Text = sw.Elapsed.ToString();
 
@@ -678,7 +677,7 @@ namespace Barnes_Hut_GUI
                     mainTree.theta = float.Parse(tb_Theta.Text);
                     TimeSpan time = mainTree.ParallelSingleParticleBH(targetParticle);
                     //sw.Stop();
-                  //  mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
+                    mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
 
                     l_TotalTimeValue.Text = time.ToString();
                     l_BHParlTimeValue.Text = time.ToString();
@@ -696,7 +695,7 @@ namespace Barnes_Hut_GUI
 
             if (ShowGrouping && DrawGraphics)
             {
-               // mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, m_MidforceVectPen);
+               mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, m_MidforceVectPen);
             }
         }
 

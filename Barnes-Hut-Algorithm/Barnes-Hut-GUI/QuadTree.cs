@@ -426,7 +426,7 @@ namespace Barnes_Hut_GUI
 
                 if (startNode.nodeParticles[0] != currentParticle)
                 {
-                    currentParticle.ForcesToApply.Add(forceVect);
+                    currentParticle.AddForce(forceVect);
                 }
 
             }
