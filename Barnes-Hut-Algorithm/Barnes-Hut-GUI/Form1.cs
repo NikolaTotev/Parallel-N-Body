@@ -653,19 +653,17 @@ namespace Barnes_Hut_GUI
                 case AlgToUse.BH:
                     sw.Start();
                     mainTree.theta = float.Parse(tb_Theta.Text);
-                    mainTree.SingleBHStep(targetParticle);
+                    mainTree.BHonSingleParticle(targetParticle);
                     sw.Stop();
                     l_TotalTimeValue.Text = sw.Elapsed.ToString();
                     l_BHSingleStepTimeValue.Text = sw.Elapsed.ToString();
                     //Clipboard.SetText(sw.Elapsed.ToString());
-                    mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
                     BHTicks = sw.Elapsed.Ticks;
                     break;
                 case AlgToUse.PWI:
                     sw.Start();
                     mainTree.SingleFramePairwiseSimulation(isParalell: false);
                     sw.Stop();
-                    mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
                     l_TotalTimeValue.Text = sw.Elapsed.ToString();
                     l_PWITimeValue.Text = sw.Elapsed.ToString();
 
@@ -673,16 +671,7 @@ namespace Barnes_Hut_GUI
                     PWITicks = sw.Elapsed.Ticks;
                     break;
                 case AlgToUse.PBH:
-                    //sw.Start();
-                    mainTree.theta = float.Parse(tb_Theta.Text);
-                    TimeSpan time = mainTree.ParallelSingleParticleBH(targetParticle);
-                    //sw.Stop();
-                    mainTree.CalculateResultantVector(mainTree.AllParticles[targetParticle]);
-
-                    l_TotalTimeValue.Text = time.ToString();
-                    l_BHParlTimeValue.Text = time.ToString();
-                    //Clipboard.SetText(time.ToString());
-                    PBHTicks = time.Ticks;
+                    
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -842,6 +831,11 @@ namespace Barnes_Hut_GUI
         {
             UseStaticPoints = cb_UseStaticPoints.Checked;
             mainTree.UseStaticPoints = UseStaticPoints;
+        }
+
+        private void btn_AnimationTest_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

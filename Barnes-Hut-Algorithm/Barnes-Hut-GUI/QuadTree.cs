@@ -231,7 +231,9 @@ namespace Barnes_Hut_GUI
                                     AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
                             }
                         }
+                        CalculateResultantVector(currentParticle);
                     });
+                    m_Sw.Stop();
                     break;
                 case false: //Is the "default:" case false:?
                     m_Sw.Reset();
@@ -247,11 +249,12 @@ namespace Barnes_Hut_GUI
                                 currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
                             }
                         }
+                        CalculateResultantVector(currentParticle);
                     }
+                    m_Sw.Stop();
                     break;
             }
 
-            m_Sw.Stop();
             return m_Sw.Elapsed;
         }
 
@@ -320,7 +323,7 @@ namespace Barnes_Hut_GUI
                             {
                                 workerThread.Join();
                             }
-
+                            
                             m_Sw.Stop();
 
 
@@ -344,7 +347,9 @@ namespace Barnes_Hut_GUI
                                     BhAlgApplyForceOnParticle(currentParticle, RootNode.NeChild);
                                     BhAlgApplyForceOnParticle(currentParticle, RootNode.NwChild);
                                     BhAlgApplyForceOnParticle(currentParticle, RootNode.SwChild);
+                                    CalculateResultantVector(currentParticle);
                                 });
+                            
                             m_Sw.Stop();
 
                             return m_Sw.Elapsed;
@@ -381,6 +386,7 @@ namespace Barnes_Hut_GUI
                 BhAlgApplyForceOnParticle(currentParticle, RootNode.NeChild);
                 BhAlgApplyForceOnParticle(currentParticle, RootNode.NwChild);
                 BhAlgApplyForceOnParticle(currentParticle, RootNode.SwChild);
+                CalculateResultantVector(AllParticles[i]);
             }
         }
 
@@ -651,12 +657,13 @@ namespace Barnes_Hut_GUI
         #endregion
 
 
-        public void SingleBHStep(int targetParticle)
+        public void BHonSingleParticle(int targetParticle)
         {
             BhAlgApplyForceOnParticle(AllParticles[targetParticle], RootNode.SeChild);
             BhAlgApplyForceOnParticle(AllParticles[targetParticle], RootNode.NeChild);
             BhAlgApplyForceOnParticle(AllParticles[targetParticle], RootNode.NwChild);
             BhAlgApplyForceOnParticle(AllParticles[targetParticle], RootNode.SwChild);
+            CalculateResultantVector(AllParticles[targetParticle]);
         }
 
 
