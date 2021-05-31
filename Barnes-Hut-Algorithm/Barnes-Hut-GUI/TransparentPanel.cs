@@ -41,6 +41,7 @@ namespace Barnes_Hut_GUI
                 return cp;
             }
         }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             using (var brush = new SolidBrush(Color.FromArgb(this.opacity * 255 / 100, this.BackColor)))

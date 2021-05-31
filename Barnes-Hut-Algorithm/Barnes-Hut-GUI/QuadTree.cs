@@ -73,7 +73,7 @@ namespace Barnes_Hut_GUI
 
         #region Visualization Variables
 
-        public bool DrawNodeCOG;
+        public bool DrawNodeCOG { get; set; }
         public bool DrawEmptyCells { get; set; }
         public bool DrawBhNodeGrouping { get; set; }
 
@@ -199,14 +199,15 @@ namespace Barnes_Hut_GUI
         /// Returns the time required for the whole frame to be calculated.
         /// </summary>
         /// <returns>TimeSpan</returns>
-        public TimeSpan SingleFramePairwiseSimulation(bool isParalell)
+        public TimeSpan SingleFramePairwiseSimulation(bool isParalell, int threadCount = 1)
         {
             switch (isParalell)
             {
                 case true:
                     m_Sw.Reset();
                     m_Sw.Start();
-                    Parallel.ForEach(AllParticles, currentParticle =>
+                    Parallel.ForEach(AllParticles, new ParallelOptions { MaxDegreeOfParallelism = threadCount },
+                        currentParticle =>
                     {
                         for (int j = 0; j < AllParticles.Count; j++)
                         {
@@ -552,7 +553,7 @@ namespace Barnes_Hut_GUI
         /// <param name="graphicsPen"></param>
         public void VisualizeGrouping(int particleNumber, Graphics currenctGraphics, Pen graphicsPen)
         {
-            Pen drawPen = new Pen(Color.SkyBlue, 2.0f);
+            Pen drawPen = new Pen(Color.Orange, 1.0f);
             for (int i = 0; i < AllParticles[particleNumber].ForcesToApply.Count; i++)
             {
                 float forceVecMag = AllParticles[particleNumber].ForcesToApply[i].Magnitude;

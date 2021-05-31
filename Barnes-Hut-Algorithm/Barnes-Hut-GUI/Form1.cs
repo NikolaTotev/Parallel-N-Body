@@ -13,10 +13,14 @@ using System.Globalization;
 using System.IO;
 using System.Runtime;
 using System.Threading;
+using System.Windows.Media;
 using CsvHelper;
 using LiveCharts;
 using LiveCharts.Wpf;
+using Brush = System.Drawing.Brush;
 using CartesianChart = LiveCharts.WinForms.CartesianChart;
+using Color = System.Drawing.Color;
+using Pen = System.Drawing.Pen;
 
 
 namespace Barnes_Hut_GUI
@@ -113,8 +117,16 @@ namespace Barnes_Hut_GUI
             rb_UsePWI.Checked = true;
             DrawGraphics = false;
             mainTree.OnProgress += MainTree_OnProgress;
-            mainTree.OnCompleted += MainTree_OnCompleted;
-            ;
+            mainTree.OnCompleted += MainTree_OnCompleted; 
+            ShowForceVect = cb_ForceVect.Checked;
+            mainTree.ShowForceVect = cb_ForceVect.Checked;
+            mainTree.DrawBhNodeGrouping = cb_ShowGrouping.Checked;
+            mainTree.DrawNodeCOG = cb_ShowCOG.Checked;
+            mainTree.ShowForceVect = cb_TreeOutline.Checked;
+            DrawGraphics = cb_DrawGraphics.Checked;
+            ShowGrouping = cb_ShowGrouping.Checked;
+
+
         }
 
         #region Event subscriber functions
@@ -284,6 +296,14 @@ namespace Barnes_Hut_GUI
             CalculateForces();
         }
 
+        private void cb_ShowCOG_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_ShowCOG.Checked)
+            {
+                mainTree.DrawNodeCOG = cb_ShowCOG.Checked;
+            }
+        }
+
         #endregion
 
 
@@ -342,7 +362,7 @@ namespace Barnes_Hut_GUI
 
                     break;
                 case TestingMode.ThreadTest:
-                    
+
                     ThreadTesting(endParticleCount, maxThreadCount, ref threadComparison, ref threadCounts);
                     break;
                 case TestingMode.SingleFramePlusThreadTest:
@@ -366,9 +386,9 @@ namespace Barnes_Hut_GUI
 
         }
 
-        
 
-       
+
+
 
         private void ThreadTesting(int endParticleCount, int maxThreadCount, ref List<int> threadComparison, ref List<string> threadCounts)
         {
@@ -384,26 +404,57 @@ namespace Barnes_Hut_GUI
             {
                 switch (alg)
                 {
-                    
+                    case AlgToUse.PWI:
+                        l_AutoProgress.Text = "Algorithm selection err";
+                        break;
+                    case AlgToUse.PPWI:
+                        mainTree.GenerateParticles(currentParticleCount);
+                        execTime = mainTree.SingleFramePairwiseSimulation(isParalell: true, threadCount: j);
+                        threadComparison.Add(execTime.Milliseconds);
+                        threadCounts.Add(j.ToString());
+                        l_AutoProgress.Text = $"Progress: Comparing thread performance. PPWI Thread:{j}";
+                        mainTree.Reset();
+                        break;
+                    case AlgToUse.BH:
+                        l_AutoProgress.Text = "Algorithm selection err";
+                        break;
+                    case AlgToUse.PBH:
+                        mainTree.GenerateParticles(currentParticleCount);
+                        l_Status.Text = "Status: Partitioning...";
+                        Partition();
+                        m_partitionThread.Join();
+                        m_partitionThread = null;
+
+                        l_Status.Text = "Status: Starting BH sim...";
+
+                        execTime = mainTree.SingleFrameBHSimulation(isParallel: true, j,
+                            mode: m_currentMode);
+                        threadComparison.Add(execTime.Milliseconds);
+                        threadCounts.Add(j.ToString());
+                        l_AutoProgress.Text = $"Progress: Comparing thread performance. Thread:{j}";
+
+                        mainTree.Reset();
+                        break;
+                    default:
+                        l_AutoProgress.Text = "Algorithm selection err";
+                        break;
+
                 }
-                mainTree.GenerateParticles(currentParticleCount);
-                l_Status.Text = "Status: Partitioning...";
-                Partition();
-                m_partitionThread.Join();
-                m_partitionThread = null;
 
-                l_Status.Text = "Status: Starting BH sim...";
-                
-                execTime = mainTree.SingleFrameBHSimulation(isParallel: true, j,
-                    mode: m_currentMode);
-                threadComparison.Add(execTime.Milliseconds);
-                threadCounts.Add(j.ToString());
-                l_AutoProgress.Text = $"Progress: Comparing thread performance. Thread:{j}";
-
-                mainTree.Reset();
             }
         }
-
+        /// <summary>
+        /// Calculate the single frame performance used all of the available algorithms
+        /// </summary>
+        /// <param name="numberOfSteps"></param>
+        /// <param name="currentParticleCount"></param>
+        /// <param name="stepSize"></param>
+        /// <param name="execTime"></param>
+        /// <param name="pwiExecTimes"></param>
+        /// <param name="ppwiExecTimes"></param>
+        /// <param name="bhExecTimes"></param>
+        /// <param name="pbhExecTimes"></param>
+        /// <param name="xAxisVals"></param>
         void SingleFrame(int numberOfSteps, ref int currentParticleCount, int stepSize,
             ref TimeSpan execTime, ref List<int> pwiExecTimes,
             ref List<int> ppwiExecTimes, ref List<int> bhExecTimes,
@@ -538,7 +589,7 @@ namespace Barnes_Hut_GUI
             chart_ExecTime.Series = execTimes;
         }
 
-        
+
         /// <summary>
         /// Visualize the tree and re-draw particles to avoid them being covered by the nodes.
         /// </summary>
@@ -756,12 +807,17 @@ namespace Barnes_Hut_GUI
             }
         }
 
-      
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
-          
+
         }
 
+        private void btn_ClearForceVect_Click(object sender, EventArgs e)
+        {
+            forceVectGraphics.DrawEllipse(Pens.Blue, 100, 100, 5, 5);
+            p_ForcePanel = new TransparentPanel();
+        }
     }
 }

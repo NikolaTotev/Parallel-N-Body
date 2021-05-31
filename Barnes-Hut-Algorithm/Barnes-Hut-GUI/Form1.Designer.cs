@@ -106,6 +106,7 @@ namespace Barnes_Hut_GUI
             this.rb_SFandTT = new System.Windows.Forms.RadioButton();
             this.l_ThreadControls = new System.Windows.Forms.Label();
             this.p_SingleParticleDiagnostics = new System.Windows.Forms.Panel();
+            this.cb_ShowCOG = new System.Windows.Forms.CheckBox();
             this.l_SimDiagnostics = new System.Windows.Forms.Label();
             this.p_SimOptions = new System.Windows.Forms.Panel();
             this.l_saveDirectory = new System.Windows.Forms.Label();
@@ -134,6 +135,7 @@ namespace Barnes_Hut_GUI
             this.tb_ParticleCount.Name = "tb_ParticleCount";
             this.tb_ParticleCount.Size = new System.Drawing.Size(106, 20);
             this.tb_ParticleCount.TabIndex = 0;
+            this.tb_ParticleCount.Text = "10";
             // 
             // label1
             // 
@@ -186,6 +188,8 @@ namespace Barnes_Hut_GUI
             // cb_ForceVect
             // 
             this.cb_ForceVect.AutoSize = true;
+            this.cb_ForceVect.Checked = true;
+            this.cb_ForceVect.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_ForceVect.Location = new System.Drawing.Point(15, 55);
             this.cb_ForceVect.Name = "cb_ForceVect";
             this.cb_ForceVect.Size = new System.Drawing.Size(122, 17);
@@ -221,6 +225,8 @@ namespace Barnes_Hut_GUI
             // cb_TreeOutline
             // 
             this.cb_TreeOutline.AutoSize = true;
+            this.cb_TreeOutline.Checked = true;
+            this.cb_TreeOutline.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_TreeOutline.Location = new System.Drawing.Point(12, 17);
             this.cb_TreeOutline.Name = "cb_TreeOutline";
             this.cb_TreeOutline.Size = new System.Drawing.Size(114, 17);
@@ -291,7 +297,7 @@ namespace Barnes_Hut_GUI
             this.btn_CalcForces.BackColor = System.Drawing.Color.DarkSlateBlue;
             this.btn_CalcForces.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_CalcForces.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btn_CalcForces.Location = new System.Drawing.Point(15, 124);
+            this.btn_CalcForces.Location = new System.Drawing.Point(15, 153);
             this.btn_CalcForces.Name = "btn_CalcForces";
             this.btn_CalcForces.Size = new System.Drawing.Size(131, 23);
             this.btn_CalcForces.TabIndex = 17;
@@ -305,6 +311,7 @@ namespace Barnes_Hut_GUI
             this.tb_TargetParticleNum.Name = "tb_TargetParticleNum";
             this.tb_TargetParticleNum.Size = new System.Drawing.Size(122, 20);
             this.tb_TargetParticleNum.TabIndex = 18;
+            this.tb_TargetParticleNum.Text = "1";
             // 
             // l_TgtParticle
             // 
@@ -341,6 +348,8 @@ namespace Barnes_Hut_GUI
             // cb_ShowGrouping
             // 
             this.cb_ShowGrouping.AutoSize = true;
+            this.cb_ShowGrouping.Checked = true;
+            this.cb_ShowGrouping.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_ShowGrouping.Location = new System.Drawing.Point(15, 101);
             this.cb_ShowGrouping.Name = "cb_ShowGrouping";
             this.cb_ShowGrouping.Size = new System.Drawing.Size(99, 17);
@@ -539,6 +548,8 @@ namespace Barnes_Hut_GUI
             // cb_DrawGraphics
             // 
             this.cb_DrawGraphics.AutoSize = true;
+            this.cb_DrawGraphics.Checked = true;
+            this.cb_DrawGraphics.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_DrawGraphics.Location = new System.Drawing.Point(12, 63);
             this.cb_DrawGraphics.Name = "cb_DrawGraphics";
             this.cb_DrawGraphics.Size = new System.Drawing.Size(96, 17);
@@ -914,6 +925,7 @@ namespace Barnes_Hut_GUI
             // p_SingleParticleDiagnostics
             // 
             this.p_SingleParticleDiagnostics.BackColor = System.Drawing.Color.Bisque;
+            this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ShowCOG);
             this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ShowResForce);
             this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ForceVect);
             this.p_SingleParticleDiagnostics.Controls.Add(this.btn_CalcForces);
@@ -924,6 +936,19 @@ namespace Barnes_Hut_GUI
             this.p_SingleParticleDiagnostics.Name = "p_SingleParticleDiagnostics";
             this.p_SingleParticleDiagnostics.Size = new System.Drawing.Size(200, 275);
             this.p_SingleParticleDiagnostics.TabIndex = 50;
+            // 
+            // cb_ShowCOG
+            // 
+            this.cb_ShowCOG.AutoSize = true;
+            this.cb_ShowCOG.Checked = true;
+            this.cb_ShowCOG.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_ShowCOG.Location = new System.Drawing.Point(15, 124);
+            this.cb_ShowCOG.Name = "cb_ShowCOG";
+            this.cb_ShowCOG.Size = new System.Drawing.Size(79, 17);
+            this.cb_ShowCOG.TabIndex = 23;
+            this.cb_ShowCOG.Text = "Show COG";
+            this.cb_ShowCOG.UseVisualStyleBackColor = true;
+            this.cb_ShowCOG.CheckedChanged += new System.EventHandler(this.cb_ShowCOG_CheckedChanged);
             // 
             // l_SimDiagnostics
             // 
@@ -1166,6 +1191,7 @@ namespace Barnes_Hut_GUI
         private LiveCharts.WinForms.CartesianChart chart_ExecTime;
         private System.Windows.Forms.Button btn_SaveExecGraph;
         private System.Windows.Forms.Button btn_SaveThreadComp;
+        private System.Windows.Forms.CheckBox cb_ShowCOG;
     }
 }
 
