@@ -43,7 +43,7 @@ namespace Barnes_Hut_GUI
             this.tb_Theta = new System.Windows.Forms.TextBox();
             this.btn_Simulate = new System.Windows.Forms.Button();
             this.l_TimeStepsToSim = new System.Windows.Forms.Label();
-            this.tb_TimeStepSim = new System.Windows.Forms.TextBox();
+            this.tb_FrameCount = new System.Windows.Forms.TextBox();
             this.btn_CalcForces = new System.Windows.Forms.Button();
             this.tb_TargetParticleNum = new System.Windows.Forms.TextBox();
             this.l_TgtParticle = new System.Windows.Forms.Label();
@@ -119,6 +119,8 @@ namespace Barnes_Hut_GUI
             this.btn_SaveExecGraph = new System.Windows.Forms.Button();
             this.btn_SaveThreadComp = new System.Windows.Forms.Button();
             this.pb_AnimationTest = new System.Windows.Forms.PictureBox();
+            this.cb_ShowSimPlane = new System.Windows.Forms.CheckBox();
+            this.pb_SimWindow = new System.Windows.Forms.PictureBox();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ExecMetrics.SuspendLayout();
@@ -132,6 +134,7 @@ namespace Barnes_Hut_GUI
             this.p_SingleParticleDiagnostics.SuspendLayout();
             this.p_SimOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_AnimationTest)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pb_SimWindow)).BeginInit();
             this.SuspendLayout();
             // 
             // tb_ParticleCount
@@ -290,12 +293,12 @@ namespace Barnes_Hut_GUI
             this.l_TimeStepsToSim.TabIndex = 16;
             this.l_TimeStepsToSim.Text = "Timesteps to Simulate";
             // 
-            // tb_TimeStepSim
+            // tb_FrameCount
             // 
-            this.tb_TimeStepSim.Location = new System.Drawing.Point(15, 30);
-            this.tb_TimeStepSim.Name = "tb_TimeStepSim";
-            this.tb_TimeStepSim.Size = new System.Drawing.Size(175, 20);
-            this.tb_TimeStepSim.TabIndex = 15;
+            this.tb_FrameCount.Location = new System.Drawing.Point(15, 30);
+            this.tb_FrameCount.Name = "tb_FrameCount";
+            this.tb_FrameCount.Size = new System.Drawing.Size(175, 20);
+            this.tb_FrameCount.TabIndex = 15;
             // 
             // btn_CalcForces
             // 
@@ -677,6 +680,7 @@ namespace Barnes_Hut_GUI
             this.cb_UseStaticPoints.TabIndex = 32;
             this.cb_UseStaticPoints.Text = "Use Static Points";
             this.cb_UseStaticPoints.UseVisualStyleBackColor = true;
+            this.cb_UseStaticPoints.CheckedChanged += new System.EventHandler(this.cb_UseStaticPoints_CheckedChanged_1);
             // 
             // l_VisOpts
             // 
@@ -990,10 +994,11 @@ namespace Barnes_Hut_GUI
             // p_SimOptions
             // 
             this.p_SimOptions.BackColor = System.Drawing.Color.Bisque;
+            this.p_SimOptions.Controls.Add(this.cb_ShowSimPlane);
             this.p_SimOptions.Controls.Add(this.btn_AnimationTest);
             this.p_SimOptions.Controls.Add(this.l_saveDirectory);
             this.p_SimOptions.Controls.Add(this.textBox2);
-            this.p_SimOptions.Controls.Add(this.tb_TimeStepSim);
+            this.p_SimOptions.Controls.Add(this.tb_FrameCount);
             this.p_SimOptions.Controls.Add(this.btn_Simulate);
             this.p_SimOptions.Controls.Add(this.l_TimeStepsToSim);
             this.p_SimOptions.Location = new System.Drawing.Point(1218, 330);
@@ -1006,7 +1011,7 @@ namespace Barnes_Hut_GUI
             this.btn_AnimationTest.BackColor = System.Drawing.Color.DarkSlateBlue;
             this.btn_AnimationTest.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_AnimationTest.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btn_AnimationTest.Location = new System.Drawing.Point(47, 148);
+            this.btn_AnimationTest.Location = new System.Drawing.Point(18, 155);
             this.btn_AnimationTest.Name = "btn_AnimationTest";
             this.btn_AnimationTest.Size = new System.Drawing.Size(132, 23);
             this.btn_AnimationTest.TabIndex = 19;
@@ -1083,6 +1088,29 @@ namespace Barnes_Hut_GUI
             this.pb_AnimationTest.TabStop = false;
             this.pb_AnimationTest.Paint += new System.Windows.Forms.PaintEventHandler(this.pb_AnimationTest_Paint);
             // 
+            // cb_ShowSimPlane
+            // 
+            this.cb_ShowSimPlane.AutoSize = true;
+            this.cb_ShowSimPlane.Checked = true;
+            this.cb_ShowSimPlane.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_ShowSimPlane.Location = new System.Drawing.Point(47, 132);
+            this.cb_ShowSimPlane.Name = "cb_ShowSimPlane";
+            this.cb_ShowSimPlane.Size = new System.Drawing.Size(103, 17);
+            this.cb_ShowSimPlane.TabIndex = 25;
+            this.cb_ShowSimPlane.Text = "Show Sim Plane";
+            this.cb_ShowSimPlane.UseVisualStyleBackColor = true;
+            this.cb_ShowSimPlane.CheckedChanged += new System.EventHandler(this.cb_ShowSimPlane_CheckedChanged);
+            // 
+            // pb_SimWindow
+            // 
+            this.pb_SimWindow.BackColor = System.Drawing.Color.White;
+            this.pb_SimWindow.Location = new System.Drawing.Point(11, 11);
+            this.pb_SimWindow.Name = "pb_SimWindow";
+            this.pb_SimWindow.Size = new System.Drawing.Size(737, 737);
+            this.pb_SimWindow.TabIndex = 57;
+            this.pb_SimWindow.TabStop = false;
+            this.pb_SimWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.pb_SimWindow_Paint);
+            // 
             // p_TreePanel
             // 
             this.p_TreePanel.Location = new System.Drawing.Point(12, 12);
@@ -1120,6 +1148,7 @@ namespace Barnes_Hut_GUI
             this.Controls.Add(this.label7);
             this.Controls.Add(this.chart_ThreadComparison);
             this.Controls.Add(this.l_Progress);
+            this.Controls.Add(this.pb_SimWindow);
             this.Controls.Add(this.p_TreePanel);
             this.Controls.Add(this.p_ForcePanel);
             this.Controls.Add(this.iL_ExecMetrics);
@@ -1152,6 +1181,7 @@ namespace Barnes_Hut_GUI
             this.p_SimOptions.ResumeLayout(false);
             this.p_SimOptions.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_AnimationTest)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pb_SimWindow)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1172,7 +1202,7 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.TextBox tb_Theta;
         private System.Windows.Forms.Button btn_Simulate;
         private System.Windows.Forms.Label l_TimeStepsToSim;
-        private System.Windows.Forms.TextBox tb_TimeStepSim;
+        private System.Windows.Forms.TextBox tb_FrameCount;
         private System.Windows.Forms.Button btn_CalcForces;
         private System.Windows.Forms.TextBox tb_TargetParticleNum;
         private System.Windows.Forms.Label l_TgtParticle;
@@ -1250,6 +1280,8 @@ namespace Barnes_Hut_GUI
         private System.Windows.Forms.CheckBox cb_UseStaticPoints;
         private System.Windows.Forms.Button btn_AnimationTest;
         private System.Windows.Forms.PictureBox pb_AnimationTest;
+        private System.Windows.Forms.CheckBox cb_ShowSimPlane;
+        private System.Windows.Forms.PictureBox pb_SimWindow;
     }
 }
 

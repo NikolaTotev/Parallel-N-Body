@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,10 @@ namespace Barnes_Hut_GUI
         public PointF CenterPoint { get; set; }
         public PointF OldCenterPoint { get; set; }
         public PointF AccelerationComponents { get; set; }
+        public PointF Velocity = new PointF(0, 0);
+        public int SimHeight = 737;
+        public int SimWidth = 737;
+        private int time = 0;
 
         public float Mass { get; set; }
         public Color ParticleColor { get; }
@@ -26,6 +31,8 @@ namespace Barnes_Hut_GUI
 
         public PointF ResultantVectorStart { get; set; }
         public PointF ResultantVectorEnd { get; set; }
+        public PointF AcceleratioNVectorStart;
+        public PointF AcceleratioNVectorEnd;
 
         public Particle()
         {
@@ -68,21 +75,17 @@ namespace Barnes_Hut_GUI
 
         public void CalculateResultantForce()
         {
-            ForceVector resultantForceVector = new ForceVector();
-            resultantForceVector.Start = ForcesToApply[0].Start;
+            PointF resultantVectorStart = CenterPoint;
+            PointF resultantVectorEnd = CenterPoint;
 
-
-            PointF currentVectorEndpoint = new Point();
-            PointF currentStartPoint = ForcesToApply[0].End;
-
-            for (int i = 1; i < ForcesToApply.Count; i++)
+            foreach (ForceVector forceVector in ForcesToApply)
             {
-                currentVectorEndpoint.X = currentStartPoint.X + (int)ForcesToApply[i].xLen * ForcesToApply[i].DirectionHorizontal;
-                currentVectorEndpoint.Y = currentStartPoint.Y + (int)ForcesToApply[i].yLen * ForcesToApply[i].DirectionVertical;
-                currentStartPoint = currentVectorEndpoint;
+                forceVector.ShiftEndPoint(resultantVectorEnd);
+                resultantVectorEnd = forceVector.ShiftedEnd;
             }
 
-            resultantForceVector.End = currentVectorEndpoint;
+            ResultantVectorStart = resultantVectorStart;
+            ResultantVectorEnd = resultantVectorEnd;
         }
 
         public void GetAccelerationVector()
@@ -92,7 +95,128 @@ namespace Barnes_Hut_GUI
 
             float xAccel = xLen / Mass;
             float yAccel = yLen / Mass;
-            AccelerationComponents = new PointF(xAccel * 100, yAccel * 100);
+            AccelerationComponents = new PointF(xAccel * 10, yAccel * 10f);
+        }
+
+        public void MoveParticle()
+        {
+            OldCenterPoint = CenterPoint;
+            GetAccelerationVector();
+            time += 1;
+            PointF currentCenterPoint = CenterPoint;
+            float forceX = (float)(Math.Abs(Velocity.X) * 1 + 0.5 * Math.Abs(AccelerationComponents.X) * 1 * 1);
+            float forceY = (float)(Math.Abs(Velocity.Y) * 1 + 0.5 * Math.Abs(AccelerationComponents.Y) * 1 * 1);
+            float newCenterX = 0;
+            float newCenterY = 0;
+
+            bool negativeX = ResultantVectorEnd.X < ResultantVectorStart.X;
+            bool negativeY = ResultantVectorEnd.Y < ResultantVectorStart.Y;
+
+            if (negativeX)
+            {
+                newCenterX = currentCenterPoint.X - forceX;
+                Velocity.X = -AccelerationComponents.X * 1;
+            }
+            else
+            {
+                newCenterX = currentCenterPoint.X + forceX;
+                Velocity.X = AccelerationComponents.X * 1;
+            }
+
+            if (negativeY)
+            {
+                newCenterY = currentCenterPoint.Y - forceY;
+                Velocity.Y = -AccelerationComponents.Y * 1;
+            }
+            else
+            {
+                newCenterY = currentCenterPoint.Y + forceY;
+                Velocity.Y = AccelerationComponents.Y * 1;
+            }
+
+            // Debug.Print($"Velocity: {vel.ToString()} | Acceleration: {simParticle.AccelerationComponents.ToString()} ");
+
+
+
+
+            //if (newCenterX >SimWidth)
+            //{
+            //    newCenterX = SimWidth;
+            //}
+            //else if (newCenterX < 0)
+            //{
+            //    newCenterX = 0;
+            //}
+
+            //if (newCenterY > SimHeight)
+            //{
+            //    newCenterY = SimHeight;
+            //}
+            //else if (newCenterY < 0)
+            //{
+            //    newCenterY = 0;
+            //}
+
+
+
+            CenterPoint = new PointF(newCenterX, newCenterY);
+
+
+            //if (accelEndX > SimWidth)
+            //{
+            //    accelEndX = SimWidth - (accelEndX - SimWidth);
+            //    Velocity.X = -Velocity.X;
+            //}
+            //else if (accelEndX < 0)
+            //{
+            //    accelEndX = Math.Abs(accelEndX);
+            //    Velocity.X = -Velocity.X;
+            //}
+
+            //if (accelEndY > SimHeight)
+            //{
+            //    accelEndY = SimHeight - (accelEndY - SimHeight);
+            //    Velocity.Y = -Velocity.Y;
+            //}
+            //else if (accelEndY < 0)
+            //{
+            //    accelEndY = Math.Abs(accelEndY);
+            //    Velocity.Y = -Velocity.Y;
+            //}
+
+
+            //AcceleratioNVectorEnd = new PointF(accelEndX, accelEndY);
+
+            //simParticle.ResultantVectorStart = simVector.Start;
+            //simParticle.ResultantVectorEnd = simVector.End;
+
+
+            Debug.Print($"ForceX: {forceX} || ForceY: {forceY}");
+            //Debug.Print($"Center: {simParticle.CenterPoint.ToString()} | Vel: {vel.ToString()} | SimVectEnd: {simVector.Start.ToString()} -> {simVector.End.ToString()}");
+
+
+
+            /*
+             *
+             *function velocity_verlet(pos::Float64, acc::Float64, dt::Float64)
+                prev_pos = pos
+                time = 0.0
+                vel = 0.0
+
+                while (pos > 0.0)
+                    time += dt
+                    pos += vel * dt + 0.5 * acc * dt * dt;
+                    vel += acc * dt;
+                end
+
+                return time, vel
+                end
+             *
+            */ //
+
+            ForcesToApply.Clear();
+
+
         }
     }
 }

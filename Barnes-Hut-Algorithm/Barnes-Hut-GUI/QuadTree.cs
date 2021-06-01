@@ -232,6 +232,7 @@ namespace Barnes_Hut_GUI
                             }
                         }
                         CalculateResultantVector(currentParticle);
+                        
                     });
                     m_Sw.Stop();
                     break;
@@ -249,7 +250,9 @@ namespace Barnes_Hut_GUI
                                 currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
                             }
                         }
-                        CalculateResultantVector(currentParticle);
+                        currentParticle.CalculateResultantForce();
+                        currentParticle.MoveParticle();
+                        //CalculateResultantVector(currentParticle);
                     }
                     m_Sw.Stop();
                     break;

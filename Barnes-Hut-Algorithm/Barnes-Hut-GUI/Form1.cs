@@ -205,6 +205,7 @@ namespace Barnes_Hut_GUI
                 cb_ShowGrouping.Enabled = false;
                 ShowGrouping = false;
                 mainTree.DrawBhNodeGrouping = false;
+                cb_ShowGrouping.Checked = false;
             }
         }
 
@@ -664,6 +665,7 @@ namespace Barnes_Hut_GUI
                 case AlgToUse.PWI:
                     sw.Start();
                     mainTree.SingleFramePairwiseSimulation(isParalell: false);
+                 
                     sw.Stop();
                     l_TotalTimeValue.Text = sw.Elapsed.ToString();
                     l_PWITimeValue.Text = sw.Elapsed.ToString();
@@ -766,46 +768,63 @@ namespace Barnes_Hut_GUI
 
         private void btn_Simulate_Click(object sender, EventArgs e)
         {
-            Stopwatch sw = new Stopwatch();
-            TimeSpan time;
-            switch (alg)
+            //Stopwatch sw = new Stopwatch();
+            //TimeSpan time;
+            //switch (alg)
+            //{
+            //    case AlgToUse.PWI:
+            //        sw.Start();
+            //        time = mainTree.SingleFramePairwiseSimulation(isParalell: false);
+            //        sw.Stop();
+            //        l_TotalTimeValue.Text = time.ToString();
+            //        l_PWITimeValue.Text = time.ToString();
+            //        //Clipboard.SetText(sw.Elapsed.ToString());
+            //        PWITicks = sw.Elapsed.Ticks;
+            //        break;
+            //    case AlgToUse.PPWI:
+            //        time = mainTree.SingleFramePairwiseSimulation(isParalell: true);
+            //        l_TotalTimeValue.Text = time.ToString();
+            //        l_PPWITimeValue.Text = time.ToString();
+            //        break;
+            //    case AlgToUse.BH:
+            //        mainTree.theta = float.Parse(tb_Theta.Text);
+            //        time = mainTree.SingleFrameBHSimulation(isParallel: false, numberOfThreads: 1,
+            //            mode: m_currentMode);
+            //        l_TotalTimeValue.Text = time.ToString();
+            //        l_BHSingleStepTimeValue.Text = time.ToString();
+            //        //Clipboard.SetText(sw.Elapsed.ToString());
+            //        BHTicks = sw.Elapsed.Ticks;
+            //        break;
+
+            //    case AlgToUse.PBH:
+
+            //        mainTree.theta = float.Parse(tb_Theta.Text);
+            //        time = mainTree.SingleFrameBHSimulation(isParallel: true, numberOfThreads: 6,
+            //            mode: m_currentMode);
+            //        l_TotalTimeValue.Text = time.ToString();
+            //        l_BHParlTimeValue.Text = time.ToString();
+            //        //Clipboard.SetText(time.ToString());
+            //        PBHTicks = time.Ticks;
+            //        break;
+            //    default:
+            //        throw new ArgumentOutOfRangeException();
+            //}
+
+            int framesToSimulate = int.Parse(tb_FrameCount.Text);
+            
+            for (int i = 0; i < framesToSimulate; i++)
             {
-                case AlgToUse.PWI:
-                    sw.Start();
-                    time = mainTree.SingleFramePairwiseSimulation(isParalell: false);
-                    sw.Stop();
-                    l_TotalTimeValue.Text = time.ToString();
-                    l_PWITimeValue.Text = time.ToString();
-                    //Clipboard.SetText(sw.Elapsed.ToString());
-                    PWITicks = sw.Elapsed.Ticks;
-                    break;
-                case AlgToUse.PPWI:
-                    time = mainTree.SingleFramePairwiseSimulation(isParalell: true);
-                    l_TotalTimeValue.Text = time.ToString();
-                    l_PPWITimeValue.Text = time.ToString();
-                    break;
-                case AlgToUse.BH:
-                    mainTree.theta = float.Parse(tb_Theta.Text);
-                    time = mainTree.SingleFrameBHSimulation(isParallel: false, numberOfThreads: 1,
-                        mode: m_currentMode);
-                    l_TotalTimeValue.Text = time.ToString();
-                    l_BHSingleStepTimeValue.Text = time.ToString();
-                    //Clipboard.SetText(sw.Elapsed.ToString());
-                    BHTicks = sw.Elapsed.Ticks;
-                    break;
+                mainTree.SingleFramePairwiseSimulation(isParalell: false, 1);
 
-                case AlgToUse.PBH:
 
-                    mainTree.theta = float.Parse(tb_Theta.Text);
-                    time = mainTree.SingleFrameBHSimulation(isParallel: true, numberOfThreads: 6,
-                        mode: m_currentMode);
-                    l_TotalTimeValue.Text = time.ToString();
-                    l_BHParlTimeValue.Text = time.ToString();
-                    //Clipboard.SetText(time.ToString());
-                    PBHTicks = time.Ticks;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                Invoke((MethodInvoker)(() =>
+                {
+                    pb_SimWindow.Invalidate();
+                    pb_SimWindow.Update();
+                }));
+
+                Thread.Sleep(16);
+                Debug.Print($"Frame: {i}");
             }
         }
 
@@ -1002,6 +1021,31 @@ namespace Barnes_Hut_GUI
           // graphics.DrawLine(Pens.Blue, simParticle.CenterPoint, vel);
             graphics.DrawLine(Pens.GreenYellow, simParticle.CenterPoint, new PointF(simParticle.AccelerationComponents.X + simParticle.CenterPoint.X, simParticle.AccelerationComponents.Y+simParticle.CenterPoint.Y));
             
+        }
+
+        private void pb_SimWindow_Paint(object sender, PaintEventArgs e)
+        {
+            SimulateFrame(e.Graphics);
+        }
+
+        public void SimulateFrame(Graphics graphics)
+        {
+            foreach (Particle particle in mainTree.AllParticles)
+            {
+                graphics.FillEllipse(new SolidBrush(Color.CornflowerBlue), particle.CenterPoint.X - 2, particle.CenterPoint.Y - 2, 4, 4);
+                //graphics.DrawLine(Pens.Red, particle.CenterPoint, particle.ResultantVectorEnd);
+
+            }
+        }
+
+        private void cb_ShowSimPlane_CheckedChanged(object sender, EventArgs e)
+        {
+            pb_SimWindow.Visible = cb_ShowSimPlane.Checked;
+        }
+
+        private void cb_UseStaticPoints_CheckedChanged_1(object sender, EventArgs e)
+        {
+            mainTree.UseStaticPoints = cb_UseStaticPoints.Checked;
         }
     }
 }
