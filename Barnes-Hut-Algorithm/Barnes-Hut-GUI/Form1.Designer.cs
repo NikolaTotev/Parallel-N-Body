@@ -80,6 +80,7 @@ namespace Barnes_Hut_GUI
             this.p_ActionButtons = new System.Windows.Forms.Panel();
             this.l_init = new System.Windows.Forms.Label();
             this.p_Initialization = new System.Windows.Forms.Panel();
+            this.cb_UseStaticPoints = new System.Windows.Forms.CheckBox();
             this.l_VisOpts = new System.Windows.Forms.Label();
             this.p_Visualization = new System.Windows.Forms.Panel();
             this.l_AlgSelection = new System.Windows.Forms.Label();
@@ -106,21 +107,20 @@ namespace Barnes_Hut_GUI
             this.rb_SFandTT = new System.Windows.Forms.RadioButton();
             this.l_ThreadControls = new System.Windows.Forms.Label();
             this.p_SingleParticleDiagnostics = new System.Windows.Forms.Panel();
+            this.cb_ShowShiftedVect = new System.Windows.Forms.CheckBox();
             this.cb_ShowCOG = new System.Windows.Forms.CheckBox();
             this.l_SimDiagnostics = new System.Windows.Forms.Label();
             this.p_SimOptions = new System.Windows.Forms.Panel();
+            this.btn_AnimationTest = new System.Windows.Forms.Button();
             this.l_saveDirectory = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.l_SimOpts = new System.Windows.Forms.Label();
             this.chart_ExecTime = new LiveCharts.WinForms.CartesianChart();
             this.btn_SaveExecGraph = new System.Windows.Forms.Button();
             this.btn_SaveThreadComp = new System.Windows.Forms.Button();
-            this.cb_ShowShiftedVect = new System.Windows.Forms.CheckBox();
-            this.cb_UseStaticPoints = new System.Windows.Forms.CheckBox();
+            this.pb_AnimationTest = new System.Windows.Forms.PictureBox();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
-            this.pb_AnimationTest = new System.Windows.Forms.PictureBox();
-            this.btn_AnimationTest = new System.Windows.Forms.Button();
             this.p_ExecMetrics.SuspendLayout();
             this.p_ManualControls.SuspendLayout();
             this.p_ActionButtons.SuspendLayout();
@@ -668,6 +668,16 @@ namespace Barnes_Hut_GUI
             this.p_Initialization.Size = new System.Drawing.Size(207, 97);
             this.p_Initialization.TabIndex = 49;
             // 
+            // cb_UseStaticPoints
+            // 
+            this.cb_UseStaticPoints.AutoSize = true;
+            this.cb_UseStaticPoints.Location = new System.Drawing.Point(93, 70);
+            this.cb_UseStaticPoints.Name = "cb_UseStaticPoints";
+            this.cb_UseStaticPoints.Size = new System.Drawing.Size(107, 17);
+            this.cb_UseStaticPoints.TabIndex = 32;
+            this.cb_UseStaticPoints.Text = "Use Static Points";
+            this.cb_UseStaticPoints.UseVisualStyleBackColor = true;
+            // 
             // l_VisOpts
             // 
             this.l_VisOpts.AutoSize = true;
@@ -944,6 +954,17 @@ namespace Barnes_Hut_GUI
             this.p_SingleParticleDiagnostics.Size = new System.Drawing.Size(200, 275);
             this.p_SingleParticleDiagnostics.TabIndex = 50;
             // 
+            // cb_ShowShiftedVect
+            // 
+            this.cb_ShowShiftedVect.AutoSize = true;
+            this.cb_ShowShiftedVect.Location = new System.Drawing.Point(15, 101);
+            this.cb_ShowShiftedVect.Name = "cb_ShowShiftedVect";
+            this.cb_ShowShiftedVect.Size = new System.Drawing.Size(128, 17);
+            this.cb_ShowShiftedVect.TabIndex = 24;
+            this.cb_ShowShiftedVect.Text = "Show Shifted Vectors";
+            this.cb_ShowShiftedVect.UseVisualStyleBackColor = true;
+            this.cb_ShowShiftedVect.CheckedChanged += new System.EventHandler(this.cb_ShowShiftedVect_CheckedChanged);
+            // 
             // cb_ShowCOG
             // 
             this.cb_ShowCOG.AutoSize = true;
@@ -979,6 +1000,19 @@ namespace Barnes_Hut_GUI
             this.p_SimOptions.Name = "p_SimOptions";
             this.p_SimOptions.Size = new System.Drawing.Size(200, 184);
             this.p_SimOptions.TabIndex = 52;
+            // 
+            // btn_AnimationTest
+            // 
+            this.btn_AnimationTest.BackColor = System.Drawing.Color.DarkSlateBlue;
+            this.btn_AnimationTest.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_AnimationTest.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btn_AnimationTest.Location = new System.Drawing.Point(47, 148);
+            this.btn_AnimationTest.Name = "btn_AnimationTest";
+            this.btn_AnimationTest.Size = new System.Drawing.Size(132, 23);
+            this.btn_AnimationTest.TabIndex = 19;
+            this.btn_AnimationTest.Text = "Test Animation";
+            this.btn_AnimationTest.UseVisualStyleBackColor = false;
+            this.btn_AnimationTest.Click += new System.EventHandler(this.btn_AnimationTest_Click);
             // 
             // l_saveDirectory
             // 
@@ -1039,26 +1073,15 @@ namespace Barnes_Hut_GUI
             this.btn_SaveThreadComp.UseVisualStyleBackColor = false;
             this.btn_SaveThreadComp.Click += new System.EventHandler(this.btn_SaveThreadComp_Click);
             // 
-            // cb_ShowShiftedVect
+            // pb_AnimationTest
             // 
-            this.cb_ShowShiftedVect.AutoSize = true;
-            this.cb_ShowShiftedVect.Location = new System.Drawing.Point(15, 101);
-            this.cb_ShowShiftedVect.Name = "cb_ShowShiftedVect";
-            this.cb_ShowShiftedVect.Size = new System.Drawing.Size(128, 17);
-            this.cb_ShowShiftedVect.TabIndex = 24;
-            this.cb_ShowShiftedVect.Text = "Show Shifted Vectors";
-            this.cb_ShowShiftedVect.UseVisualStyleBackColor = true;
-            this.cb_ShowShiftedVect.CheckedChanged += new System.EventHandler(this.cb_ShowShiftedVect_CheckedChanged);
-            // 
-            // cb_UseStaticPoints
-            // 
-            this.cb_UseStaticPoints.AutoSize = true;
-            this.cb_UseStaticPoints.Location = new System.Drawing.Point(93, 70);
-            this.cb_UseStaticPoints.Name = "cb_UseStaticPoints";
-            this.cb_UseStaticPoints.Size = new System.Drawing.Size(107, 17);
-            this.cb_UseStaticPoints.TabIndex = 32;
-            this.cb_UseStaticPoints.Text = "Use Static Points";
-            this.cb_UseStaticPoints.UseVisualStyleBackColor = true;
+            this.pb_AnimationTest.BackColor = System.Drawing.Color.Gainsboro;
+            this.pb_AnimationTest.Location = new System.Drawing.Point(1167, 545);
+            this.pb_AnimationTest.Name = "pb_AnimationTest";
+            this.pb_AnimationTest.Size = new System.Drawing.Size(251, 204);
+            this.pb_AnimationTest.TabIndex = 56;
+            this.pb_AnimationTest.TabStop = false;
+            this.pb_AnimationTest.Paint += new System.Windows.Forms.PaintEventHandler(this.pb_AnimationTest_Paint);
             // 
             // p_TreePanel
             // 
@@ -1075,28 +1098,6 @@ namespace Barnes_Hut_GUI
             this.p_ForcePanel.Opacity = 0;
             this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
             this.p_ForcePanel.TabIndex = 24;
-            // 
-            // pb_AnimationTest
-            // 
-            this.pb_AnimationTest.BackColor = System.Drawing.Color.White;
-            this.pb_AnimationTest.Location = new System.Drawing.Point(1167, 545);
-            this.pb_AnimationTest.Name = "pb_AnimationTest";
-            this.pb_AnimationTest.Size = new System.Drawing.Size(251, 204);
-            this.pb_AnimationTest.TabIndex = 56;
-            this.pb_AnimationTest.TabStop = false;
-            // 
-            // btn_AnimationTest
-            // 
-            this.btn_AnimationTest.BackColor = System.Drawing.Color.DarkSlateBlue;
-            this.btn_AnimationTest.Font = new System.Drawing.Font("Montserrat", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_AnimationTest.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btn_AnimationTest.Location = new System.Drawing.Point(47, 148);
-            this.btn_AnimationTest.Name = "btn_AnimationTest";
-            this.btn_AnimationTest.Size = new System.Drawing.Size(132, 23);
-            this.btn_AnimationTest.TabIndex = 19;
-            this.btn_AnimationTest.Text = "Test Animation";
-            this.btn_AnimationTest.UseVisualStyleBackColor = false;
-            this.btn_AnimationTest.Click += new System.EventHandler(this.btn_AnimationTest_Click);
             // 
             // Form1
             // 

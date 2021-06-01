@@ -10,6 +10,9 @@ namespace Barnes_Hut_GUI
     class Particle
     {
         public PointF CenterPoint { get; set; }
+        public PointF OldCenterPoint { get; set; }
+        public PointF AccelerationComponents { get; set; }
+
         public float Mass { get; set; }
         public Color ParticleColor { get; }
         public List<ForceVector> ForcesToApply { get; set; }
@@ -80,6 +83,16 @@ namespace Barnes_Hut_GUI
             }
 
             resultantForceVector.End = currentVectorEndpoint;
+        }
+
+        public void GetAccelerationVector()
+        {
+            float xLen = Math.Abs(ResultantVectorStart.X- ResultantVectorEnd.X);
+            float yLen = Math.Abs(ResultantVectorStart.Y - ResultantVectorEnd.Y);
+
+            float xAccel = xLen / Mass;
+            float yAccel = yLen / Mass;
+            AccelerationComponents = new PointF(xAccel*100, yAccel*100);
         }
     }
 }

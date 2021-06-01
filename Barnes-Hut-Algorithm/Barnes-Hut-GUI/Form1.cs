@@ -112,6 +112,7 @@ namespace Barnes_Hut_GUI
         public Form1()
         {
             InitializeComponent();
+            simParticle.CenterPoint = new PointF(0, 0);
             mainTree = new QuadTree();
             graphics = p_SimulationArea.CreateGraphics();
             forceVectGraphics = p_ForcePanel.CreateGraphics();
@@ -120,7 +121,7 @@ namespace Barnes_Hut_GUI
             rb_UsePWI.Checked = true;
             DrawGraphics = false;
             mainTree.OnProgress += MainTree_OnProgress;
-            mainTree.OnCompleted += MainTree_OnCompleted; 
+            mainTree.OnCompleted += MainTree_OnCompleted;
             ShowForceVect = cb_ForceVect.Checked;
             mainTree.ShowForceVect = cb_ForceVect.Checked;
             mainTree.DrawBhNodeGrouping = cb_ShowGrouping.Checked;
@@ -296,7 +297,7 @@ namespace Barnes_Hut_GUI
 
         private void cb_ShowResForce_CheckedChanged(object sender, EventArgs e)
         {
-            ShowResultantForce =  cb_ShowResForce.Checked;
+            ShowResultantForce = cb_ShowResForce.Checked;
             mainTree.ShowResultantForce = ShowResultantForce;
         }
 
@@ -307,9 +308,9 @@ namespace Barnes_Hut_GUI
 
         private void cb_ShowCOG_CheckedChanged(object sender, EventArgs e)
         {
-            
-                mainTree.DrawNodeCOG = cb_ShowCOG.Checked;
-            
+
+            mainTree.DrawNodeCOG = cb_ShowCOG.Checked;
+
         }
 
         #endregion
@@ -671,7 +672,7 @@ namespace Barnes_Hut_GUI
                     PWITicks = sw.Elapsed.Ticks;
                     break;
                 case AlgToUse.PBH:
-                    
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -679,12 +680,12 @@ namespace Barnes_Hut_GUI
 
             if (ShowForceVect && DrawGraphics)
             {
-               mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, m_MinforceVectPen, m_MidforceVectPen,m_MaxforceVectPen);
+                mainTree.VisualizeForceVectors(targetParticle, forceVectGraphics, m_MinforceVectPen, m_MidforceVectPen, m_MaxforceVectPen);
             }
 
             if (ShowGrouping && DrawGraphics)
             {
-               mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, m_MidforceVectPen);
+                mainTree.VisualizeGrouping(targetParticle, forceVectGraphics, m_MidforceVectPen);
             }
         }
 
@@ -833,9 +834,154 @@ namespace Barnes_Hut_GUI
             mainTree.UseStaticPoints = UseStaticPoints;
         }
 
+        private Particle simParticle = new Particle();
+        private ForceVector simVector = new ForceVector();
         private void btn_AnimationTest_Click(object sender, EventArgs e)
         {
+            simParticle = new Particle();
+            simParticle.CenterPoint = new PointF(20, 30);
+            simVector = new ForceVector(sPoint: simParticle.CenterPoint, new PointF(25, 35), 15, 0.5f, 0.2f);
+            simParticle.ResultantVectorStart = simVector.Start;
+            simParticle.ResultantVectorEnd = simVector.End;
 
+            for (int i = 0; i < 2000; i++)
+            {
+                Thread.Sleep(16);
+                CalculateFrame();
+                //Debug.Print($"At frame: {i}");
+            }
+
+        }
+
+        private void pb_AnimationTest_Paint(object sender, PaintEventArgs e)
+        {
+            DrawFrame(e.Graphics);
+
+        }
+        float time = 0.0f;
+        PointF vel = new PointF(0, 0);
+        Random rand = new Random(42);
+        public void CalculateFrame()
+        {
+
+            simParticle.OldCenterPoint = simParticle.CenterPoint;
+            simParticle.GetAccelerationVector();
+            time += 1;
+            PointF currentCenterPoint = simParticle.CenterPoint;
+            float forceX = (float)(vel.X * 1 + 0.5 * simParticle.AccelerationComponents.X * 1 * 1);
+            float forceY = (float)(vel.Y * 1 + 0.5 * simParticle.AccelerationComponents.Y * 1 * 1);
+            float newX = currentCenterPoint.X + forceX;
+            float newY = currentCenterPoint.Y + forceY;
+           // Debug.Print($"Velocity: {vel.ToString()} | Acceleration: {simParticle.AccelerationComponents.ToString()} ");
+
+            if (newX > pb_AnimationTest.Width)
+            {
+                newX = pb_AnimationTest.Width;// - (newX - pb_AnimationTest.Width);
+            }
+            else if (newX < 0)
+            {
+                newX = 0;
+            }
+
+            if (newY > pb_AnimationTest.Height)
+            {
+                newY = pb_AnimationTest.Height;//- (newY - pb_AnimationTest.Height);
+            }
+            else if (newY < 0)
+            {
+                newY = 0;
+            }
+            simParticle.CenterPoint = new PointF(newX, newY);
+
+            float endX = 0;
+            float endY = 0;
+            simVector.Start = simParticle.CenterPoint;
+            if (vel.X < 0)
+            {
+                vel.X = -simParticle.AccelerationComponents.X * 1;
+                endX = simParticle.CenterPoint.X - 5;
+            }
+            else
+            {
+                vel.X = simParticle.AccelerationComponents.X * 1;
+                endX = simParticle.CenterPoint.X + 5;
+            }
+            
+            if (vel.Y < 0)
+            {
+                vel.Y = -simParticle.AccelerationComponents.Y * 1;
+                endY = simParticle.CenterPoint.Y - 5;
+            }
+            else
+            {
+                vel.Y = simParticle.AccelerationComponents.Y * 1;
+                endY = simParticle.CenterPoint.Y + 5;
+            }
+            
+
+            if (endX > pb_AnimationTest.Width)
+            {
+                endX = simParticle.CenterPoint.X - (endX - simParticle.CenterPoint.X);
+                vel.X = -vel.X;
+            }
+            else if (endX < 0)
+            {
+                endX = Math.Abs(endX);
+                vel.X = -vel.X;
+            }
+
+            if (endY > pb_AnimationTest.Height)
+            {
+                endY = simParticle.CenterPoint.Y - (endY - simParticle.CenterPoint.Y);
+                vel.Y = -vel.Y;
+            }
+            else if (endY < 0)
+            {
+                endY = Math.Abs(endY);
+                vel.Y = -vel.Y;
+            }
+
+
+            simVector.End = new PointF(endX, endY);
+            simParticle.ResultantVectorStart = simVector.Start;
+            simParticle.ResultantVectorEnd = simVector.End;
+
+            Debug.Print($"Center: {simParticle.CenterPoint.ToString()} | Vel: {vel.ToString()} | SimVectEnd: {simVector.Start.ToString()} -> {simVector.End.ToString()}");
+
+
+            Invoke((MethodInvoker)(() =>
+           {
+               pb_AnimationTest.Invalidate();
+               pb_AnimationTest.Update();
+           }));
+            /*
+             *
+             *function velocity_verlet(pos::Float64, acc::Float64, dt::Float64)
+                prev_pos = pos
+                time = 0.0
+                vel = 0.0
+
+                while (pos > 0.0)
+                    time += dt
+                    pos += vel * dt + 0.5 * acc * dt * dt;
+                    vel += acc * dt;
+                end
+
+                return time, vel
+                end
+             *
+            */ //
+
+
+        }
+
+        public void DrawFrame(Graphics graphics)
+        {
+            graphics.FillEllipse(new SolidBrush(Color.CornflowerBlue), simParticle.CenterPoint.X - 2, simParticle.CenterPoint.Y - 2, 4, 4);
+            graphics.DrawLine(Pens.Red, simVector.Start, simVector.End);
+          // graphics.DrawLine(Pens.Blue, simParticle.CenterPoint, vel);
+           // graphics.DrawLine(Pens.GreenYellow, simParticle.CenterPoint, simParticle.AccelerationComponents);
+            
         }
     }
 }
