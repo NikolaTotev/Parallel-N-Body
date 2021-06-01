@@ -23,7 +23,7 @@ namespace Barnes_Hut_GUI
         private bool initialMinMaxNotSet = true;
 
         private readonly object listLock = new object();
-        
+
         public PointF ResultantVectorStart { get; set; }
         public PointF ResultantVectorEnd { get; set; }
 
@@ -61,9 +61,9 @@ namespace Barnes_Hut_GUI
 
             //lock (listLock)
             //{
-                ForcesToApply.Add(currentVector);
+            ForcesToApply.Add(currentVector);
             //}
-            
+
         }
 
         public void CalculateResultantForce()
@@ -87,12 +87,12 @@ namespace Barnes_Hut_GUI
 
         public void GetAccelerationVector()
         {
-            float xLen = Math.Abs(ResultantVectorStart.X- ResultantVectorEnd.X);
+            float xLen = Math.Abs(ResultantVectorStart.X - ResultantVectorEnd.X);
             float yLen = Math.Abs(ResultantVectorStart.Y - ResultantVectorEnd.Y);
 
             float xAccel = xLen / Mass;
             float yAccel = yLen / Mass;
-            AccelerationComponents = new PointF(xAccel*100, yAccel*100);
+            AccelerationComponents = new PointF(xAccel * 100, yAccel * 100);
         }
     }
 }

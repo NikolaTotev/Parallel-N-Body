@@ -844,7 +844,7 @@ namespace Barnes_Hut_GUI
             simParticle.ResultantVectorStart = simVector.Start;
             simParticle.ResultantVectorEnd = simVector.End;
 
-            for (int i = 0; i < 2000; i++)
+            for (int i = 0; i < 200000; i++)
             {
                 Thread.Sleep(16);
                 CalculateFrame();
@@ -868,10 +868,28 @@ namespace Barnes_Hut_GUI
             simParticle.GetAccelerationVector();
             time += 1;
             PointF currentCenterPoint = simParticle.CenterPoint;
-            float forceX = (float)(vel.X * 1 + 0.5 * simParticle.AccelerationComponents.X * 1 * 1);
-            float forceY = (float)(vel.Y * 1 + 0.5 * simParticle.AccelerationComponents.Y * 1 * 1);
-            float newX = currentCenterPoint.X + forceX;
-            float newY = currentCenterPoint.Y + forceY;
+            float forceX = (float)(Math.Abs(vel.X) * 1 + 0.5 * Math.Abs(simParticle.AccelerationComponents.X)* 1 * 1);
+            float forceY = (float)(Math.Abs(vel.Y) * 1 + 0.5 * Math.Abs(simParticle.AccelerationComponents.Y)* 1 * 1);
+            float newX = 0;
+            float newY  = 0;
+            if (vel.X < 0)
+            {
+                 newX = currentCenterPoint.X - forceX;
+            }
+            else
+            {
+                 newX = currentCenterPoint.X + forceX; 
+            }
+
+            if (vel.Y < 0)
+            {
+                 newY = currentCenterPoint.Y - forceY;
+            }
+            else
+            {
+                 newY = currentCenterPoint.Y +forceY;
+            }
+            
            // Debug.Print($"Velocity: {vel.ToString()} | Acceleration: {simParticle.AccelerationComponents.ToString()} ");
 
             if (newX > pb_AnimationTest.Width)
@@ -921,7 +939,7 @@ namespace Barnes_Hut_GUI
 
             if (endX > pb_AnimationTest.Width)
             {
-                endX = simParticle.CenterPoint.X - (endX - simParticle.CenterPoint.X);
+                endX = pb_AnimationTest.Width - (endX - pb_AnimationTest.Width);
                 vel.X = -vel.X;
             }
             else if (endX < 0)
@@ -932,7 +950,7 @@ namespace Barnes_Hut_GUI
 
             if (endY > pb_AnimationTest.Height)
             {
-                endY = simParticle.CenterPoint.Y - (endY - simParticle.CenterPoint.Y);
+                endY = pb_AnimationTest.Height - (endY - pb_AnimationTest.Height);
                 vel.Y = -vel.Y;
             }
             else if (endY < 0)
@@ -946,7 +964,9 @@ namespace Barnes_Hut_GUI
             simParticle.ResultantVectorStart = simVector.Start;
             simParticle.ResultantVectorEnd = simVector.End;
 
-            Debug.Print($"Center: {simParticle.CenterPoint.ToString()} | Vel: {vel.ToString()} | SimVectEnd: {simVector.Start.ToString()} -> {simVector.End.ToString()}");
+            
+            Debug.Print($"ForceX: {forceX} || ForceY: {forceY}");
+            //Debug.Print($"Center: {simParticle.CenterPoint.ToString()} | Vel: {vel.ToString()} | SimVectEnd: {simVector.Start.ToString()} -> {simVector.End.ToString()}");
 
 
             Invoke((MethodInvoker)(() =>
@@ -980,7 +1000,7 @@ namespace Barnes_Hut_GUI
             graphics.FillEllipse(new SolidBrush(Color.CornflowerBlue), simParticle.CenterPoint.X - 2, simParticle.CenterPoint.Y - 2, 4, 4);
             graphics.DrawLine(Pens.Red, simVector.Start, simVector.End);
           // graphics.DrawLine(Pens.Blue, simParticle.CenterPoint, vel);
-           // graphics.DrawLine(Pens.GreenYellow, simParticle.CenterPoint, simParticle.AccelerationComponents);
+            graphics.DrawLine(Pens.GreenYellow, simParticle.CenterPoint, new PointF(simParticle.AccelerationComponents.X + simParticle.CenterPoint.X, simParticle.AccelerationComponents.Y+simParticle.CenterPoint.Y));
             
         }
     }
