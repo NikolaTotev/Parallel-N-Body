@@ -769,7 +769,7 @@ namespace Barnes_Hut_GUI
 
         #endregion
 
-
+        
         private void btn_Simulate_Click(object sender, EventArgs e)
         {
             //Stopwatch sw = new Stopwatch();
@@ -813,7 +813,7 @@ namespace Barnes_Hut_GUI
             //    default:
             //        throw new ArgumentOutOfRangeException();
             //}
-
+            Graphics simGraphics = pb_SimWindow.CreateGraphics();
             int framesToSimulate = int.Parse(tb_FrameCount.Text);
             //METHOD 1 SIMULATION =================================================================
 
@@ -829,38 +829,59 @@ namespace Barnes_Hut_GUI
             //        pb_SimWindow.Update();
             //    }));
 
+            //   //SimulateFrame(simGraphics);
+
             //    Thread.Sleep(16);
             //    Debug.Print($"Frame: {i}");
             //}
 
             //METHOD 2 SIMULATION =================================================================
             float velocity = 0;
-            float dt = 1;
+            float dt = 1f;
             float time = 0;
             for (int i = 0; i < framesToSimulate; i++)
             {
                 Debug.Print($"Frame: {i}");
 
-                float boost = 100;
+                float boost = 3000;
                 foreach (Particle particle in mainTree.AllParticles)
                 {
-                    particle.Method2VelocityComponents.X += boost*particle.Method2AccelComponents.X * dt / 2;
-                    particle.Method2VelocityComponents.Y += boost*particle.Method2AccelComponents.Y * dt / 2;
+                    particle.Method2VelocityComponents.X += boost * particle.Method2AccelComponents.X * dt / 2;
+                    particle.Method2VelocityComponents.Y += boost * particle.Method2AccelComponents.Y * dt / 2;
 
                     PointF newCenter = particle.CenterPoint;
 
                     newCenter.X += particle.Method2VelocityComponents.X * dt;
                     newCenter.Y += particle.Method2VelocityComponents.Y * dt;
                     Debug.Print($"X force: { boost * particle.Method2VelocityComponents.X * dt} || Y force: {  boost * particle.Method2VelocityComponents.Y * dt}");
+                    //Debug.Print($"Center:{newCenter}");
                     particle.CenterPoint = newCenter;
+
+                    if (particle.CenterPoint.X > pb_SimWindow.Width)
+                    {
+                        particle.Method2VelocityComponents.X = -particle.Method2VelocityComponents.X;
+                    }
+                    else if (particle.CenterPoint.X < 0)
+                    {
+                        particle.Method2VelocityComponents.X = -particle.Method2VelocityComponents.X;
+                    }
+
+                    if (particle.CenterPoint.Y > pb_SimWindow.Height)
+                    {
+                        particle.Method2VelocityComponents.Y = -particle.Method2VelocityComponents.Y;
+                    }
+                    else if (particle.CenterPoint.Y < 0)
+                    {
+                        particle.Method2VelocityComponents.Y = -particle.Method2VelocityComponents.Y;
+                    }
 
                 }
 
                 mainTree.Method2AccelerationCalculation();
                 foreach (Particle particle in mainTree.AllParticles)
                 {
-                    particle.Method2VelocityComponents.X += particle.Method2AccelComponents.X * dt / 2;
-                    particle.Method2VelocityComponents.Y += particle.Method2AccelComponents.Y * dt / 2;
+                    particle.Method2VelocityComponents.X += boost * particle.Method2AccelComponents.X * dt / 2;
+                    particle.Method2VelocityComponents.Y += boost * particle.Method2AccelComponents.Y * dt / 2;
 
                 }
 
@@ -868,8 +889,9 @@ namespace Barnes_Hut_GUI
 
                 Invoke((MethodInvoker)(() =>
                 {
-                    pb_SimWindow.Invalidate();
-                    pb_SimWindow.Update();
+                    //SimulateFrame(simGraphics);
+                     pb_SimWindow.Invalidate();
+                     pb_SimWindow.Refresh();
                 }));
 
             }
@@ -1077,12 +1099,16 @@ namespace Barnes_Hut_GUI
             SimulateFrame(e.Graphics);
         }
 
+        private PointF prevSpot;
         public void SimulateFrame(Graphics graphics)
         {
             foreach (Particle particle in mainTree.AllParticles)
             {
-                graphics.FillEllipse(new SolidBrush(Color.CornflowerBlue), particle.CenterPoint.X - 2, particle.CenterPoint.Y - 2, 4, 4);
+                graphics.FillEllipse(new SolidBrush(particle.particleColor), particle.CenterPoint.X - 4, particle.CenterPoint.Y -4, 8, 8);
+               // graphics.FillEllipse(new SolidBrush(Color.White), particle.OldCenterPoint.X - 3, particle.OldCenterPoint.Y - 3, 6, 6);
+             //   graphics.FillEllipse(new SolidBrush(Color.LightBlue), particle.OldCenterPoint.X - 2, particle.OldCenterPoint.Y - 2, 4, 4);
 
+                //particle.OldCenterPoint = particle.CenterPoint;
 
                 //graphics.DrawLine(Pens.Red, particle.CenterPoint, particle.ResultantVectorEnd);
 

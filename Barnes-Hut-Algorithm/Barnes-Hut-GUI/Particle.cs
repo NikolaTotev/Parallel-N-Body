@@ -21,6 +21,7 @@ namespace Barnes_Hut_GUI
         public int SimHeight = 737;
         public int SimWidth = 737;
         private float time = 0;
+        public Color particleColor;
 
         public float Mass { get; set; }
         public Color ParticleColor { get; }
@@ -41,7 +42,7 @@ namespace Barnes_Hut_GUI
         public Particle()
         {
             ForcesToApply = new List<ForceVector>();
-            Mass = 5000;
+            Mass = 1000;
         }
 
         public void AddForce(ForceVector force)
@@ -102,15 +103,15 @@ namespace Barnes_Hut_GUI
             AccelerationComponents = new PointF(xAccel * 1, yAccel * 1);
         }
 
-        private float dt = 0.1f;
+        private float dt = 0.09f;
         public void MoveParticle()
         {
             OldCenterPoint = CenterPoint;
             GetAccelerationVector();
             time += dt;
             PointF currentCenterPoint = CenterPoint;
-            float forceX = (float)(Math.Abs(Velocity.X) * dt + 0.5 * Math.Abs(AccelerationComponents.X) * dt * dt);
-            float forceY = (float)(Math.Abs(Velocity.Y) * dt + 0.5 * Math.Abs(AccelerationComponents.Y) * dt * dt);
+            float forceX = (float)((Math.Abs(Velocity.X) * dt + 0.5 * Math.Abs(AccelerationComponents.X) * dt * dt)+Math.Pow(0.1 ,2));
+            float forceY = (float)((Math.Abs(Velocity.Y) * dt + 0.5 * Math.Abs(AccelerationComponents.Y) * dt * dt) + Math.Pow(0.1, 2));
             float newCenterX = 0;
             float newCenterY = 0;
 
@@ -120,23 +121,23 @@ namespace Barnes_Hut_GUI
             if (negativeX)
             {
                 newCenterX = currentCenterPoint.X - forceX;
-                Velocity.X = -AccelerationComponents.X * 1;
+                Velocity.X -= AccelerationComponents.X * dt;
             }
             else
             {
                 newCenterX = currentCenterPoint.X + forceX;
-                Velocity.X = AccelerationComponents.X * 1;
+                Velocity.X += AccelerationComponents.X * dt;
             }
 
             if (negativeY)
             {
                 newCenterY = currentCenterPoint.Y - forceY;
-                Velocity.Y = -AccelerationComponents.Y * 1;
+                Velocity.Y -= AccelerationComponents.Y * dt;
             }
             else
             {
                 newCenterY = currentCenterPoint.Y + forceY;
-                Velocity.Y = AccelerationComponents.Y * 1;
+                Velocity.Y += AccelerationComponents.Y * dt;
             }
 
             // Debug.Print($"Velocity: {vel.ToString()} | Acceleration: {simParticle.AccelerationComponents.ToString()} ");
