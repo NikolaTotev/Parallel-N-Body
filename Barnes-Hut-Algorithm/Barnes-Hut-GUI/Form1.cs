@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
@@ -21,6 +22,9 @@ using Brush = System.Drawing.Brush;
 using CartesianChart = LiveCharts.WinForms.CartesianChart;
 using Color = System.Drawing.Color;
 using Pen = System.Drawing.Pen;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using DashStyle = System.Drawing.Drawing2D.DashStyle;
 
 
 namespace Barnes_Hut_GUI
@@ -665,7 +669,7 @@ namespace Barnes_Hut_GUI
                 case AlgToUse.PWI:
                     sw.Start();
                     mainTree.SingleFramePairwiseSimulation(isParalell: false);
-                 
+
                     sw.Stop();
                     l_TotalTimeValue.Text = sw.Elapsed.ToString();
                     l_PWITimeValue.Text = sw.Elapsed.ToString();
@@ -811,11 +815,56 @@ namespace Barnes_Hut_GUI
             //}
 
             int framesToSimulate = int.Parse(tb_FrameCount.Text);
-            
+            //METHOD 1 SIMULATION =================================================================
+
+
+            //for (int i = 0; i < framesToSimulate; i++)
+            //{
+            //    mainTree.SingleFramePairwiseSimulation(isParalell: false, 1);
+
+
+            //    Invoke((MethodInvoker)(() =>
+            //    {
+            //        pb_SimWindow.Invalidate();
+            //        pb_SimWindow.Update();
+            //    }));
+
+            //    Thread.Sleep(16);
+            //    Debug.Print($"Frame: {i}");
+            //}
+
+            //METHOD 2 SIMULATION =================================================================
+            float velocity = 0;
+            float dt = 1;
+            float time = 0;
             for (int i = 0; i < framesToSimulate; i++)
             {
-                mainTree.SingleFramePairwiseSimulation(isParalell: false, 1);
+                Debug.Print($"Frame: {i}");
 
+                float boost = 100;
+                foreach (Particle particle in mainTree.AllParticles)
+                {
+                    particle.Method2VelocityComponents.X += boost*particle.Method2AccelComponents.X * dt / 2;
+                    particle.Method2VelocityComponents.Y += boost*particle.Method2AccelComponents.Y * dt / 2;
+
+                    PointF newCenter = particle.CenterPoint;
+
+                    newCenter.X += particle.Method2VelocityComponents.X * dt;
+                    newCenter.Y += particle.Method2VelocityComponents.Y * dt;
+                    Debug.Print($"X force: { boost * particle.Method2VelocityComponents.X * dt} || Y force: {  boost * particle.Method2VelocityComponents.Y * dt}");
+                    particle.CenterPoint = newCenter;
+
+                }
+
+                mainTree.Method2AccelerationCalculation();
+                foreach (Particle particle in mainTree.AllParticles)
+                {
+                    particle.Method2VelocityComponents.X += particle.Method2AccelComponents.X * dt / 2;
+                    particle.Method2VelocityComponents.Y += particle.Method2AccelComponents.Y * dt / 2;
+
+                }
+
+                time += dt;
 
                 Invoke((MethodInvoker)(() =>
                 {
@@ -823,9 +872,9 @@ namespace Barnes_Hut_GUI
                     pb_SimWindow.Update();
                 }));
 
-                Thread.Sleep(16);
-                Debug.Print($"Frame: {i}");
             }
+
+
         }
 
 
@@ -887,29 +936,29 @@ namespace Barnes_Hut_GUI
             simParticle.GetAccelerationVector();
             time += 1;
             PointF currentCenterPoint = simParticle.CenterPoint;
-            float forceX = (float)(Math.Abs(vel.X) * 1 + 0.5 * Math.Abs(simParticle.AccelerationComponents.X)* 1 * 1);
-            float forceY = (float)(Math.Abs(vel.Y) * 1 + 0.5 * Math.Abs(simParticle.AccelerationComponents.Y)* 1 * 1);
+            float forceX = (float)(Math.Abs(vel.X) * 1 + 0.5 * Math.Abs(simParticle.AccelerationComponents.X) * 1 * 1);
+            float forceY = (float)(Math.Abs(vel.Y) * 1 + 0.5 * Math.Abs(simParticle.AccelerationComponents.Y) * 1 * 1);
             float newX = 0;
-            float newY  = 0;
+            float newY = 0;
             if (vel.X < 0)
             {
-                 newX = currentCenterPoint.X - forceX;
+                newX = currentCenterPoint.X - forceX;
             }
             else
             {
-                 newX = currentCenterPoint.X + forceX; 
+                newX = currentCenterPoint.X + forceX;
             }
 
             if (vel.Y < 0)
             {
-                 newY = currentCenterPoint.Y - forceY;
+                newY = currentCenterPoint.Y - forceY;
             }
             else
             {
-                 newY = currentCenterPoint.Y +forceY;
+                newY = currentCenterPoint.Y + forceY;
             }
-            
-           // Debug.Print($"Velocity: {vel.ToString()} | Acceleration: {simParticle.AccelerationComponents.ToString()} ");
+
+            // Debug.Print($"Velocity: {vel.ToString()} | Acceleration: {simParticle.AccelerationComponents.ToString()} ");
 
             if (newX > pb_AnimationTest.Width)
             {
@@ -943,7 +992,7 @@ namespace Barnes_Hut_GUI
                 vel.X = simParticle.AccelerationComponents.X * 1;
                 endX = simParticle.CenterPoint.X + 5;
             }
-            
+
             if (vel.Y < 0)
             {
                 vel.Y = -simParticle.AccelerationComponents.Y * 1;
@@ -954,7 +1003,7 @@ namespace Barnes_Hut_GUI
                 vel.Y = simParticle.AccelerationComponents.Y * 1;
                 endY = simParticle.CenterPoint.Y + 5;
             }
-            
+
 
             if (endX > pb_AnimationTest.Width)
             {
@@ -983,7 +1032,7 @@ namespace Barnes_Hut_GUI
             simParticle.ResultantVectorStart = simVector.Start;
             simParticle.ResultantVectorEnd = simVector.End;
 
-            
+
             Debug.Print($"ForceX: {forceX} || ForceY: {forceY}");
             //Debug.Print($"Center: {simParticle.CenterPoint.ToString()} | Vel: {vel.ToString()} | SimVectEnd: {simVector.Start.ToString()} -> {simVector.End.ToString()}");
 
@@ -1018,9 +1067,9 @@ namespace Barnes_Hut_GUI
         {
             graphics.FillEllipse(new SolidBrush(Color.CornflowerBlue), simParticle.CenterPoint.X - 2, simParticle.CenterPoint.Y - 2, 4, 4);
             graphics.DrawLine(Pens.Red, simVector.Start, simVector.End);
-          // graphics.DrawLine(Pens.Blue, simParticle.CenterPoint, vel);
-            graphics.DrawLine(Pens.GreenYellow, simParticle.CenterPoint, new PointF(simParticle.AccelerationComponents.X + simParticle.CenterPoint.X, simParticle.AccelerationComponents.Y+simParticle.CenterPoint.Y));
-            
+            // graphics.DrawLine(Pens.Blue, simParticle.CenterPoint, vel);
+            graphics.DrawLine(Pens.GreenYellow, simParticle.CenterPoint, new PointF(simParticle.AccelerationComponents.X + simParticle.CenterPoint.X, simParticle.AccelerationComponents.Y + simParticle.CenterPoint.Y));
+
         }
 
         private void pb_SimWindow_Paint(object sender, PaintEventArgs e)
@@ -1033,7 +1082,45 @@ namespace Barnes_Hut_GUI
             foreach (Particle particle in mainTree.AllParticles)
             {
                 graphics.FillEllipse(new SolidBrush(Color.CornflowerBlue), particle.CenterPoint.X - 2, particle.CenterPoint.Y - 2, 4, 4);
+
+
                 //graphics.DrawLine(Pens.Red, particle.CenterPoint, particle.ResultantVectorEnd);
+
+                //for (int i = 0; i < particle.ForcesToApply.Count; i++)
+                //{
+                //    float forceVecMag = particle.ForcesToApply[i].Magnitude;
+                //    PointF forceVectStart = particle.ForcesToApply[i].Start;
+                //    PointF forceVectEnd = particle.ForcesToApply[i].End;
+                //    PointF ShiftedVectorStart = particle.ForcesToApply[i].ShiftedStart;
+                //    PointF ShiftedVectorEnd = particle.ForcesToApply[i].ShiftedEnd;
+
+
+                //    if (ShowForceVect)
+                //    {
+                //        if (forceVecMag == particle.MinForce)
+                //        {
+                //            graphics.DrawLine(Pens.Green, forceVectStart, forceVectEnd);
+                //        }
+                //        else if (forceVecMag == particle.MaxForce)
+                //        {
+                //            graphics.DrawLine(Pens.Orange, forceVectStart, forceVectEnd);
+                //        }
+                //        else { graphics.DrawLine(Pens.Red, forceVectStart, forceVectEnd); }
+                //    }
+
+                //    Pen resultantPen = new Pen(Color.Red, 2.0f);
+                //    resultantPen.DashStyle = DashStyle.Dash;
+                //    resultantPen.DashCap = DashCap.Triangle;
+                //    graphics.DrawLine(resultantPen, ShiftedVectorStart, ShiftedVectorEnd);
+
+                //    PointF ResultantStart = particle.ResultantVectorStart;
+                //    PointF ResultantEnd = particle.ResultantVectorEnd;
+
+
+                //    Pen resPen = new Pen(Color.Indigo, 1.0f);
+                //    resPen.DashStyle = DashStyle.DashDot;
+                //    graphics.DrawLine(resPen, ResultantStart, ResultantEnd);
+                //}
 
             }
         }

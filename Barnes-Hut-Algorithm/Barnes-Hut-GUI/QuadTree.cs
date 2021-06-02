@@ -51,7 +51,7 @@ namespace Barnes_Hut_GUI
         public List<Particle> AllParticles { get; set; }
 
         public Node RootNode { get; set; }
-        private const float G = 9.8f;
+        private float G = (float)(6.67408 * Pow(10, -8));
         public float theta = 2f;
         public bool UseStaticPoints;
 
@@ -211,6 +211,7 @@ namespace Barnes_Hut_GUI
         /// <returns>TimeSpan</returns>
         public TimeSpan SingleFramePairwiseSimulation(bool isParalell, int threadCount = 1)
         {
+
             switch (isParalell)
             {
                 case true:
@@ -218,22 +219,26 @@ namespace Barnes_Hut_GUI
                     m_Sw.Start();
                     Parallel.ForEach(AllParticles, new ParallelOptions { MaxDegreeOfParallelism = threadCount },
                         currentParticle =>
-                    {
-                        for (int j = 0; j < AllParticles.Count; j++)
                         {
-                            if (AllParticles[j] != currentParticle)
+                            currentParticle.ForcesToApply.Clear();
+                            for (int j = 0; j < AllParticles.Count; j++)
                             {
-                                List<float> distanceInfo =
-                                    CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
-                                float forceVecMag =
-                                    GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
-                                currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint,
-                                    AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
+                                if (AllParticles[j] != currentParticle)
+                                {
+                                    List<float> distanceInfo =
+                                        CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
+                                    float forceVecMag =
+                                        GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
+                                    currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint,
+                                        AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
+
+
+
+                                }
                             }
-                        }
-                        CalculateResultantVector(currentParticle);
-                        
-                    });
+                            CalculateResultantVector(currentParticle);
+
+                        });
                     m_Sw.Stop();
                     break;
                 case false: //Is the "default:" case false:?
@@ -241,6 +246,7 @@ namespace Barnes_Hut_GUI
                     m_Sw.Start();
                     foreach (Particle currentParticle in AllParticles)
                     {
+                        currentParticle.ForcesToApply.Clear();
                         for (int j = 0; j < AllParticles.Count; j++)
                         {
                             if (AllParticles[j] != currentParticle)
@@ -249,9 +255,14 @@ namespace Barnes_Hut_GUI
                                 float forceVecMag = GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
                                 currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
                             }
+                            
                         }
                         currentParticle.CalculateResultantForce();
-                        currentParticle.MoveParticle();
+
+
+
+
+                        //currentParticle.MoveParticle();
                         //CalculateResultantVector(currentParticle);
                     }
                     m_Sw.Stop();
@@ -259,6 +270,34 @@ namespace Barnes_Hut_GUI
             }
 
             return m_Sw.Elapsed;
+        }
+
+
+        public void Method2AccelerationCalculation()
+        {
+            float diffX = 0;
+            float diffY = 0;
+            float inv_r2X = 0;
+            float inv_r2Y = 0;
+            float softening = 0.1f;
+
+
+            foreach (Particle currentParticle in AllParticles)
+            {
+                for (int j = 0; j < AllParticles.Count; j++)
+                {
+                    if (AllParticles[j] != currentParticle)
+                    {
+                        diffX = AllParticles[j].CenterPoint.X - currentParticle.CenterPoint.X;
+                        diffY = AllParticles[j].CenterPoint.Y - currentParticle.CenterPoint.Y;
+                        inv_r2X = (float)Pow((Pow(diffX, 2) + softening), -1.5);
+                        inv_r2Y = (float)Pow((Pow(diffY, 2) + softening), -1.5);
+                        currentParticle.Method2AccelComponents.X += G * (diffX * inv_r2X) * AllParticles[j].Mass;
+                        currentParticle.Method2AccelComponents.Y += G * (diffY * inv_r2Y) * AllParticles[j].Mass;
+
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -326,7 +365,7 @@ namespace Barnes_Hut_GUI
                             {
                                 workerThread.Join();
                             }
-                            
+
                             m_Sw.Stop();
 
 
@@ -352,7 +391,7 @@ namespace Barnes_Hut_GUI
                                     BhAlgApplyForceOnParticle(currentParticle, RootNode.SwChild);
                                     CalculateResultantVector(currentParticle);
                                 });
-                            
+
                             m_Sw.Stop();
 
                             return m_Sw.Elapsed;
@@ -595,7 +634,7 @@ namespace Barnes_Hut_GUI
                 PointF forceVectStart = AllParticles[particleNumber].ForcesToApply[i].Start;
                 PointF forceVectEnd = AllParticles[particleNumber].ForcesToApply[i].EffectorCOM;
 
-              currenctGraphics.DrawLine(graphicsPen, forceVectStart, forceVectEnd);
+                currenctGraphics.DrawLine(graphicsPen, forceVectStart, forceVectEnd);
                 currenctGraphics.DrawEllipse(drawPen, forceVectEnd.X - 4,
                     forceVectEnd.Y - 4, 4 * 2, 4 * 2);
                 currenctGraphics.FillEllipse(Brushes.NavajoWhite, forceVectEnd.X - 0.5f,

@@ -14,9 +14,13 @@ namespace Barnes_Hut_GUI
         public PointF OldCenterPoint { get; set; }
         public PointF AccelerationComponents { get; set; }
         public PointF Velocity = new PointF(0, 0);
+
+        public PointF Method2AccelComponents = new PointF(0f,0f);
+        public PointF Method2VelocityComponents = new PointF(0,0);
+
         public int SimHeight = 737;
         public int SimWidth = 737;
-        private int time = 0;
+        private float time = 0;
 
         public float Mass { get; set; }
         public Color ParticleColor { get; }
@@ -37,7 +41,7 @@ namespace Barnes_Hut_GUI
         public Particle()
         {
             ForcesToApply = new List<ForceVector>();
-            Mass = 1000;
+            Mass = 5000;
         }
 
         public void AddForce(ForceVector force)
@@ -95,17 +99,18 @@ namespace Barnes_Hut_GUI
 
             float xAccel = xLen / Mass;
             float yAccel = yLen / Mass;
-            AccelerationComponents = new PointF(xAccel * 10, yAccel * 10f);
+            AccelerationComponents = new PointF(xAccel * 1, yAccel * 1);
         }
 
+        private float dt = 0.1f;
         public void MoveParticle()
         {
             OldCenterPoint = CenterPoint;
             GetAccelerationVector();
-            time += 1;
+            time += dt;
             PointF currentCenterPoint = CenterPoint;
-            float forceX = (float)(Math.Abs(Velocity.X) * 1 + 0.5 * Math.Abs(AccelerationComponents.X) * 1 * 1);
-            float forceY = (float)(Math.Abs(Velocity.Y) * 1 + 0.5 * Math.Abs(AccelerationComponents.Y) * 1 * 1);
+            float forceX = (float)(Math.Abs(Velocity.X) * dt + 0.5 * Math.Abs(AccelerationComponents.X) * dt * dt);
+            float forceY = (float)(Math.Abs(Velocity.Y) * dt + 0.5 * Math.Abs(AccelerationComponents.Y) * dt * dt);
             float newCenterX = 0;
             float newCenterY = 0;
 
@@ -214,7 +219,6 @@ namespace Barnes_Hut_GUI
              *
             */ //
 
-            ForcesToApply.Clear();
 
 
         }
