@@ -886,10 +886,10 @@ namespace Barnes_Hut_GUI
                 switch (alg)
                 {
                     case AlgToUse.PWI:
-                        mainTree.SimCalculations(isParallel: false, QuadTree.SimPart.first, threadCount: 1,
+                        mainTree.SimCalculations(isParallel: false, QuadTree.SimPart.first, threadCount: threadCount,
                             mode: threadMode.fromParallelLib);
                         mainTree.SingleFramePairwiseSimulation(isParalell: false, threadCount: 1);
-                        mainTree.SimCalculations(isParallel: false, QuadTree.SimPart.second, threadCount: 1,
+                        mainTree.SimCalculations(isParallel: false, QuadTree.SimPart.second, threadCount: threadCount,
                             mode: threadMode.fromParallelLib);
                         break;
                     case AlgToUse.PPWI:

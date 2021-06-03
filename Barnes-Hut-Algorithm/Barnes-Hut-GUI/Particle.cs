@@ -33,6 +33,7 @@ namespace Barnes_Hut_GUI
         private bool initialMinMaxNotSet = true;
 
         private readonly object listLock = new object();
+        private readonly object accelLock = new object();
 
         public PointF ResultantVectorStart { get; set; }
         public PointF ResultantVectorEnd { get; set; }
@@ -42,6 +43,15 @@ namespace Barnes_Hut_GUI
         {
             ForcesToApply = new List<ForceVector>();
             Mass = 1000;
+        }
+
+        public void IncreaseAccel(float valueX, float valueY)
+        {
+            lock (accelLock)
+            {
+                Method2AccelComponents.X += valueX;
+                Method2AccelComponents.Y += valueY;
+            }
         }
 
         public void AddForce(ForceVector force)
