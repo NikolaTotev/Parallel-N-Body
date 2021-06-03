@@ -484,21 +484,7 @@ namespace Barnes_Hut_GUI
                             {
                                 if (AllParticles[j] != currentParticle)
                                 {
-                                    List<float> distanceInfo =
-                                        CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
-                                    //float forceVecMag =
-                                    //    GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
-                                    //currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint,
-                                    //    AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
-
-                                    float diffXT = distanceInfo[3];// AllParticles[j].CenterPoint.X - currentParticle.CenterPoint.X;
-                                    float diffYT = distanceInfo[4];// AllParticles[j].CenterPoint.Y - currentParticle.CenterPoint.Y;
-
-                                    float inv_r2t = (float)Pow((Pow(diffXT, 2) + Pow(diffYT, 2) + Pow(softening, 2)), -1.5);
-                                    
-                                    float xVal = G * (diffXT * inv_r2t) * AllParticles[j].Mass;
-                                    float yVal = G * (diffYT * inv_r2t) * AllParticles[j].Mass;
-                                    currentParticle.IncreaseAccel(xVal,yVal);
+                                    CalculateAccelerations(currentParticle, j);
                                 }
                             }
 
@@ -519,16 +505,7 @@ namespace Barnes_Hut_GUI
                         {
                             if (AllParticles[j] != currentParticle)
                             {
-                                List<float> distanceInfo = CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
-                                //float forceVecMag = GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
-                                //currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint, AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
-
-                                diffX = distanceInfo[3];// AllParticles[j].CenterPoint.X - currentParticle.CenterPoint.X;
-                                diffY = distanceInfo[4];// AllParticles[j].CenterPoint.Y - currentParticle.CenterPoint.Y;
-
-                                inv_r2 = (float)Pow((Pow(diffX, 2) + Pow(diffY, 2) + Pow(softening, 2)), -1.5);
-                                currentParticle.Method2AccelComponents.X += G * (diffX * inv_r2) * AllParticles[j].Mass;
-                                currentParticle.Method2AccelComponents.Y += G * (diffY * inv_r2) * AllParticles[j].Mass;
+                                CalculateAccelerations(currentParticle, j);
                             }
 
                         }
@@ -542,6 +519,25 @@ namespace Barnes_Hut_GUI
             }
 
             return m_Sw.Elapsed;
+        }
+
+        private void CalculateAccelerations(Particle currentParticle, int j)
+        {
+            List<float> distanceInfo =
+                CalculateDistanceToNode(currentParticle, AllParticles[j].CenterPoint);
+            //float forceVecMag =
+            //    GravitationalForceCalculation(distanceInfo[0], currentParticle.Mass, AllParticles[j].Mass);
+            //currentParticle.AddForce(new ForceVector(currentParticle.CenterPoint,
+            //    AllParticles[j].CenterPoint, forceVecMag, distanceInfo[1], distanceInfo[2]));
+
+            float diffXT = distanceInfo[3]; // AllParticles[j].CenterPoint.X - currentParticle.CenterPoint.X;
+            float diffYT = distanceInfo[4]; // AllParticles[j].CenterPoint.Y - currentParticle.CenterPoint.Y;
+
+            float inv_r2t = (float) Pow((Pow(diffXT, 2) + Pow(diffYT, 2) + Pow(softening, 2)), -1.5);
+
+            float xVal = G * (diffXT * inv_r2t) * AllParticles[j].Mass;
+            float yVal = G * (diffYT * inv_r2t) * AllParticles[j].Mass;
+            currentParticle.IncreaseAccel(xVal, yVal);
         }
 
 
