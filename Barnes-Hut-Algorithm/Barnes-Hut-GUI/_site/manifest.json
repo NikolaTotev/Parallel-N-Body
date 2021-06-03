@@ -1,0 +1,222 @@
+{
+  "homepages": [],
+  "source_base_path": "D:/Documents/Project Files/N-Body/Parallel-N-Body/Barnes-Hut-Algorithm/Barnes-Hut-GUI",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html",
+          "hash": "tcC8iFVsCQfztVBZ2A2XSrufwHng2fhw2zsmZiNm1Jo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "sgKSLLyRJwZAZCJUbpaCe2dCgw5lnM/f7ygr57wt77o="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html",
+          "hash": "BlPxk5mtl2kgfcZUgkEguqiSAR/EUyUTT4EdebwkQvs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "Act0DTfRHfjQCjSsGpmhip3hUQFjw7UmcoV5r0Docww="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/Barnes_Hut_GUI.AlgToUse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Barnes_Hut_GUI.AlgToUse.html",
+          "hash": "q4JZCdWz8pz02DpgLKN1yX1e+FNmb8OAe+dz+tluh+w="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/Barnes_Hut_GUI.ChartWindow.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Barnes_Hut_GUI.ChartWindow.html",
+          "hash": "fQrvfSxuWtvnEsQNRCgj5S+8niioJVliyOxNTzdhq1Q="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/Barnes_Hut_GUI.Form1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Barnes_Hut_GUI.Form1.html",
+          "hash": "VDeJrMQLMVMffBTnHANi0GclS6qNN4mGUEjiPAGmswM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/Barnes_Hut_GUI.MyEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Barnes_Hut_GUI.MyEventArgs.html",
+          "hash": "D86w72+tVgEeON5UBDMyC4lK3aFDLwpTOag56NLE2uY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/Barnes_Hut_GUI.MyEventHandler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Barnes_Hut_GUI.MyEventHandler.html",
+          "hash": "xNHcg5+IC5IHqYKmSU9Tz3njee0yUwgZkvW5xgAZrkM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/Barnes_Hut_GUI.TransparentPanel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Barnes_Hut_GUI.TransparentPanel.html",
+          "hash": "DcgGY5d0AU9/GbOXRREp4Nce/L+pNBmLdd+Ythh8HLw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/Barnes_Hut_GUI.threadMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Barnes_Hut_GUI.threadMode.html",
+          "hash": "zikM4UYZ44gjicX7DVNcMgGViSdSVrgxFIOOAI0jCko="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/Barnes_Hut_GUI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Barnes_Hut_GUI.html",
+          "hash": "T1LsOnRnbB5W/WseLD+zsmNvNsLYP5lduwBkdBRfdUc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "obj/api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "eUtnT/2lmtOsimI1aYtH/QiMLOSpkXlrwVwwAYNLVBo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "Oa9PuD4E1hvZnCkVjUgzNBX6S00Zo5YilamTERTZo54="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": true,
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 3,
+          "skipped_file_count": 3
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 8,
+          "skipped_file_count": 8
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": true,
+        "details": "Can support incremental post processing.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

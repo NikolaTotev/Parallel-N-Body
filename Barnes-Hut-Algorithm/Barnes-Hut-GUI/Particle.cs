@@ -36,8 +36,7 @@ namespace Barnes_Hut_GUI
 
         public PointF ResultantVectorStart { get; set; }
         public PointF ResultantVectorEnd { get; set; }
-        public PointF AcceleratioNVectorStart;
-        public PointF AcceleratioNVectorEnd;
+
 
         public Particle()
         {
