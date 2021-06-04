@@ -1071,5 +1071,14 @@ namespace Barnes_Hut_GUI
             RootNode.IsRoot = true;
 
         }
+
+        public void ResetRootNode()
+        {
+            RootNode = null;
+            PointF bottomLeft = new Point(0, 737);
+            PointF topRight = new Point(737, 0);
+            RootNode = new Node(topRight, bottomLeft);
+            RootNode.IsRoot = true;
+        }
     }
 }

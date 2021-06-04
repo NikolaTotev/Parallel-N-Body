@@ -29,6 +29,8 @@ using DashStyle = System.Drawing.Drawing2D.DashStyle;
 
 namespace Barnes_Hut_GUI
 {
+
+
     public partial class Form1 : Form
     {
         #region Pens
@@ -88,6 +90,8 @@ namespace Barnes_Hut_GUI
         #region Thread Vairables
 
         private Thread m_partitionThread;
+        private Thread m_ParticleGenThread;
+        private Thread m_SimulationThread;
         private bool isWorking;
         private bool canReset = true;
 
@@ -104,7 +108,10 @@ namespace Barnes_Hut_GUI
         #endregion
 
         private QuadTree mainTree;
-
+        public event EventHandler OnParticleGenerationComplete;
+        public event EventHandler OnFrameDraw;
+        public event EventHandler OnSimulationComplete;
+        public event FrameCounterEventHandler OnFrameUpdateComplete;
 
         private AlgToUse alg = AlgToUse.PWI;
         private int currentParticleValue = 0;
@@ -124,7 +131,11 @@ namespace Barnes_Hut_GUI
             DrawGraphics = false;
             mainTree.OnProgress += MainTree_OnProgress;
             mainTree.OnCompleted += MainTree_OnCompleted;
+            OnParticleGenerationComplete += ParticleGeneration_OnCompleted;
+            OnFrameUpdateComplete += FrameUpdate_OnCompleted;
+            OnSimulationComplete += SimulationComplete_OnCompleted;
             ShowForceVect = cb_ForceVect.Checked;
+            OnFrameDraw += FrameDraw_OnComplete;
             mainTree.ShowForceVect = cb_ForceVect.Checked;
             mainTree.DrawBhNodeGrouping = cb_ShowGrouping.Checked;
             mainTree.DrawNodeCOG = cb_ShowCOG.Checked;
@@ -137,6 +148,97 @@ namespace Barnes_Hut_GUI
             mainTree.ShowShiftedVectors = ShowShiftedVectors;
             UseStaticPoints = cb_UseStaticPoints.Checked;
             mainTree.UseStaticPoints = UseStaticPoints;
+        }
+
+        private void SimulationComplete_OnCompleted(object sender, EventArgs e)
+        {
+            btn_Simulate.BackColor = Color.ForestGreen;
+            btn_Simulate.Enabled = true;
+
+            if (m_SimulationThread != null)
+            {
+                if (m_SimulationThread.IsAlive)
+                {
+                    if (m_SimulationThread.Join(500))
+                    {
+                        Debug.WriteLine("Simulation thread joined!");
+                    }
+                    else
+                    {
+                        m_SimulationThread.Abort();
+                    }
+                }
+            }
+        }
+
+        private void FrameDraw_OnComplete(object sender, EventArgs e)
+        {
+            Invoke((MethodInvoker)(() =>
+            {
+                //SimulateFrame(simGraphics);
+                pb_SimWindow.Invalidate();
+                pb_SimWindow.Refresh();
+            }));
+        }
+
+        private void FrameUpdate_OnCompleted(object source, FrameEventArgs e)
+        {
+            int currentFrame = e.GetCurrentFrame();
+            int currentSeconds = e.GetSeconds();
+            l_CurrentFrame.Text = $"Frame: {currentFrame}/{int.Parse(tb_FrameCount.Text)}";
+            if (currentSeconds != 0)
+            {
+                l_FPS.Text = $"Mean FPS : {currentFrame / currentSeconds}";
+            }
+
+
+        }
+
+        private void ParticleGeneration_OnCompleted(object sender, EventArgs e)
+        {
+            int particleCount = int.Parse(tb_ParticleCount.Text);
+
+            if (mainTree.AllParticles.Count == particleCount)
+            {
+                btn_GenerateParticles.BackColor = Color.ForestGreen;
+            }
+            else
+            {
+                btn_GenerateParticles.BackColor = Color.IndianRed;
+            }
+            btn_GenerateParticles.Enabled = true;
+
+            if (m_ParticleGenThread != null)
+            {
+                if (m_ParticleGenThread.IsAlive)
+                {
+                    if (m_ParticleGenThread.Join(500))
+                    {
+                        Debug.WriteLine("Particle gen thread joined.");
+                    }
+                    else
+                    {
+                        m_ParticleGenThread.Abort();
+                    }
+                }
+            }
+        }
+
+
+        private void RaiseEventOnUIThread(Delegate theEvent, object[] args)
+        {
+            foreach (Delegate d in theEvent.GetInvocationList())
+            {
+                ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
+                if (syncer == null)
+                {
+                    d.DynamicInvoke(args);
+                }
+                else
+                {
+                    syncer.BeginInvoke(d, args);  // cleanup omitted
+                }
+            }
         }
 
         #region Event subscriber functions
@@ -253,11 +355,23 @@ namespace Barnes_Hut_GUI
 
         private void btn_GenerateParticles_Click(object sender, EventArgs e)
         {
+            Debug.Print("Generate btn pressed!");
+            btn_GenerateParticles.BackColor = Color.Orange;
+            btn_GenerateParticles.Enabled = false;
+
             int particleCount = int.Parse(tb_ParticleCount.Text);
+
+            m_ParticleGenThread = new Thread((() => GenerateParticles(particleCount)));
+            m_ParticleGenThread.Name = "GeneratorThread";
+            m_ParticleGenThread.Start();
+        }
+
+        private void GenerateParticles(int particleCount)
+        {
             currentParticleValue = particleCount;
             mainTree.GenerateParticles(particleCount);
-
             DrawParticles(particleCount);
+            RaiseEventOnUIThread(OnParticleGenerationComplete, new object[] { null, new EventArgs() });
         }
 
 
@@ -773,6 +887,7 @@ namespace Barnes_Hut_GUI
 
         private void btn_Simulate_Click(object sender, EventArgs e)
         {
+
             //Stopwatch sw = new Stopwatch();
             //TimeSpan time;
             //switch (alg)
@@ -840,48 +955,117 @@ namespace Barnes_Hut_GUI
             float dt = 1f;
             float time = 0;
             int threadCount = int.Parse(tb_MaxThreads.Text);
+            //for (int i = 0; i < framesToSimulate; i++)
+            //{
+            //    Debug.Print($"Frame: {i}");
+
+            //    float boost = 3000;
+
+            //    //This should be parallel
+            //    //foreach (Particle currentParticle in mainTree.AllParticles)
+            //    //{
+            //    //    currentParticle.Method2VelocityComponents.X += boost * currentParticle.Method2AccelComponents.X * dt / 2;
+            //    //    currentParticle.Method2VelocityComponents.Y += boost * currentParticle.Method2AccelComponents.Y * dt / 2;
+
+            //    //    PointF newCenter = currentParticle.CenterPoint;
+
+            //    //    newCenter.X += currentParticle.Method2VelocityComponents.X * dt;
+            //    //    newCenter.Y += currentParticle.Method2VelocityComponents.Y * dt;
+            //    //    Debug.Print($"X force: { boost * currentParticle.Method2VelocityComponents.X * dt} || Y force: {  boost * currentParticle.Method2VelocityComponents.Y * dt}");
+            //    //    //Debug.Print($"Center:{newCenter}");
+            //    //    currentParticle.CenterPoint = newCenter;
+
+            //    //    if (currentParticle.CenterPoint.X > pb_SimWindow.Width)
+            //    //    {
+            //    //        currentParticle.Method2VelocityComponents.X = -currentParticle.Method2VelocityComponents.X;
+            //    //    }
+            //    //    else if (currentParticle.CenterPoint.X < 0)
+            //    //    {
+            //    //        currentParticle.Method2VelocityComponents.X = -currentParticle.Method2VelocityComponents.X;
+            //    //    }
+
+            //    //    if (currentParticle.CenterPoint.Y > pb_SimWindow.Height)
+            //    //    {
+            //    //        currentParticle.Method2VelocityComponents.Y = -currentParticle.Method2VelocityComponents.Y;
+            //    //    }
+            //    //    else if (currentParticle.CenterPoint.Y < 0)
+            //    //    {
+            //    //        currentParticle.Method2VelocityComponents.Y = -currentParticle.Method2VelocityComponents.Y;
+            //    //    }
+
+            //    //}
+
+            //    //mainTree.SimCalculations(isParallel: true, QuadTree.SimPart.first, threadCount: threadCount,
+            //    //    mode: threadMode.fromParallelLib);
+
+            //    switch (alg)
+            //    {
+            //        case AlgToUse.PWI:
+            //            mainTree.SimCalculations(isParallel: false, QuadTree.SimPart.first, threadCount: 1,
+            //                mode: threadMode.fromParallelLib);
+            //            mainTree.SingleFramePairwiseSimulation(isParalell: false, threadCount: 1);
+            //            mainTree.SimCalculations(isParallel: false, QuadTree.SimPart.second, threadCount: 1,
+            //                mode: threadMode.fromParallelLib);
+            //            break;
+            //        case AlgToUse.PPWI:
+            //            mainTree.SimCalculations(isParallel: false, QuadTree.SimPart.first, threadCount: threadCount,
+            //                mode: threadMode.fromParallelLib);
+            //            mainTree.SingleFramePairwiseSimulation(isParalell: true, threadCount: threadCount);
+            //            mainTree.SimCalculations(isParallel: false, QuadTree.SimPart.second, threadCount: threadCount,
+            //                mode: threadMode.fromParallelLib);
+            //            break;
+            //        case AlgToUse.BH:
+            //            mainTree.SingleFrameBHSimulation(isParallel: false, threadCount: 1, mode: m_currentMode);
+            //            break;
+            //        case AlgToUse.PBH:
+            //            mainTree.SingleFrameBHSimulation(isParallel: true, threadCount: threadCount, mode: m_currentMode);
+            //            break;
+            //        default:
+            //            throw new ArgumentOutOfRangeException();
+            //    }
+
+
+
+            //    //mainTree.Method2AccelerationCalculation();
+
+            //    //This foreach can be be parallel
+            //    //foreach (Particle currentParticle in mainTree.AllParticles)
+            //    //{
+            //    //    currentParticle.Method2VelocityComponents.X += boost * currentParticle.Method2AccelComponents.X * dt / 2;
+            //    //    currentParticle.Method2VelocityComponents.Y += boost * currentParticle.Method2AccelComponents.Y * dt / 2;
+
+            //    //}
+
+            //    time += dt;
+
+            //    Invoke((MethodInvoker)(() =>
+            //    {
+            //        //SimulateFrame(simGraphics);
+            //        pb_SimWindow.Invalidate();
+            //        pb_SimWindow.Refresh();
+            //    }));
+
+            //}
+            int frameCount = int.Parse(tb_FrameCount.Text);
+
+            btn_Simulate.BackColor = Color.Orange;
+            btn_Simulate.Enabled = false;
+            m_SimulationThread = new Thread(() => RunSimulation(frameCount, threadCount, dt));
+            m_SimulationThread.Name = "SimulationThread";
+            m_SimulationThread.Start();
+        }
+
+        public void RunSimulation(int framesToSimulate, int threadCount, float dt)
+        {
+            Stopwatch Sw = new Stopwatch();
+
+            Sw.Start();
             for (int i = 0; i < framesToSimulate; i++)
             {
                 Debug.Print($"Frame: {i}");
 
                 float boost = 3000;
 
-                //This should be parallel
-                //foreach (Particle currentParticle in mainTree.AllParticles)
-                //{
-                //    currentParticle.Method2VelocityComponents.X += boost * currentParticle.Method2AccelComponents.X * dt / 2;
-                //    currentParticle.Method2VelocityComponents.Y += boost * currentParticle.Method2AccelComponents.Y * dt / 2;
-
-                //    PointF newCenter = currentParticle.CenterPoint;
-
-                //    newCenter.X += currentParticle.Method2VelocityComponents.X * dt;
-                //    newCenter.Y += currentParticle.Method2VelocityComponents.Y * dt;
-                //    Debug.Print($"X force: { boost * currentParticle.Method2VelocityComponents.X * dt} || Y force: {  boost * currentParticle.Method2VelocityComponents.Y * dt}");
-                //    //Debug.Print($"Center:{newCenter}");
-                //    currentParticle.CenterPoint = newCenter;
-
-                //    if (currentParticle.CenterPoint.X > pb_SimWindow.Width)
-                //    {
-                //        currentParticle.Method2VelocityComponents.X = -currentParticle.Method2VelocityComponents.X;
-                //    }
-                //    else if (currentParticle.CenterPoint.X < 0)
-                //    {
-                //        currentParticle.Method2VelocityComponents.X = -currentParticle.Method2VelocityComponents.X;
-                //    }
-
-                //    if (currentParticle.CenterPoint.Y > pb_SimWindow.Height)
-                //    {
-                //        currentParticle.Method2VelocityComponents.Y = -currentParticle.Method2VelocityComponents.Y;
-                //    }
-                //    else if (currentParticle.CenterPoint.Y < 0)
-                //    {
-                //        currentParticle.Method2VelocityComponents.Y = -currentParticle.Method2VelocityComponents.Y;
-                //    }
-
-                //}
-
-                //mainTree.SimCalculations(isParallel: true, QuadTree.SimPart.first, threadCount: threadCount,
-                //    mode: threadMode.fromParallelLib);
 
                 switch (alg)
                 {
@@ -900,39 +1084,41 @@ namespace Barnes_Hut_GUI
                             mode: threadMode.fromParallelLib);
                         break;
                     case AlgToUse.BH:
-                        mainTree.SingleFrameBHSimulation(isParallel: false, threadCount: 1, mode: m_currentMode);
+                        mainTree.SimCalculations(isParallel: false, QuadTree.SimPart.first, threadCount: threadCount,
+                            mode: threadMode.fromParallelLib);
+                        Partition();
+                        m_partitionThread.Join();
+                        m_partitionThread = null;
+                        mainTree.SingleFrameBHSimulation(isParallel: false, threadCount: threadCount, mode: m_currentMode);
+                        mainTree.SimCalculations(isParallel: false, QuadTree.SimPart.second, threadCount: threadCount,
+                            mode: threadMode.fromParallelLib);
+                        mainTree.ResetRootNode();
                         break;
                     case AlgToUse.PBH:
+                        mainTree.SimCalculations(isParallel: true, QuadTree.SimPart.first, threadCount: threadCount,
+                            mode: threadMode.fromParallelLib);
+                        Partition();
+                        m_partitionThread.Join();
+                        m_partitionThread = null;
                         mainTree.SingleFrameBHSimulation(isParallel: true, threadCount: threadCount, mode: m_currentMode);
-                        break;
+                        mainTree.ResetRootNode();
+                        mainTree.SimCalculations(isParallel: true, QuadTree.SimPart.second, threadCount: threadCount,
+                            mode: threadMode.fromParallelLib); break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
 
-           
-
-                //mainTree.Method2AccelerationCalculation();
-
-                //This foreach can be be parallel
-                //foreach (Particle currentParticle in mainTree.AllParticles)
-                //{
-                //    currentParticle.Method2VelocityComponents.X += boost * currentParticle.Method2AccelComponents.X * dt / 2;
-                //    currentParticle.Method2VelocityComponents.Y += boost * currentParticle.Method2AccelComponents.Y * dt / 2;
-
-                //}
 
                 time += dt;
 
-                Invoke((MethodInvoker)(() =>
-                {
-                    //SimulateFrame(simGraphics);
-                    pb_SimWindow.Invalidate();
-                    pb_SimWindow.Refresh();
-                }));
 
+                RaiseEventOnUIThread(OnFrameDraw, new object[] { null, new EventArgs() });
+
+                FrameEventArgs args = new FrameEventArgs(i, Sw.Elapsed);
+                RaiseEventOnUIThread(OnFrameUpdateComplete, new object[] { null, args });
             }
 
-
+            RaiseEventOnUIThread(OnSimulationComplete, new object[] { null, new EventArgs() });
         }
 
 
@@ -1190,6 +1376,30 @@ namespace Barnes_Hut_GUI
         private void cb_UseStaticPoints_CheckedChanged_1(object sender, EventArgs e)
         {
             mainTree.UseStaticPoints = cb_UseStaticPoints.Checked;
+        }
+    }
+
+    public delegate void FrameCounterEventHandler(object source, FrameEventArgs e);
+
+    public class FrameEventArgs : EventArgs
+    {
+        private int CurrentFrame;
+        private int TotalSimTime;
+
+        public FrameEventArgs(int currentFrame, TimeSpan swTime)
+        {
+            CurrentFrame = currentFrame;
+            TotalSimTime = swTime.Seconds;
+        }
+
+        public int GetCurrentFrame()
+        {
+            return CurrentFrame;
+        }
+
+        public int GetSeconds()
+        {
+            return TotalSimTime;
         }
     }
 }

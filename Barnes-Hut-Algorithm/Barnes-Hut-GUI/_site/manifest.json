@@ -81,7 +81,31 @@
       "output": {
         ".html": {
           "relative_path": "api/Barnes_Hut_GUI.Form1.html",
-          "hash": "VDeJrMQLMVMffBTnHANi0GclS6qNN4mGUEjiPAGmswM="
+          "hash": "OMEEfD/6tJOz5MtIgrqWnn2PPIe9syFpMHI9hDmKWb8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/Barnes_Hut_GUI.FrameCounterEventHandler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Barnes_Hut_GUI.FrameCounterEventHandler.html",
+          "hash": "j4LdlxopN7/5l+TeObCJMhnOcu+9DBdxAjSqlTGDJT4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/Barnes_Hut_GUI.FrameEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Barnes_Hut_GUI.FrameEventArgs.html",
+          "hash": "FrQ/1K6QCjfHkaFFb1bAz0ta3pzmQXR1i/jLnLn9zPs="
         }
       },
       "is_incremental": true,
@@ -141,7 +165,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Barnes_Hut_GUI.html",
-          "hash": "T1LsOnRnbB5W/WseLD+zsmNvNsLYP5lduwBkdBRfdUc="
+          "hash": "1wKeIMUVpyNFe4IIFWDE/PtZBpNIc+f4gme2SgtwTzs="
         }
       },
       "is_incremental": true,
@@ -153,7 +177,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "eUtnT/2lmtOsimI1aYtH/QiMLOSpkXlrwVwwAYNLVBo="
+          "hash": "N2S8sUsNukCq8/57a01JA1RWl7R8Batx5qDmWBXkSkQ="
         }
       },
       "is_incremental": false,
@@ -190,8 +214,8 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": true,
           "incrementalPhase": "build",
-          "total_file_count": 8,
-          "skipped_file_count": 8
+          "total_file_count": 10,
+          "skipped_file_count": 10
         },
         "TocDocumentProcessor": {
           "can_incremental": false,

@@ -143,6 +143,43 @@ references:
   isSpec: "True"
   fullName: Barnes_Hut_GUI.Form1.DrawFrame
   nameWithType: Form1.DrawFrame
+- uid: Barnes_Hut_GUI.Form1.OnFrameDraw
+  name: OnFrameDraw
+  href: api/Barnes_Hut_GUI.Form1.html#Barnes_Hut_GUI_Form1_OnFrameDraw
+  commentId: E:Barnes_Hut_GUI.Form1.OnFrameDraw
+  fullName: Barnes_Hut_GUI.Form1.OnFrameDraw
+  nameWithType: Form1.OnFrameDraw
+- uid: Barnes_Hut_GUI.Form1.OnFrameUpdateComplete
+  name: OnFrameUpdateComplete
+  href: api/Barnes_Hut_GUI.Form1.html#Barnes_Hut_GUI_Form1_OnFrameUpdateComplete
+  commentId: E:Barnes_Hut_GUI.Form1.OnFrameUpdateComplete
+  fullName: Barnes_Hut_GUI.Form1.OnFrameUpdateComplete
+  nameWithType: Form1.OnFrameUpdateComplete
+- uid: Barnes_Hut_GUI.Form1.OnParticleGenerationComplete
+  name: OnParticleGenerationComplete
+  href: api/Barnes_Hut_GUI.Form1.html#Barnes_Hut_GUI_Form1_OnParticleGenerationComplete
+  commentId: E:Barnes_Hut_GUI.Form1.OnParticleGenerationComplete
+  fullName: Barnes_Hut_GUI.Form1.OnParticleGenerationComplete
+  nameWithType: Form1.OnParticleGenerationComplete
+- uid: Barnes_Hut_GUI.Form1.OnSimulationComplete
+  name: OnSimulationComplete
+  href: api/Barnes_Hut_GUI.Form1.html#Barnes_Hut_GUI_Form1_OnSimulationComplete
+  commentId: E:Barnes_Hut_GUI.Form1.OnSimulationComplete
+  fullName: Barnes_Hut_GUI.Form1.OnSimulationComplete
+  nameWithType: Form1.OnSimulationComplete
+- uid: Barnes_Hut_GUI.Form1.RunSimulation(System.Int32,System.Int32,System.Single)
+  name: RunSimulation(Int32, Int32, Single)
+  href: api/Barnes_Hut_GUI.Form1.html#Barnes_Hut_GUI_Form1_RunSimulation_System_Int32_System_Int32_System_Single_
+  commentId: M:Barnes_Hut_GUI.Form1.RunSimulation(System.Int32,System.Int32,System.Single)
+  fullName: Barnes_Hut_GUI.Form1.RunSimulation(System.Int32, System.Int32, System.Single)
+  nameWithType: Form1.RunSimulation(Int32, Int32, Single)
+- uid: Barnes_Hut_GUI.Form1.RunSimulation*
+  name: RunSimulation
+  href: api/Barnes_Hut_GUI.Form1.html#Barnes_Hut_GUI_Form1_RunSimulation_
+  commentId: Overload:Barnes_Hut_GUI.Form1.RunSimulation
+  isSpec: "True"
+  fullName: Barnes_Hut_GUI.Form1.RunSimulation
+  nameWithType: Form1.RunSimulation
 - uid: Barnes_Hut_GUI.Form1.SaveToPng(LiveCharts.WinForms.CartesianChart,System.String)
   name: SaveToPng(CartesianChart, String)
   href: api/Barnes_Hut_GUI.Form1.html#Barnes_Hut_GUI_Form1_SaveToPng_LiveCharts_WinForms_CartesianChart_System_String_
@@ -169,6 +206,57 @@ references:
   isSpec: "True"
   fullName: Barnes_Hut_GUI.Form1.SimulateFrame
   nameWithType: Form1.SimulateFrame
+- uid: Barnes_Hut_GUI.FrameCounterEventHandler
+  name: FrameCounterEventHandler
+  href: api/Barnes_Hut_GUI.FrameCounterEventHandler.html
+  commentId: T:Barnes_Hut_GUI.FrameCounterEventHandler
+  fullName: Barnes_Hut_GUI.FrameCounterEventHandler
+  nameWithType: FrameCounterEventHandler
+- uid: Barnes_Hut_GUI.FrameEventArgs
+  name: FrameEventArgs
+  href: api/Barnes_Hut_GUI.FrameEventArgs.html
+  commentId: T:Barnes_Hut_GUI.FrameEventArgs
+  fullName: Barnes_Hut_GUI.FrameEventArgs
+  nameWithType: FrameEventArgs
+- uid: Barnes_Hut_GUI.FrameEventArgs.#ctor(System.Int32,System.TimeSpan)
+  name: FrameEventArgs(Int32, TimeSpan)
+  href: api/Barnes_Hut_GUI.FrameEventArgs.html#Barnes_Hut_GUI_FrameEventArgs__ctor_System_Int32_System_TimeSpan_
+  commentId: M:Barnes_Hut_GUI.FrameEventArgs.#ctor(System.Int32,System.TimeSpan)
+  fullName: Barnes_Hut_GUI.FrameEventArgs.FrameEventArgs(System.Int32, System.TimeSpan)
+  nameWithType: FrameEventArgs.FrameEventArgs(Int32, TimeSpan)
+- uid: Barnes_Hut_GUI.FrameEventArgs.#ctor*
+  name: FrameEventArgs
+  href: api/Barnes_Hut_GUI.FrameEventArgs.html#Barnes_Hut_GUI_FrameEventArgs__ctor_
+  commentId: Overload:Barnes_Hut_GUI.FrameEventArgs.#ctor
+  isSpec: "True"
+  fullName: Barnes_Hut_GUI.FrameEventArgs.FrameEventArgs
+  nameWithType: FrameEventArgs.FrameEventArgs
+- uid: Barnes_Hut_GUI.FrameEventArgs.GetCurrentFrame
+  name: GetCurrentFrame()
+  href: api/Barnes_Hut_GUI.FrameEventArgs.html#Barnes_Hut_GUI_FrameEventArgs_GetCurrentFrame
+  commentId: M:Barnes_Hut_GUI.FrameEventArgs.GetCurrentFrame
+  fullName: Barnes_Hut_GUI.FrameEventArgs.GetCurrentFrame()
+  nameWithType: FrameEventArgs.GetCurrentFrame()
+- uid: Barnes_Hut_GUI.FrameEventArgs.GetCurrentFrame*
+  name: GetCurrentFrame
+  href: api/Barnes_Hut_GUI.FrameEventArgs.html#Barnes_Hut_GUI_FrameEventArgs_GetCurrentFrame_
+  commentId: Overload:Barnes_Hut_GUI.FrameEventArgs.GetCurrentFrame
+  isSpec: "True"
+  fullName: Barnes_Hut_GUI.FrameEventArgs.GetCurrentFrame
+  nameWithType: FrameEventArgs.GetCurrentFrame
+- uid: Barnes_Hut_GUI.FrameEventArgs.GetSeconds
+  name: GetSeconds()
+  href: api/Barnes_Hut_GUI.FrameEventArgs.html#Barnes_Hut_GUI_FrameEventArgs_GetSeconds
+  commentId: M:Barnes_Hut_GUI.FrameEventArgs.GetSeconds
+  fullName: Barnes_Hut_GUI.FrameEventArgs.GetSeconds()
+  nameWithType: FrameEventArgs.GetSeconds()
+- uid: Barnes_Hut_GUI.FrameEventArgs.GetSeconds*
+  name: GetSeconds
+  href: api/Barnes_Hut_GUI.FrameEventArgs.html#Barnes_Hut_GUI_FrameEventArgs_GetSeconds_
+  commentId: Overload:Barnes_Hut_GUI.FrameEventArgs.GetSeconds
+  isSpec: "True"
+  fullName: Barnes_Hut_GUI.FrameEventArgs.GetSeconds
+  nameWithType: FrameEventArgs.GetSeconds
 - uid: Barnes_Hut_GUI.MyEventArgs
   name: MyEventArgs
   href: api/Barnes_Hut_GUI.MyEventArgs.html
