@@ -135,5 +135,10 @@ namespace Parallel_N_Body
         private void Btn_StartAutoTest_OnClick(object sender, RoutedEventArgs e)
         {
         }
+
+        private void Btn_StopAutoTest_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

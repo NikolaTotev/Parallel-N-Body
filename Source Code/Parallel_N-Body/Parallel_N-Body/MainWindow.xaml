@@ -131,7 +131,7 @@
                             <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
 
-                        <RadioButton x:Name="Rb_PairwiseSelector" FontSize="15" Grid.Row="0" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  Content="Pairwise (Default)" VerticalContentAlignment="Center" Checked="Rb_PairwiseSelector_OnChecked">
+                        <RadioButton x:Name="Rb_PairwiseSelector" FontSize="15" Grid.Row="0"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  Content="Pairwise (Default)" VerticalContentAlignment="Center" Checked="Rb_PairwiseSelector_OnChecked">
                             <RadioButton.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="3"></Setter>
@@ -140,7 +140,7 @@
                         </RadioButton>
 
 
-                        <RadioButton x:Name="Rb_BHSelector"  Content="BH Algorithm" FontSize="15" Grid.Row="1" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_BHSelector_OnChecked">
+                        <RadioButton x:Name="Rb_BHSelector"  Content="BH Algorithm" FontSize="15" Grid.Row="1"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_BHSelector_OnChecked">
                             <RadioButton.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="3"></Setter>
@@ -148,7 +148,7 @@
                             </RadioButton.Resources>
                         </RadioButton>
 
-                        <CheckBox x:Name="Cb_ParallelSelector"  Content="Use Parallel Version" FontSize="15" Grid.Row="2" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Cb_ParallelSelector_OnChecked">
+                        <CheckBox x:Name="Cb_ParallelSelector"  Content="Use Parallel Version" FontSize="15" Grid.Row="2"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Cb_ParallelSelector_OnChecked">
                             <CheckBox.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="3"></Setter>
@@ -217,7 +217,7 @@
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <CheckBox x:Name="Cb_ShowAccelDirection"  Content="Show Accel Vect" FontSize="15" Grid.Column="0" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Center" Checked="Cb_ShowAccelDirection_OnChecked">
+                            <CheckBox x:Name="Cb_ShowAccelDirection"  Content="Show Accel Vect" FontSize="15" Grid.Column="0"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Center" Checked="Cb_ShowAccelDirection_OnChecked">
                                 <CheckBox.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="3"></Setter>
@@ -225,7 +225,7 @@
                                 </CheckBox.Resources>
                             </CheckBox>
 
-                            <CheckBox x:Name="Cb_ShowVelDirection"  Content="Show Vel Vect" FontSize="15" Grid.Column="1" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Center" Checked="Cb_ShowVelDirection_OnChecked">
+                            <CheckBox x:Name="Cb_ShowVelDirection"  Content="Show Vel Vect" FontSize="15" Grid.Column="1" FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Center" Checked="Cb_ShowVelDirection_OnChecked">
                                 <CheckBox.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="3"></Setter>
@@ -250,7 +250,7 @@
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="Visualization Settings" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
 
-                    <CheckBox x:Name="Cb_ShowTree"  Content="Show Tree" FontSize="15" Grid.Row="1" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowTree_OnChecked">
+                    <CheckBox x:Name="Cb_ShowTree"  Content="Show Tree" FontSize="15" Grid.Row="1"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowTree_OnChecked">
                         <CheckBox.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -258,7 +258,7 @@
                         </CheckBox.Resources>
                     </CheckBox>
 
-                    <CheckBox x:Name="Cb_ShowEmptyCells"  Content="Show Empty cells" FontSize="15" Grid.Row="2" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowEmptyCells_OnChecked">
+                    <CheckBox x:Name="Cb_ShowEmptyCells"  Content="Show Empty cells" FontSize="15" Grid.Row="2"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowEmptyCells_OnChecked">
                         <CheckBox.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -267,7 +267,7 @@
                     </CheckBox>
 
 
-                    <CheckBox x:Name="Cb_ShowCOG"  Content="Show Accel Vect" FontSize="15" Grid.Row="3" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowCOG_OnChecked">
+                    <CheckBox x:Name="Cb_ShowCOG"  Content="Show Accel Vect" FontSize="15" Grid.Row="3"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowCOG_OnChecked">
                         <CheckBox.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -275,7 +275,7 @@
                         </CheckBox.Resources>
                     </CheckBox>
 
-                    <CheckBox x:Name="Cb_ShowBHGrouping"  Content="Show BH Grouping" FontSize="15" Grid.Row="4" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowBHGrouping_OnChecked">
+                    <CheckBox x:Name="Cb_ShowBHGrouping"  Content="Show BH Grouping" FontSize="15" Grid.Row="4"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowBHGrouping_OnChecked">
                         <CheckBox.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -283,7 +283,7 @@
                         </CheckBox.Resources>
                     </CheckBox>
 
-                    <CheckBox x:Name="Cb_EnableMultiColorParticles"  Content="Use multicolor particles" FontSize="15" Grid.Row="5" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowBHGrouping_OnChecked">
+                    <CheckBox x:Name="Cb_EnableMultiColorParticles"  Content="Use multicolor particles" FontSize="15" Grid.Row="5"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowBHGrouping_OnChecked">
                         <CheckBox.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -320,7 +320,7 @@
                         </StackPanel>
                     </Border>
 
-                    <RadioButton x:Name="Rb_AutoTestCustomThreads" FontSize="15" Grid.Row="2" Content="Auto test custom threads"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_AutoTestCustomThreads_OnChecked">
+                    <RadioButton x:Name="Rb_AutoTestCustomThreads" FontSize="15" Grid.Row="2" Content="Auto test custom threads"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_AutoTestCustomThreads_OnChecked">
                         <RadioButton.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -328,7 +328,7 @@
                         </RadioButton.Resources>
                     </RadioButton>
 
-                    <RadioButton x:Name="Rb_AutoTestTPLThreads" FontSize="15" Grid.Row="3"  Content="Auto test TPL threads"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3" VerticalContentAlignment="Center" Checked="Rb_AutoTestTPLThreads_OnChecked">
+                    <RadioButton x:Name="Rb_AutoTestTPLThreads" FontSize="15" Grid.Row="3"  Content="Auto test TPL threads"  BorderBrush="{StaticResource OrangeAccent}" FontFamily="{StaticResource Montserrat}" BorderThickness="3" VerticalContentAlignment="Center" Checked="Rb_AutoTestTPLThreads_OnChecked">
                         <RadioButton.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -336,27 +336,68 @@
                         </RadioButton.Resources>
                     </RadioButton>
 
-                    <!--#region Button Generate-->
-                    <Button x:Name="Btn_StartAutoTest" Grid.Row="4"  Height="40" Width="90" FontSize="14" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Grid.Column="0" Click="Btn_StartAutoTest_OnClick"  Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
-                        <Button.ToolTip>
-                            <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
-                                <ToolTip.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="10"></Setter>
-                                    </Style>
-                                </ToolTip.Resources>
-                                <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
-                            </ToolTip>
-                        </Button.ToolTip>
+                    <Grid Grid.Row="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Start" VerticalAlignment="Center"></TextBlock>
-                    </Button>
+                        <!--#region Button Start Auto Test-->
+                        <Button x:Name="Btn_StartAutoTest" Grid.Column="0"  Height="40" Width="90" FontSize="14" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Click="Btn_StartAutoTest_OnClick"  Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                            <Button.ToolTip>
+                                <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
+                                    <ToolTip.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="10"></Setter>
+                                        </Style>
+                                    </ToolTip.Resources>
+                                    <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
+                                </ToolTip>
+                            </Button.ToolTip>
+
+                            <TextBlock Text="Start" VerticalAlignment="Center"></TextBlock>
+                        </Button>
+
+                        <!--#region Button Start Auto Test-->
+                        <Button x:Name="Btn_StopAutoTest" Grid.Column="1" IsEnabled="False" Height="40" Width="90" FontSize="14" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Click="Btn_StopAutoTest_OnClick" Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                            <Button.ToolTip>
+                                <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
+                                    <ToolTip.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="10"></Setter>
+                                        </Style>
+                                    </ToolTip.Resources>
+                                    <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
+                                </ToolTip>
+                            </Button.ToolTip>
+
+                            <TextBlock Text="Stop" VerticalAlignment="Center"></TextBlock>
+                        </Button>
+                    </Grid>
+
+                    
 
 
                 </Grid>
 
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.3*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Auto Test Status" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
+                    <Label x:Name="Lb_AutoTestStatCurrentThreadCount"  Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Current thread:" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
+                    <Label x:Name="Lb_AutoTestStatElapsedTime" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Elapsed time:"   FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
+                    <Label x:Name="Lb_AutoTestStatCurrentOperation"  Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Current operation:" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
+                    <Label x:Name="Lb_AutoTestStatTimeForLastTest" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Last thread time:"   FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
+
+                </Grid>
+
                 
-                <TextBlock Grid.Column="1" Text="Auto Test Status" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
+                
                 <TextBlock Grid.Column="2" Text="Thread Settings" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
             </Grid>
 
