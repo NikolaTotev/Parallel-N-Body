@@ -29,8 +29,8 @@
 
 
         <FontFamily x:Key="Montserrat">pack://application:,,,/Resources/Fonts/#Montserrat</FontFamily>
+        <FontFamily x:Key="Lilita">pack://application:,,,/Resources/Fonts/#LilitaOne</FontFamily>
 
-        <system:String x:Key="DefaultSimImage">pack://application:,,,/Resources/Images/default_sim_image.png</system:String>
 
         <!--Tool tip texts-->
         <system:String x:Key="ToolTip_Default">Default tool tip</system:String>

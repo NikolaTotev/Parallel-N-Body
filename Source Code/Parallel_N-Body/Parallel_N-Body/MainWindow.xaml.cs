@@ -76,5 +76,50 @@ namespace Parallel_N_Body
         private void Cb_ParallelSelector_OnChecked(object sender, RoutedEventArgs e)
         {
         }
+
+        private void Tb_TargetParticle_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Tb_TargetParticle_OnGotFocus(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Tb_TargetParticle_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Cb_ShowAccelDirection_OnChecked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Cb_ShowVelDirection_OnChecked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Cb_ShowTree_OnChecked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Cb_ShowBHGrouping_OnChecked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Cb_ShowCOG_OnChecked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Cb_ShowEmptyCells_OnChecked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

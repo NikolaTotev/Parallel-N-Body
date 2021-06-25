@@ -97,6 +97,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Resource Include="Resources\Fonts\LilitaOne-Regular.ttf" />
     <Resource Include="Resources\Fonts\Montserrat-Black.ttf" />
     <Resource Include="Resources\Fonts\Montserrat-BlackItalic.ttf" />
     <Resource Include="Resources\Fonts\Montserrat-Bold.ttf" />

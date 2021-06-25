@@ -43,7 +43,7 @@
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="General Settings"></TextBlock>
+                    <TextBlock Grid.Row="0" Text="General Settings" FontFamily="{StaticResource Lilita}" FontWeight="Regular" FontSize="12"></TextBlock>
 
                     <!-- Number of particles & theta constant inputs -->
                     <Grid Grid.Row="1">
@@ -86,8 +86,8 @@
                                     <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
                                 </ToolTip>
                             </Button.ToolTip>
-                            
-                                <TextBlock Text="Generate" VerticalAlignment="Center"></TextBlock>
+
+                            <TextBlock Text="Generate" VerticalAlignment="Center"></TextBlock>
                         </Button>
 
                         <!--#region Button Partition-->
@@ -130,7 +130,7 @@
                             <RowDefinition Height="*"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
-                        
+
                         <RadioButton x:Name="Rb_PairwiseSelector" FontSize="15" Grid.Row="0" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  Content="Pairwise (Default)" VerticalContentAlignment="Center" Checked="Rb_PairwiseSelector_OnChecked">
                             <RadioButton.Resources>
                                 <Style TargetType="Border">
@@ -159,8 +159,143 @@
 
                 </Grid>
 
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.2*"></RowDefinition>
+                        <RowDefinition Height="0.5*"></RowDefinition>
+                        <RowDefinition Height="0.5*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Single Particle Testing"></TextBlock>
 
-                <TextBlock Grid.Column="1" Text="Single Particle Testing"></TextBlock>
+                    <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
+                        <StackPanel Margin="5"
+                                    Orientation="Horizontal">
+                            <TextBox  x:Name="Tb_TargetParticle" Text="Target Particle" TextChanged="Tb_TargetParticle_OnTextChanged" GotFocus="Tb_TargetParticle_OnGotFocus" LostFocus="Tb_TargetParticle_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                        </StackPanel>
+                    </Border>
+
+                    <!--#region Button Generate-->
+                    <Button x:Name="Btn_CalculateSingleParticle"  Grid.Row="2"  Height="40" Width="90" FontSize="14" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Grid.Column="0" Click="Btn_Generate_Click"  Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                        <Button.ToolTip>
+                            <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
+                                <ToolTip.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="10"></Setter>
+                                    </Style>
+                                </ToolTip.Resources>
+                                <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
+                            </ToolTip>
+                        </Button.ToolTip>
+
+                        <TextBlock Text="Calculate" VerticalAlignment="Center"></TextBlock>
+                    </Button>
+
+                    <Grid Grid.Row="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Label x:Name="Lb_XAccel" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"  Content="X Accel: " Margin="20,0,20,0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent"/>
+                            <Label x:Name="Lb_YAccel" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Content="Y Accel: " Margin="20,0,20,0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent"/>
+
+                            <Label x:Name="Lb_XVel" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"  Content="X Vel: " Margin="20,0,20,0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent"/>
+                            <Label x:Name="Lb_YVel" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Content="Y Vel: " Margin="20,0,20,0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent"/>
+                        </Grid>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox x:Name="Cb_ShowAccelDirection"  Content="Show Accel Vect" FontSize="15" Grid.Column="0" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Center" Checked="Cb_ShowAccelDirection_OnChecked">
+                                <CheckBox.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="3"></Setter>
+                                    </Style>
+                                </CheckBox.Resources>
+                            </CheckBox>
+
+                            <CheckBox x:Name="Cb_ShowVelDirection"  Content="Show Vel Vect" FontSize="15" Grid.Column="1" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Center" Checked="Cb_ShowVelDirection_OnChecked">
+                                <CheckBox.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="3"></Setter>
+                                    </Style>
+                                </CheckBox.Resources>
+                            </CheckBox>
+                        </Grid>
+                        
+
+                    </Grid>
+
+                </Grid>
+
+                <Grid Grid.Column="2" Margin="30,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.5*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Visualization Settings"></TextBlock>
+
+                    <CheckBox x:Name="Cb_ShowTree"  Content="Show Tree" FontSize="15" Grid.Row="1" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowTree_OnChecked">
+                        <CheckBox.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="3"></Setter>
+                            </Style>
+                        </CheckBox.Resources>
+                    </CheckBox>
+
+                    <CheckBox x:Name="Cb_ShowEmptyCells"  Content="Show Empty cells" FontSize="15" Grid.Row="2" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowEmptyCells_OnChecked">
+                        <CheckBox.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="3"></Setter>
+                            </Style>
+                        </CheckBox.Resources>
+                    </CheckBox>
+
+
+                    <CheckBox x:Name="Cb_ShowCOG"  Content="Show Accel Vect" FontSize="15" Grid.Row="3" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowCOG_OnChecked">
+                        <CheckBox.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="3"></Setter>
+                            </Style>
+                        </CheckBox.Resources>
+                    </CheckBox>
+
+                    <CheckBox x:Name="Cb_ShowBHGrouping"  Content="Show BH Grouping" FontSize="15" Grid.Row="4" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowBHGrouping_OnChecked">
+                        <CheckBox.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="3"></Setter>
+                            </Style>
+                        </CheckBox.Resources>
+                    </CheckBox>
+
+                    <CheckBox x:Name="Cb_EnableMultiColorParticles"  Content="Use multicolor particles" FontSize="15" Grid.Row="5" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowBHGrouping_OnChecked">
+                        <CheckBox.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="3"></Setter>
+                            </Style>
+                        </CheckBox.Resources>
+                    </CheckBox>
+
+
+                </Grid>
+
+
             </Grid>
 
             <Grid x:Name="G_SecondRow" Grid.Row="1">
