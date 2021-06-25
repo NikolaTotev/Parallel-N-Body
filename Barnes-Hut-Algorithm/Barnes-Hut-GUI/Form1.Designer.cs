@@ -111,6 +111,7 @@ namespace Barnes_Hut_GUI
             this.cb_ShowCOG = new System.Windows.Forms.CheckBox();
             this.l_SimDiagnostics = new System.Windows.Forms.Label();
             this.p_SimOptions = new System.Windows.Forms.Panel();
+            this.l_FPS = new System.Windows.Forms.Label();
             this.l_CurrentFrame = new System.Windows.Forms.Label();
             this.cb_ShowSimPlane = new System.Windows.Forms.CheckBox();
             this.btn_AnimationTest = new System.Windows.Forms.Button();
@@ -124,7 +125,6 @@ namespace Barnes_Hut_GUI
             this.pb_SimWindow = new System.Windows.Forms.PictureBox();
             this.p_TreePanel = new Barnes_Hut_GUI.TransparentPanel();
             this.p_ForcePanel = new Barnes_Hut_GUI.TransparentPanel();
-            this.l_FPS = new System.Windows.Forms.Label();
             this.p_ExecMetrics.SuspendLayout();
             this.p_ManualControls.SuspendLayout();
             this.p_ActionButtons.SuspendLayout();
@@ -415,7 +415,7 @@ namespace Barnes_Hut_GUI
             // 
             // p_ExecMetrics
             // 
-            this.p_ExecMetrics.BackColor = System.Drawing.Color.Bisque;
+            this.p_ExecMetrics.BackColor = System.Drawing.Color.Thistle;
             this.p_ExecMetrics.Controls.Add(this.checkBox1);
             this.p_ExecMetrics.Controls.Add(this.l_PPWITimeValue);
             this.p_ExecMetrics.Controls.Add(this.iL_PPWI);
@@ -616,7 +616,7 @@ namespace Barnes_Hut_GUI
             // 
             // p_ManualControls
             // 
-            this.p_ManualControls.BackColor = System.Drawing.Color.Bisque;
+            this.p_ManualControls.BackColor = System.Drawing.Color.Thistle;
             this.p_ManualControls.Controls.Add(this.l_ActionBtns);
             this.p_ManualControls.Controls.Add(this.p_ActionButtons);
             this.p_ManualControls.Controls.Add(this.l_init);
@@ -745,7 +745,7 @@ namespace Barnes_Hut_GUI
             // 
             // p_ThreadControls
             // 
-            this.p_ThreadControls.BackColor = System.Drawing.Color.Bisque;
+            this.p_ThreadControls.BackColor = System.Drawing.Color.Thistle;
             this.p_ThreadControls.Controls.Add(this.rb_TPLThreads);
             this.p_ThreadControls.Controls.Add(this.rb_CustomThreads);
             this.p_ThreadControls.Controls.Add(this.l_MaxThreads);
@@ -882,7 +882,7 @@ namespace Barnes_Hut_GUI
             // 
             // p_AutoControls
             // 
-            this.p_AutoControls.BackColor = System.Drawing.Color.Bisque;
+            this.p_AutoControls.BackColor = System.Drawing.Color.Thistle;
             this.p_AutoControls.Controls.Add(this.rb_SFPerformance);
             this.p_AutoControls.Controls.Add(this.rb_ThreadTesting);
             this.p_AutoControls.Controls.Add(this.rb_SFandTT);
@@ -946,7 +946,7 @@ namespace Barnes_Hut_GUI
             // 
             // p_SingleParticleDiagnostics
             // 
-            this.p_SingleParticleDiagnostics.BackColor = System.Drawing.Color.Bisque;
+            this.p_SingleParticleDiagnostics.BackColor = System.Drawing.Color.Thistle;
             this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ShowShiftedVect);
             this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ShowCOG);
             this.p_SingleParticleDiagnostics.Controls.Add(this.cb_ShowResForce);
@@ -995,7 +995,7 @@ namespace Barnes_Hut_GUI
             // 
             // p_SimOptions
             // 
-            this.p_SimOptions.BackColor = System.Drawing.Color.Bisque;
+            this.p_SimOptions.BackColor = System.Drawing.Color.Thistle;
             this.p_SimOptions.Controls.Add(this.l_FPS);
             this.p_SimOptions.Controls.Add(this.l_CurrentFrame);
             this.p_SimOptions.Controls.Add(this.cb_ShowSimPlane);
@@ -1009,6 +1009,15 @@ namespace Barnes_Hut_GUI
             this.p_SimOptions.Name = "p_SimOptions";
             this.p_SimOptions.Size = new System.Drawing.Size(219, 184);
             this.p_SimOptions.TabIndex = 52;
+            // 
+            // l_FPS
+            // 
+            this.l_FPS.AutoSize = true;
+            this.l_FPS.Location = new System.Drawing.Point(100, 30);
+            this.l_FPS.Name = "l_FPS";
+            this.l_FPS.Size = new System.Drawing.Size(33, 13);
+            this.l_FPS.TabIndex = 27;
+            this.l_FPS.Text = "FPS: ";
             // 
             // l_CurrentFrame
             // 
@@ -1106,7 +1115,7 @@ namespace Barnes_Hut_GUI
             // 
             // pb_AnimationTest
             // 
-            this.pb_AnimationTest.BackColor = System.Drawing.Color.Gainsboro;
+            this.pb_AnimationTest.BackColor = System.Drawing.Color.Thistle;
             this.pb_AnimationTest.Location = new System.Drawing.Point(1167, 545);
             this.pb_AnimationTest.Name = "pb_AnimationTest";
             this.pb_AnimationTest.Size = new System.Drawing.Size(251, 204);
@@ -1139,15 +1148,6 @@ namespace Barnes_Hut_GUI
             this.p_ForcePanel.Opacity = 0;
             this.p_ForcePanel.Size = new System.Drawing.Size(737, 737);
             this.p_ForcePanel.TabIndex = 24;
-            // 
-            // l_FPS
-            // 
-            this.l_FPS.AutoSize = true;
-            this.l_FPS.Location = new System.Drawing.Point(100, 30);
-            this.l_FPS.Name = "l_FPS";
-            this.l_FPS.Size = new System.Drawing.Size(33, 13);
-            this.l_FPS.TabIndex = 27;
-            this.l_FPS.Text = "FPS: ";
             // 
             // Form1
             // 

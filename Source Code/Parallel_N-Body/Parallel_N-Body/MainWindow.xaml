@@ -1,0 +1,168 @@
+﻿<Window x:Class="Parallel_N_Body.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:local="clr-namespace:Parallel_N_Body"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="1010" Width="1700" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="737"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+
+        <Image Grid.Column="0" x:Name="I_SimWindow" Source="{Binding SimImage}" Effect="{StaticResource DropShadow}">
+
+
+
+
+        </Image>
+
+        <Grid Grid.Column="1" Margin="15,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid x:Name="G_FirstRow" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Grid  Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.5*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="General Settings"></TextBlock>
+
+                    <!-- Number of particles & theta constant inputs -->
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Left" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
+                            <StackPanel Margin="5"
+                                        Orientation="Horizontal">
+                                <TextBox  x:Name="Tb_NumberOfParticles" Text="Number of particles" TextChanged="Tb_ParticleCount_OnTextChanged" GotFocus="Tb_ParticleCount_OnGotFocus" LostFocus="Tb_ParticleCount_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Left" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
+                            <StackPanel Margin="5"
+                                        Orientation="Horizontal">
+                                <TextBox  x:Name="Tb_Theta" Text="BH Theta Constant" TextChanged="Tb_Theta_OnTextChanged" GotFocus="Tb_Theta_OnGotFocus" LostFocus="Tb_Theta_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Reset, partition & generate buttons -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <!--#region Button Generate-->
+                        <Button x:Name="Btn_Generate" Height="50" Width="150" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Grid.Column="0" Click="Btn_Generate_Click"  Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" FontSize="20" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                            <Button.ToolTip>
+                                <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
+                                    <ToolTip.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="10"></Setter>
+                                        </Style>
+                                    </ToolTip.Resources>
+                                    <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
+                                </ToolTip>
+                            </Button.ToolTip>
+                            
+                                <TextBlock Text="Generate" VerticalAlignment="Center"></TextBlock>
+                        </Button>
+
+                        <!--#region Button Partition-->
+                        <Button x:Name="Btn_Partition" Height="50" Width="150" Grid.Column="1" Click="Btn_Partition_Click" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" FontSize="20" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                            <Button.ToolTip>
+                                <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
+                                    <ToolTip.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="10"></Setter>
+                                        </Style>
+                                    </ToolTip.Resources>
+                                    <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
+                                </ToolTip>
+                            </Button.ToolTip>
+
+                            <TextBlock Text="Partition" VerticalAlignment="Center"></TextBlock>
+                        </Button>
+
+                        <!--#region Button Reset-->
+                        <Button x:Name="Btn_Reset" Height="50" Width="150" Grid.Column="2" Click="Btn_Reset_Click" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" FontSize="20" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                            <Button.ToolTip>
+                                <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
+                                    <ToolTip.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="10"></Setter>
+                                        </Style>
+                                    </ToolTip.Resources>
+                                    <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
+                                </ToolTip>
+                            </Button.ToolTip>
+
+                            <TextBlock Text="Reset" VerticalAlignment="Center"></TextBlock>
+                        </Button>
+
+                      
+                    </Grid>
+
+                </Grid>
+
+
+                <TextBlock Grid.Column="1" Text="Single Particle Testing"></TextBlock>
+            </Grid>
+
+            <Grid x:Name="G_SecondRow" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Auto Test Settings"></TextBlock>
+                <TextBlock Grid.Column="1" Text="Auto Test Status"></TextBlock>
+                <TextBlock Grid.Column="2" Text="Thread Settings"></TextBlock>
+            </Grid>
+
+            <Grid x:Name="G_ThirdRow" Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Simulation Settings"></TextBlock>
+                <TextBlock Grid.Column="1" Text="Simulation Status"></TextBlock>
+            </Grid>
+
+            <Grid x:Name="G_ForthRow" Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+
+                <lvc:CartesianChart x:Name="Lc_LevelOfParallelism" Grid.Column="0"></lvc:CartesianChart>
+                <lvc:CartesianChart x:Name="Lc_ExecutionTime" Grid.Column="1"></lvc:CartesianChart>
+            </Grid>
+
+
+        </Grid>
+    </Grid>
+</Window>

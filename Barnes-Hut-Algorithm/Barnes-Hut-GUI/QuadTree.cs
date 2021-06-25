@@ -779,19 +779,23 @@ namespace Barnes_Hut_GUI
 
         }
 
+        /// <summary>
+        /// Calculates the sum of all force vectors (the resultant force).
+        /// </summary>
+        /// <param name="currentParticle"></param>
         public void CalculateResultantVector(Particle currentParticle)
         {
-            PointF resultantVectorStart = currentParticle.CenterPoint;
-            PointF resultantVectorEnd = currentParticle.CenterPoint;
+            //PointF resultantVectorStart = currentParticle.CenterPoint;
+            //PointF resultantVectorEnd = currentParticle.CenterPoint;
 
-            foreach (ForceVector forceVector in currentParticle.ForcesToApply)
-            {
-                forceVector.ShiftEndPoint(resultantVectorEnd);
-                resultantVectorEnd = forceVector.ShiftedEnd;
-            }
+            //foreach (ForceVector forceVector in currentParticle.ForcesToApply)
+            //{
+            //    forceVector.ShiftEndPoint(resultantVectorEnd);
+            //    resultantVectorEnd = forceVector.ShiftedEnd;
+            //}
 
-            currentParticle.ResultantVectorStart = resultantVectorStart;
-            currentParticle.ResultantVectorEnd = resultantVectorEnd;
+            //currentParticle.ResultantVectorStart = resultantVectorStart;
+            //currentParticle.ResultantVectorEnd = resultantVectorEnd;
 
         }
 
@@ -1060,7 +1064,7 @@ namespace Barnes_Hut_GUI
             }
         }
 
-
+        //Reset the instance of the quad tree
         public void Reset()
         {
             AllParticles.Clear();
@@ -1072,6 +1076,7 @@ namespace Barnes_Hut_GUI
 
         }
 
+        //Reset the node (remove partition)
         public void ResetRootNode()
         {
             RootNode = null;
