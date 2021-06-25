@@ -15,6 +15,7 @@
         <Brush x:Key="BorderButtonPressed">#00A7E1</Brush>
         <Brush x:Key="TextboxPrompt">#A2A9B9</Brush>
         <Color x:Key="OrangeButtonHighlightColor">#FFEFE2</Color>
+        <Color x:Key="NormalPurple">#9D4EDD</Color>
 
 
 
@@ -26,10 +27,11 @@
         <Brush x:Key="UndefinedTask">#A2A9B9</Brush>
         <Brush x:Key="InputError">#FFFFD5D5</Brush>
         <Brush x:Key="WarningRed">#FF6363</Brush>
+        <Brush x:Key="NormalPurpleBrush">#9D4EDD</Brush>
 
 
         <FontFamily x:Key="Montserrat">pack://application:,,,/Resources/Fonts/#Montserrat</FontFamily>
-        <FontFamily x:Key="Lilita">pack://application:,,,/Resources/Fonts/#LilitaOne</FontFamily>
+        <FontFamily x:Key="Lilita">pack://application:,,,/Resources/Fonts/#Lilita One</FontFamily>
 
 
         <!--Tool tip texts-->

@@ -43,7 +43,7 @@
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="General Settings" FontFamily="{StaticResource Lilita}" FontWeight="Regular" FontSize="12"></TextBlock>
+                    <TextBlock Grid.Row="0" Text="General Settings" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"/>
 
                     <!-- Number of particles & theta constant inputs -->
                     <Grid Grid.Row="1">
@@ -166,12 +166,11 @@
                         <RowDefinition Height="0.5*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="Single Particle Testing"></TextBlock>
+                    <TextBlock Grid.Row="0" Text="Single Particle Testing" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
 
                     <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
-                        <StackPanel Margin="5"
-                                    Orientation="Horizontal">
-                            <TextBox  x:Name="Tb_TargetParticle" Text="Target Particle" TextChanged="Tb_TargetParticle_OnTextChanged" GotFocus="Tb_TargetParticle_OnGotFocus" LostFocus="Tb_TargetParticle_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                        <StackPanel Margin="5" Orientation="Horizontal">
+                            <TextBox  x:Name="Tb_Target" Text="Target Particle" TextChanged="Tb_TargetParticle_OnTextChanged" GotFocus="Tb_TargetParticle_OnGotFocus" LostFocus="Tb_TargetParticle_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
                         </StackPanel>
                     </Border>
 
@@ -206,7 +205,7 @@
                                 <RowDefinition Height="*"></RowDefinition>
                                 <RowDefinition Height="*"></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Label x:Name="Lb_XAccel" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"  Content="X Accel: " Margin="20,0,20,0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent"/>
+                            <Label x:Name="Lb_XAccel" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"  Content="X Accel: " Margin="40,0,41,0"  FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
                             <Label x:Name="Lb_YAccel" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Content="Y Accel: " Margin="20,0,20,0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent"/>
 
                             <Label x:Name="Lb_XVel" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"  Content="X Vel: " Margin="20,0,20,0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent"/>
@@ -249,7 +248,7 @@
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="Visualization Settings"></TextBlock>
+                    <TextBlock Grid.Row="0" Text="Visualization Settings" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
 
                     <CheckBox x:Name="Cb_ShowTree"  Content="Show Tree" FontSize="15" Grid.Row="1" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowTree_OnChecked">
                         <CheckBox.Resources>
@@ -304,9 +303,61 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Auto Test Settings"></TextBlock>
-                <TextBlock Grid.Column="1" Text="Auto Test Status"></TextBlock>
-                <TextBlock Grid.Column="2" Text="Thread Settings"></TextBlock>
+
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.3*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Auto Test Settings" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
+                    <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
+                        <StackPanel Margin="5"
+                                    Orientation="Horizontal">
+                            <TextBox  x:Name="Tb_MaxThreadsForAuto" Text="Max threads to test" TextChanged="Tb_MaxThreadsForAuto_OnTextChanged" GotFocus="Tb_MaxThreadsForAuto_OnGotFocus" LostFocus="Tb_MaxThreadsForAuto_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                        </StackPanel>
+                    </Border>
+
+                    <RadioButton x:Name="Rb_AutoTestCustomThreads" FontSize="15" Grid.Row="2" Content="Auto test custom threads"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_AutoTestCustomThreads_OnChecked">
+                        <RadioButton.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="3"></Setter>
+                            </Style>
+                        </RadioButton.Resources>
+                    </RadioButton>
+
+                    <RadioButton x:Name="Rb_AutoTestTPLThreads" FontSize="15" Grid.Row="3"  Content="Auto test TPL threads"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3" VerticalContentAlignment="Center" Checked="Rb_AutoTestTPLThreads_OnChecked">
+                        <RadioButton.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="3"></Setter>
+                            </Style>
+                        </RadioButton.Resources>
+                    </RadioButton>
+
+                    <!--#region Button Generate-->
+                    <Button x:Name="Btn_StartAutoTest" Grid.Row="4"  Height="40" Width="90" FontSize="14" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Grid.Column="0" Click="Btn_StartAutoTest_OnClick"  Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                        <Button.ToolTip>
+                            <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
+                                <ToolTip.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="10"></Setter>
+                                    </Style>
+                                </ToolTip.Resources>
+                                <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
+                            </ToolTip>
+                        </Button.ToolTip>
+
+                        <TextBlock Text="Start" VerticalAlignment="Center"></TextBlock>
+                    </Button>
+
+
+                </Grid>
+
+                
+                <TextBlock Grid.Column="1" Text="Auto Test Status" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
+                <TextBlock Grid.Column="2" Text="Thread Settings" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
             </Grid>
 
             <Grid x:Name="G_ThirdRow" Grid.Row="2">
@@ -315,8 +366,8 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Text="Simulation Settings"></TextBlock>
-                <TextBlock Grid.Column="1" Text="Simulation Status"></TextBlock>
+                <TextBlock Grid.Column="0" Text="Simulation Settings" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
+                <TextBlock Grid.Column="1" Text="Simulation Status" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
             </Grid>
 
             <Grid x:Name="G_ForthRow" Grid.Row="3">
