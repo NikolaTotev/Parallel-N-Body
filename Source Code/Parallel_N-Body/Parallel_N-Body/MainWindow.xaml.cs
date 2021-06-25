@@ -138,6 +138,37 @@ namespace Parallel_N_Body
 
         private void Btn_StopAutoTest_OnClick(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void Tb_NumberOfFrames_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void Tb_NumberOfFrames_OnGotFocus(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void Tb_NumberOfFrames_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+        }
+
+        private void Btn_StopSimulation_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Btn_StartSimulation_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Lc_LevelOfParallelism_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Lc_ExecutionTime_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
             throw new NotImplementedException();
         }
     }

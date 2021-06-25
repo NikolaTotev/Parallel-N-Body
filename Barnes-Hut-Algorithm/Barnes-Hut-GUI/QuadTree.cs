@@ -763,7 +763,7 @@ namespace Barnes_Hut_GUI
 
                 if (startNode.nodeParticles[0] != currentParticle)
                 {
-                    currentParticle.AddForce(forceVect);
+                    //currentParticle.AddForce(forceVect);
                     currentParticle.Method2AccelComponents.X += currentAccelerationX;
                     currentParticle.Method2AccelComponents.Y += currentAccelerationY;
                 }

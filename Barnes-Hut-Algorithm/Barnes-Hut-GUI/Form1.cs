@@ -1172,7 +1172,7 @@ namespace Barnes_Hut_GUI
         {
 
             simParticle.OldCenterPoint = simParticle.CenterPoint;
-            simParticle.GetAccelerationVector();
+           // simParticle.GetAccelerationVector();
             time += 1;
             PointF currentCenterPoint = simParticle.CenterPoint;
             float forceX = (float)(Math.Abs(vel.X) * 1 + 0.5 * Math.Abs(simParticle.AccelerationComponents.X) * 1 * 1);
