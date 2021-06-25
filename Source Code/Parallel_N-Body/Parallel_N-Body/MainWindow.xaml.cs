@@ -55,17 +55,26 @@ namespace Parallel_N_Body
 
         private void Btn_Generate_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
         }
 
         private void Btn_Partition_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
         }
 
         private void Btn_Reset_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+        }
+        
+        private void Rb_PairwiseSelector_OnChecked(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void Rb_BHSelector_OnChecked(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void Cb_ParallelSelector_OnChecked(object sender, RoutedEventArgs e)
+        {
         }
     }
 }
