@@ -21,7 +21,7 @@ namespace Parallel_N_Body
     public partial class MainWindow : Window
     {
         public string SimImage { get; set; }
-        private string defaultSimImage = "Grouping.png";
+        private string defaultSimImage = "/Resources/images/default_sim_image.png";
         public MainWindow()
         {
             InitializeComponent();

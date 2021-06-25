@@ -33,12 +33,13 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
                 <Grid  Grid.Column="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="0.5*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="0.3*"></RowDefinition>
+                        <RowDefinition Height="1.5*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
@@ -46,18 +47,18 @@
 
                     <!-- Number of particles & theta constant inputs -->
                     <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
                             <StackPanel Margin="5"
                                         Orientation="Horizontal">
                                 <TextBox  x:Name="Tb_NumberOfParticles" Text="Number of particles" TextChanged="Tb_ParticleCount_OnTextChanged" GotFocus="Tb_ParticleCount_OnGotFocus" LostFocus="Tb_ParticleCount_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
                             </StackPanel>
                         </Border>
 
-                        <Border Grid.Column="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
+                        <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
                             <StackPanel Margin="5"
                                         Orientation="Horizontal">
                                 <TextBox  x:Name="Tb_Theta" Text="BH Theta Constant" TextChanged="Tb_Theta_OnTextChanged" GotFocus="Tb_Theta_OnGotFocus" LostFocus="Tb_Theta_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
@@ -74,7 +75,7 @@
                         </Grid.ColumnDefinitions>
 
                         <!--#region Button Generate-->
-                        <Button x:Name="Btn_Generate"  Height="40" Width="120" FontSize="16" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Grid.Column="0" Click="Btn_Generate_Click"  Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                        <Button x:Name="Btn_Generate"   Height="40" Width="90" FontSize="14" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Grid.Column="0" Click="Btn_Generate_Click"  Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
                             <Button.ToolTip>
                                 <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
                                     <ToolTip.Resources>
@@ -90,7 +91,7 @@
                         </Button>
 
                         <!--#region Button Partition-->
-                        <Button x:Name="Btn_Partition"  Height="40" Width="120" FontSize="16" Grid.Column="1" Click="Btn_Partition_Click" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                        <Button x:Name="Btn_Partition"  Height="40" Width="90" FontSize="14" Grid.Column="1" Click="Btn_Partition_Click" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
                             <Button.ToolTip>
                                 <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
                                     <ToolTip.Resources>
@@ -106,7 +107,7 @@
                         </Button>
 
                         <!--#region Button Reset-->
-                        <Button x:Name="Btn_Reset" Height="40" Width="120" FontSize="16"  Grid.Column="2" Click="Btn_Reset_Click" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                        <Button x:Name="Btn_Reset" Height="40" Width="90" FontSize="14"  Grid.Column="2" Click="Btn_Reset_Click" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
                             <Button.ToolTip>
                                 <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
                                     <ToolTip.Resources>
@@ -124,13 +125,13 @@
                     </Grid>
 
                     <Grid Grid.Row="3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
                         
-                        <RadioButton x:Name="Rb_PairwiseSelector" FontSize="15" Grid.Column="0" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  Content="Pairwise (Default)" VerticalContentAlignment="Center" Checked="Rb_PairwiseSelector_OnChecked">
+                        <RadioButton x:Name="Rb_PairwiseSelector" FontSize="15" Grid.Row="0" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  Content="Pairwise (Default)" VerticalContentAlignment="Center" Checked="Rb_PairwiseSelector_OnChecked">
                             <RadioButton.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="3"></Setter>
@@ -139,7 +140,7 @@
                         </RadioButton>
 
 
-                        <RadioButton x:Name="Rb_BHSelector"  Content="BH Algorithm" FontSize="15" Grid.Column="1" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_BHSelector_OnChecked">
+                        <RadioButton x:Name="Rb_BHSelector"  Content="BH Algorithm" FontSize="15" Grid.Row="1" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_BHSelector_OnChecked">
                             <RadioButton.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="3"></Setter>
@@ -147,7 +148,7 @@
                             </RadioButton.Resources>
                         </RadioButton>
 
-                        <CheckBox x:Name="Cb_ParallelSelector"  Content="Use Parallel Version" FontSize="15" Grid.Column="2" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Cb_ParallelSelector_OnChecked">
+                        <CheckBox x:Name="Cb_ParallelSelector"  Content="Use Parallel Version" FontSize="15" Grid.Row="2" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Cb_ParallelSelector_OnChecked">
                             <CheckBox.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="3"></Setter>
