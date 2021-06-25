@@ -316,7 +316,7 @@
                     <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
                         <StackPanel Margin="5"
                                     Orientation="Horizontal">
-                            <TextBox  x:Name="Tb_MaxThreadsForAuto" Text="Max threads to test" TextChanged="Tb_MaxThreadsForAuto_OnTextChanged" GotFocus="Tb_MaxThreadsForAuto_OnGotFocus" LostFocus="Tb_MaxThreadsForAuto_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                            <TextBox  x:Name="Tb_MaxThreadsForAuto" Text="Max threads to test " TextChanged="Tb_MaxThreadsForAuto_OnTextChanged" GotFocus="Tb_MaxThreadsForAuto_OnGotFocus" LostFocus="Tb_MaxThreadsForAuto_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
                         </StackPanel>
                     </Border>
 
@@ -396,9 +396,40 @@
 
                 </Grid>
 
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.3*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Thread Settings" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
+                    <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
+                        <StackPanel Margin="5"
+                                    Orientation="Horizontal">
+                            <TextBox  x:Name="Tb_NumberOfThreads" Text="Max threads (up to 12)" TextChanged="Tb_MaxThreadsForAuto_OnTextChanged" GotFocus="Tb_MaxThreadsForAuto_OnGotFocus" LostFocus="Tb_MaxThreadsForAuto_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                        </StackPanel>
+                    </Border>
+
+                    <RadioButton x:Name="Rb_UserCustomThreads" FontSize="15" Grid.Row="2" Content="Use custom threads"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_AutoTestCustomThreads_OnChecked">
+                        <RadioButton.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="3"></Setter>
+                            </Style>
+                        </RadioButton.Resources>
+                    </RadioButton>
+
+                    <RadioButton x:Name="Rb_UseTPLThreads" FontSize="15" Grid.Row="3"  Content="Use TPL threads"  BorderBrush="{StaticResource OrangeAccent}" FontFamily="{StaticResource Montserrat}" BorderThickness="3" VerticalContentAlignment="Center" Checked="Rb_AutoTestTPLThreads_OnChecked">
+                        <RadioButton.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="3"></Setter>
+                            </Style>
+                        </RadioButton.Resources>
+                    </RadioButton>
+                </Grid>
                 
                 
-                <TextBlock Grid.Column="2" Text="Thread Settings" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
             </Grid>
 
             <Grid x:Name="G_ThirdRow" Grid.Row="2">
