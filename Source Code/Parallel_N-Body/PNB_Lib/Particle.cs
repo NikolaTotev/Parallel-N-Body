@@ -13,7 +13,7 @@ namespace PNB_Lib
         public PointF Velocity = new PointF(0, 0);
 
         public PointF AccelerationComponents = new PointF(0f, 0f);
-        public PointF Method2VelocityComponents = new PointF(0, 0);
+        public PointF VelocityComponents = new PointF(0, 0);
 
         private float time = 0;
         public Color particleColor;

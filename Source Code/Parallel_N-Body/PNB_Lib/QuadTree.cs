@@ -21,6 +21,9 @@ namespace PNB_Lib
         private float m_G = (float)(6.67408 * Pow(10, -7));
         private float m_Softening = 0.8f;
         private Stopwatch m_Sw;
+        private float m_Dt = 0.5f;
+        private float time = 0;
+        private float m_Boost = 3000;
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {
@@ -31,14 +34,48 @@ namespace PNB_Lib
             m_Sw = new Stopwatch();
         }
 
-        public void FirstSimulationStep(Particle currentParticle)
+
+        public void Simulate(int framesToSimulate)
         {
 
         }
 
+
+        public void FirstSimulationStep(Particle currentParticle)
+        {
+            currentParticle.VelocityComponents.X += m_Boost* currentParticle.AccelerationComponents.X * m_Dt/ 2;
+            currentParticle.VelocityComponents.Y += m_Boost * currentParticle.AccelerationComponents.Y * m_Dt / 2;
+
+            PointF newCenter = currentParticle.CenterPoint;
+
+            newCenter.X += currentParticle.VelocityComponents.X * m_Dt;
+            newCenter.Y += currentParticle.VelocityComponents.Y * m_Dt;
+            
+            currentParticle.CenterPoint = newCenter;
+
+            if (currentParticle.CenterPoint.X > m_SimSpaceXLen)
+            {
+                currentParticle.VelocityComponents.X = -currentParticle.VelocityComponents.X;
+            }
+            else if (currentParticle.CenterPoint.X < 0)
+            {
+                currentParticle.VelocityComponents.X = -currentParticle.VelocityComponents.X;
+            }
+
+            if (currentParticle.CenterPoint.Y > m_SimSpaceYLen)
+            {
+                currentParticle.VelocityComponents.Y = -currentParticle.VelocityComponents.Y;
+            }
+            else if (currentParticle.CenterPoint.Y < 0)
+            {
+                currentParticle.VelocityComponents.Y = -currentParticle.VelocityComponents.Y;
+            }
+        }
+
         public void SecondSimulationStep(Particle currentParticle)
         {
-
+            currentParticle.VelocityComponents.X += m_Boost * currentParticle.AccelerationComponents.X * m_Dt / 2;
+            currentParticle.VelocityComponents.Y += m_Boost * currentParticle.AccelerationComponents.Y * m_Dt/ 2;
         }
 
         public TimeSpan PairwiseForceCalculation(bool isParalell, int threadCount = 1)
@@ -65,7 +102,7 @@ namespace PNB_Lib
                             {
                                 if (m_Particles[j] != currentParticle)
                                 {
-                                    ParticleToParticleForceCalculation(currentParticle, j);
+                                    ParticleToParticleForceCalculation(currentParticle, m_Particles[j]);
                                 }
                             }
                         });
@@ -97,7 +134,7 @@ namespace PNB_Lib
 
         public void BarnesHutForceCalculation()
         {
-
+            //TODO Implement BH Force Calculation Function
         }
 
         public void ParticleToParticleForceCalculation(Particle targetParticle, Particle effector)
@@ -117,7 +154,7 @@ namespace PNB_Lib
 
         public void ParticleToNodeForceCalculation(Particle currentParticle, Node currentNode)
         {
-
+            //TODO Implement Particle -> Node interaction
         }
         
 
@@ -141,7 +178,7 @@ namespace PNB_Lib
         float GravitationalForceCalculation(float distance, float particleMass, float nodeMass)
         {
             float totalMass = particleMass * nodeMass;
-            return G * totalMass / (float)Math.Pow(distance, 2);
+            return m_G * totalMass / (float)Math.Pow(distance, 2);
         }
 
 
