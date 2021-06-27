@@ -21,7 +21,7 @@
         
 
         <Grid  x:Name="g_SimGrid" Width="737" Height="979" Grid.Column="0">
-            <skia:SKElement PaintSurface="ps_SimSpace" />
+            <skia:SKElement x:Name="skg_SimGraphics" PaintSurface="ps_SimSpace" />
         </Grid>
         
 

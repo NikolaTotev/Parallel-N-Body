@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using static System.Math;
 using System.Drawing;
@@ -10,6 +12,13 @@ using System.Threading.Tasks;
 
 namespace PNB_Lib
 {
+    public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
+
+    public enum SimulationStep
+    {
+        first, second
+    }
+
     public class QuadTree
     {
         private int m_ParticleCount;
@@ -37,17 +46,17 @@ namespace PNB_Lib
         private bool m_DrawFlagUseDifferentColors;
         private bool m_DrawFlagShowCOG;
 
-        private int m_AutoConfigMaxThreads;
-        private ThreadMode m_AutoConfigThreadMode;
-        private bool m_AutoConfigShouldStopTest;
+        private int m_AutoConfigMaxThreads = 1;
+        private ThreadMode m_AutoConfigThreadMode = ThreadMode.customThreads;
+        private bool m_AutoConfigShouldStopTest = false;
 
-        private int m_SimConfigNumberOfFrames;
-        private bool m_SimConfigShouldStopSim;
+        private int m_SimConfigNumberOfFrames = 200;
+        private bool m_SimConfigShouldStopSim = false;
 
-        private int m_ThreadConfigMaxThreads;
-        private ThreadMode m_ThreadConfigThreadMode;
+        private int m_ThreadConfigMaxThreads = 1;
+        private ThreadMode m_ThreadConfigThreadMode = ThreadMode.customThreads;
 
-
+        public event SimFrameCompleteEventHandler OnFrameComplete;
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {
@@ -58,7 +67,10 @@ namespace PNB_Lib
             m_Sw = new Stopwatch();
         }
 
-
+        public List<Particle> GetParticles()
+        {
+            return m_Particles;
+        }
         public void SetTheta(float newTheta)
         {
             m_Theta = newTheta;
@@ -159,7 +171,93 @@ namespace PNB_Lib
 
         public void GenerateParticles()
         {
+            Random rand = new Random();
+            List<Point> testPoints = new List<Point>()
+            {
+                new Point(91, 395),
+                new Point(500, 10),
+                new Point(110, 605),
+                new Point(414, 695),
+                new Point(705, 295)
+            };
 
+            List<Point> testPoints2 = new List<Point>()
+            {
+                new Point(103, 89),
+                new Point(153, 88),
+                new Point(89, 396),
+                new Point(50, 395),
+                new Point(250, 400)
+            };
+
+            int colorCounter = 0;
+            for (int i = 0; i < m_ParticleCount; i++)
+            {
+                Particle newParticle = new Particle();
+                //int x = rand.Next(5, 730);
+                //int y = rand.Next(5, 730);
+                int x = rand.Next(250, 550);
+                int y = rand.Next(250, 550);
+
+                bool pointSet = false;
+                int doubleHit = 0;
+                while (!pointSet)
+                {
+                    pointSet = false;
+                    if (!m_ParticleMap[x, y])
+                    {
+                        Point particleCenter = new Point(x, y);
+                        if (false)
+                        {
+                            newParticle.CenterPoint = testPoints2[i];
+                        }
+                        else
+                        {
+                            newParticle.CenterPoint = particleCenter;
+                        }
+
+                        if (m_DrawFlagUseDifferentColors)
+                        {
+                            switch (colorCounter)
+                            {
+                                case 0:
+                                    newParticle.particleColor = Color.MediumPurple;
+                                    break;
+                                case 1:
+                                    newParticle.particleColor = Color.Violet;
+                                    break;
+                                case 2:
+                                    newParticle.particleColor = Color.Purple;
+                                    break;
+                                case 3:
+                                    newParticle.particleColor = Color.Orange;
+                                    break;
+                                case 4:
+                                    newParticle.particleColor = Color.DarkOrange;
+                                    break;
+                                case 5:
+                                    newParticle.particleColor = Color.OrangeRed;
+                                    break;
+                            }
+                            colorCounter++;
+                        }
+                        else
+                        {
+                            newParticle.particleColor = Color.Orange;
+                        }
+                        
+                        m_Particles.Add(newParticle);
+                        m_ParticleMap[x, y] = true;
+                        pointSet = true;
+                    }
+                    else
+                    {
+                        x = rand.Next(5, 730);
+                        y = rand.Next(5, 830);
+                        doubleHit++;
+                    }
+                }
+            }
         }
 
         public void Partition()
@@ -174,11 +272,179 @@ namespace PNB_Lib
 
         public void StartSimulation()
         {
+            //frameSw.Start();
+            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
+            PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
+            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
+            //frameSw.Stop();
+
+            //Stopwatch frameSw = new Stopwatch();
+            //switch (m_AlgToUse)
+            //{
+            //    case InteractionAlgorithm.PWI:
+
+            //        for (int i = 0; i < m_SimConfigNumberOfFrames; i++)
+            //        {
+            //            frameSw.Start();
+            //            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
+            //            PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
+            //            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
+            //            frameSw.Stop();
+            //            SimFrameCompleteArgs args = new SimFrameCompleteArgs(frameSw.Elapsed, i);
+            //            RaiseEventOnUIThread(OnFrameComplete, new object[]{null, args});
+            //            frameSw.Reset();
+            //        }
+
+            //        break;
+            //    case InteractionAlgorithm.BH:
+            //        //TODO Implement BH alg.
+            //        break;
+            //    default:
+            //        throw new ArgumentOutOfRangeException();
+            //}
+        }
+
+        #region First Simulation Step
+
+
+
+
+        public void PrepareStepExecution(ThreadMode threadMode, int threadCount, SimulationStep simulationStep)
+        {
+            if (!m_IsParallel)
+            {
+                int particlesPerThread = m_Particles.Count / threadCount;
+
+                switch (threadMode)
+                {
+                    case ThreadMode.customThreads:
+                        List<Thread> workerThreads = new List<Thread>();
+
+                        List<int> threadStartIndecencies = new List<int>(threadCount);
+                        List<int> threadEndIndecencies = new List<int>();
+
+                        int currentStartIndex = 0;
+
+                        for (int i = 0; i < threadCount; i++)
+                        {
+                            int endIndex;
+                            if (i != threadCount - 1)
+                            {
+                                threadStartIndecencies.Add(currentStartIndex);
+                                endIndex = currentStartIndex + particlesPerThread;
+                                threadEndIndecencies.Add(endIndex);
+                                currentStartIndex = endIndex + 1;
+                            }
+                            else
+                            {
+                                threadStartIndecencies.Add(currentStartIndex);
+                                endIndex = m_Particles.Count;
+                                threadEndIndecencies.Add(endIndex);
+                            }
+                        }
+
+                        for (int i = 0; i < threadCount; i++)
+                        {
+                            int startIndex = threadStartIndecencies[i];
+                            int endIndex = threadEndIndecencies[i];
+                            Thread worker;
+
+                            switch (simulationStep)
+                            {
+                                case SimulationStep.first:
+                                    worker = new Thread((() => PartitionMultithreadExecution(startIndex, endIndex, simulationStep)));
+                                    break;
+                                case SimulationStep.second:
+                                    worker = new Thread((() => PartitionMultithreadExecution(startIndex, endIndex, simulationStep)));
+                                    break;
+                                default:
+                                    worker = new Thread((ErrorInSimPart));
+                                    break;
+                            }
+
+                            worker.Priority = ThreadPriority.Highest;
+                            worker.Name = $"Thread_{i}";
+                            workerThreads.Add(worker);
+                        }
+
+                        foreach (var workerThread in workerThreads)
+                        {
+                            workerThread.Start();
+                        }
+
+                        foreach (var workerThread in workerThreads)
+                        {
+                            workerThread.Join();
+                        }
+
+                        workerThreads.Clear();
+
+                        break;
+
+                    case ThreadMode.tplThreads:
+                        Partitioner<Particle> rangePartitioner = Partitioner.Create(m_Particles, true);
+
+                        Parallel.ForEach(rangePartitioner,
+                            new ParallelOptions { MaxDegreeOfParallelism = threadCount },
+                            (currentParticle) =>
+                            {
+
+                                Thread.CurrentThread.Priority = ThreadPriority.Highest;
+
+                                switch (simulationStep)
+                                {
+                                    case SimulationStep.first:
+                                        ExecuteFirstSimulationStepCalculations(currentParticle);
+                                        break;
+                                    case SimulationStep.second:
+                                        ExecuteSecondSimulationStepCalculations(currentParticle);
+                                        break;
+                                }
+
+                            });
+
+                        break;
+                }
+            }
+
+
+            foreach (Particle particle in m_Particles)
+            {
+                ExecuteFirstSimulationStepCalculations(particle);
+            }
+        }
+
+        void ErrorInSimPart()
+        {
 
         }
 
+        public void PartitionMultithreadExecution(int startIndex, int endIndex, SimulationStep simulationStep)
+        {
+            switch (simulationStep)
+            {
+                case SimulationStep.first:
+                    for (int i = startIndex; i < endIndex; i++)
+                    {
+                        Particle currentParticle = m_Particles[i];
+                        ExecuteFirstSimulationStepCalculations(currentParticle);
+                    }
+                    break;
+                case SimulationStep.second:
+                    for (int i = startIndex; i < endIndex; i++)
+                    {
+                        Particle currentParticle = m_Particles[i];
+                        ExecuteSecondSimulationStepCalculations(currentParticle);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(simulationStep), simulationStep, null);
+            }
 
-        public void FirstSimulationStep(Particle currentParticle)
+
+        }
+
+        public void ExecuteFirstSimulationStepCalculations(Particle currentParticle)
         {
             currentParticle.VelocityComponents.X += m_Boost * currentParticle.AccelerationComponents.X * m_Dt / 2;
             currentParticle.VelocityComponents.Y += m_Boost * currentParticle.AccelerationComponents.Y * m_Dt / 2;
@@ -209,7 +475,10 @@ namespace PNB_Lib
             }
         }
 
-        public void SecondSimulationStep(Particle currentParticle)
+        #endregion
+
+
+        public void ExecuteSecondSimulationStepCalculations(Particle currentParticle)
         {
             currentParticle.VelocityComponents.X += m_Boost * currentParticle.AccelerationComponents.X * m_Dt / 2;
             currentParticle.VelocityComponents.Y += m_Boost * currentParticle.AccelerationComponents.Y * m_Dt / 2;
@@ -217,10 +486,7 @@ namespace PNB_Lib
 
         public TimeSpan PairwiseForceCalculation(bool isParalell, int threadCount = 1)
         {
-            float diffX = 0;
-            float diffY = 0;
-            float inv_r2 = 0;
-
+            
             foreach (Particle currentParticle in m_Particles)
             {
                 currentParticle.AccelerationComponents.X = 0;
@@ -297,8 +563,8 @@ namespace PNB_Lib
 
         public List<float> CalculateDistanceBetweenPoints(PointF firstPoint, PointF secondPoint)
         {
-            float diffX = firstPoint.X - secondPoint.X; //equiv of diffX
-            float diffY = firstPoint.Y - secondPoint.Y; //equiv of diffY
+            float diffX = secondPoint.X - firstPoint.X; //equiv of diffX
+            float diffY = secondPoint.Y - firstPoint.Y; //equiv of diffY
             float distance = (float)Math.Sqrt(Math.Pow(diffX, 2) + Math.Pow(diffY, 2));
             float angleSin = diffY / distance;
             float angleCos = diffX / distance;
@@ -324,7 +590,6 @@ namespace PNB_Lib
             return distanceToNode > nodeSideLength * m_Theta;
         }
 
-
         public void ResetTree()
         {
             m_Particles.Clear();
@@ -340,6 +605,21 @@ namespace PNB_Lib
             m_RootNode.IsRoot = true;
         }
 
+        private void RaiseEventOnUIThread(Delegate theEvent, object[] args)
+        {
+            foreach (Delegate d in theEvent.GetInvocationList())
+            {
+                ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
+                if (syncer == null)
+                {
+                    d.DynamicInvoke(args);
+                }
+                else
+                {
+                    syncer.BeginInvoke(d, args);  // cleanup omitted
+                }
+            }
+        }
 
     }
 }

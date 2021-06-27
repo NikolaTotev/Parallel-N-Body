@@ -16,18 +16,16 @@ namespace PNB_Lib
         public PointF VelocityComponents = new PointF(0, 0);
 
         private float time = 0;
-        public Color particleColor;
+        public Color particleColor { get; set; }
 
         public float Mass { get; set; }
-
-        public Color ParticleColor { get; }
 
         private readonly object accelLock = new object();
 
 
         public Particle()
         {
-        
+
             Mass = 1000;
         }
 

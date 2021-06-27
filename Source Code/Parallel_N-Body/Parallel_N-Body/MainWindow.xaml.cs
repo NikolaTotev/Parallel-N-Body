@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,9 +17,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using PNB_Lib;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using SkiaSharp.Views.WPF;
 
 namespace Parallel_N_Body
 {
@@ -24,7 +30,7 @@ namespace Parallel_N_Body
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string defaultSimImage = "./Resources/Images/default_sim_image.svg";
+        private string currentSimImage = "./Resources/Images/default_sim_image.svg";
         private SKSvg m_SKSvg;
         private bool m_IsStartUp = true;
         private ProgramManager m_ProgramManager = new ProgramManager(0, 0);
@@ -39,12 +45,25 @@ namespace Parallel_N_Body
         private string m_PrevThreadConfigMaxThreads;
         private string m_PrevSimConfigNumberOfFrames;
 
+        private SKCanvas m_SimCanvas;
         public MainWindow()
         {
             InitializeComponent();
             m_SimWidth = (int)g_SimGrid.Width;
             m_SimHeight = (int)g_SimGrid.Height;
             m_ProgramManager = new ProgramManager(m_SimWidth, m_SimHeight);
+            m_ProgramManager.QuadTree.OnFrameComplete += QuadTree_OnFrameComplete;
+            OnFrameDraw += MainWindow_OnFrameDraw;
+        }
+
+        private void MainWindow_OnFrameDraw(object sender, EventArgs e)
+        {
+            skg_SimGraphics.InvalidateVisual();
+        }
+
+        private void QuadTree_OnFrameComplete(object source, SimFrameCompleteArgs e)
+        {
+            skg_SimGraphics.InvalidateVisual();
         }
 
 
@@ -115,7 +134,9 @@ namespace Parallel_N_Body
 
         private void Btn_Generate_Click(object sender, RoutedEventArgs e)
         {
+            m_IsStartUp = false;
             m_ProgramManager.QuadTree.GenerateParticles();
+            skg_SimGraphics.InvalidateVisual();
         }
 
         private void Btn_Partition_Click(object sender, RoutedEventArgs e)
@@ -351,8 +372,40 @@ namespace Parallel_N_Body
         private void Btn_StartSimulation_OnClick(object sender, RoutedEventArgs e)
         {
             m_ProgramManager.QuadTree.SetSimConfigShouldStopSim(false);
-            m_ProgramManager.QuadTree.StartSimulation();
+            Thread simThread = new Thread(SimTest);
+            simThread.Start();
         }
+        public event EventHandler OnFrameDraw;
+
+        public void SimTest()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                m_ProgramManager.QuadTree.StartSimulation();
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    skg_SimGraphics.InvalidateVisual();
+                }), DispatcherPriority.Background);
+                //RaiseEventOnUIThread(OnFrameDraw, new object[] { null, new EventArgs() });
+            }
+
+        }
+        private void RaiseEventOnUIThread(Delegate theEvent, object[] args)
+        {
+            foreach (Delegate d in theEvent.GetInvocationList())
+            {
+                ISynchronizeInvoke syncer = d.Target as ISynchronizeInvoke;
+                if (syncer == null)
+                {
+                    d.DynamicInvoke(args);
+                }
+                else
+                {
+                    syncer.BeginInvoke(d, args);  // cleanup omitted
+                }
+            }
+        }
+
 
         private void Btn_StopSimulation_OnClick(object sender, RoutedEventArgs e)
         {
@@ -388,13 +441,14 @@ namespace Parallel_N_Body
         {
             // create a new SVG object
             m_SKSvg = new SKSvg();
-            m_SKSvg.Load(defaultSimImage);
+            m_SKSvg.Load(currentSimImage);
         }
 
 
 
         private void ps_SimSpace(object sender, SKPaintSurfaceEventArgs e)
         {
+            Debug.Print("Redrawing graphics! ===========");
             // the the canvas and properties
             var canvas = e.Surface.Canvas;
 
@@ -413,25 +467,33 @@ namespace Parallel_N_Body
             if (m_IsStartUp)
             {
                 m_SKSvg = new SKSvg();
-                m_SKSvg.Load(defaultSimImage);
+                m_SKSvg.Load(currentSimImage);
                 canvas.DrawPicture(m_SKSvg.Picture);
             }
             else
-            {
+            { //particle.ParticleColor.ToSKColor(),
+                //var paint = new SKPaint
+                //{
+                //    Color = Colors.Orange.ToSKColor(),
+                //    IsAntialias = true,
+                //    Style = SKPaintStyle.Fill,
+                //};
+                //canvas.DrawCircle(300, 700, 5, paint);
 
+                foreach (Particle particle in m_ProgramManager.QuadTree.GetParticles())
+                {
+
+                    var paint = new SKPaint
+                    {
+                        Color = particle.particleColor.ToSKColor(),
+                        IsAntialias = true,
+                        Style = SKPaintStyle.Fill,
+                    };
+                    canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
+                }
             }
 
-            //// draw some text
-            //var paint = new SKPaint
-            //{
-            //    Color = SKColors.Black,
-            //    IsAntialias = true,
-            //    Style = SKPaintStyle.Fill,
-            //    TextAlign = SKTextAlign.Center,
-            //    TextSize = 24
-            //};
-            //var coord = new SKPoint(scaledSize.Width / 2, (scaledSize.Height + paint.TextSize) / 2);
-            //canvas.DrawText("SkiaSharp", coord, paint);
+             
         }
         #endregion
     }
