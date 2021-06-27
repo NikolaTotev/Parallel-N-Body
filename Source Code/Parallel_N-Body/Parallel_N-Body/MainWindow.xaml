@@ -18,12 +18,12 @@
         <!--<Image Grid.Column="0" x:Name="I_SimWindow" Source="{Binding SimImage}" Effect="{StaticResource DropShadow}">-->
         <!--</Image>-->
         <!--<skia:SKElement Name="AUView" Grid.Column="0" PaintSurface="ps_SimSpace" />-->
-        
+
 
         <Grid  x:Name="g_SimGrid" Width="737" Height="979" Grid.Column="0">
             <skia:SKElement x:Name="skg_SimGraphics" PaintSurface="ps_SimSpace" />
         </Grid>
-        
+
 
         <Grid Grid.Column="1" Margin="15,0,0,0">
             <Grid.RowDefinitions>
@@ -377,6 +377,9 @@
 
                             <TextBlock Text="Stop" VerticalAlignment="Center"></TextBlock>
                         </Button>
+
+
+
                     </Grid>
 
 
@@ -464,6 +467,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
                         <!--#region Button Start Auto Test-->
@@ -496,6 +500,22 @@
                             </Button.ToolTip>
 
                             <TextBlock Text="Stop" VerticalAlignment="Center"></TextBlock>
+                        </Button>
+
+                        <!--#region Button Start Auto Test-->
+                        <Button x:Name="Btn_GenerateVideo" Grid.Column="2"  Height="40" Width="90" FontSize="14" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Click="Btn_GenerateVideo_OnClick"  Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                            <Button.ToolTip>
+                                <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
+                                    <ToolTip.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="10"></Setter>
+                                        </Style>
+                                    </ToolTip.Resources>
+                                    <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
+                                </ToolTip>
+                            </Button.ToolTip>
+
+                            <TextBlock Text="Gen video" VerticalAlignment="Center"></TextBlock>
                         </Button>
                     </Grid>
 

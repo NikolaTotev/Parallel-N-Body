@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -13,7 +14,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -22,6 +22,10 @@ using PNB_Lib;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
+using Xabe.FFmpeg;
+using Xabe.FFmpeg.Downloader;
+using Path = System.IO.Path;
+
 
 namespace Parallel_N_Body
 {
@@ -53,7 +57,8 @@ namespace Parallel_N_Body
             m_SimHeight = (int)g_SimGrid.Height;
             m_ProgramManager = new ProgramManager(m_SimWidth, m_SimHeight);
             m_ProgramManager.QuadTree.OnFrameComplete += QuadTree_OnFrameComplete;
-            OnFrameDraw += MainWindow_OnFrameDraw;
+            //OnFrameDraw += MainWindow_OnFrameDraw;
+            FFmpegDownloader.GetLatestVersion(FFmpegVersion.Full);
         }
 
         private void MainWindow_OnFrameDraw(object sender, EventArgs e)
@@ -63,7 +68,9 @@ namespace Parallel_N_Body
 
         private void QuadTree_OnFrameComplete(object source, SimFrameCompleteArgs e)
         {
+            Debug.Print("Drawing frame");
             skg_SimGraphics.InvalidateVisual();
+
         }
 
 
@@ -372,24 +379,30 @@ namespace Parallel_N_Body
         private void Btn_StartSimulation_OnClick(object sender, RoutedEventArgs e)
         {
             m_ProgramManager.QuadTree.SetSimConfigShouldStopSim(false);
-            Thread simThread = new Thread(SimTest);
+            Thread simThread = new Thread(m_ProgramManager.QuadTree.StartSimulation);
             simThread.Start();
         }
         public event EventHandler OnFrameDraw;
 
         public void SimTest()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 m_ProgramManager.QuadTree.StartSimulation();
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    skg_SimGraphics.InvalidateVisual();
-                }), DispatcherPriority.Background);
+               
                 //RaiseEventOnUIThread(OnFrameDraw, new object[] { null, new EventArgs() });
             }
 
         }
+
+
+        async void GenerateVideo()
+        {
+            List<string> files = Directory.EnumerateFiles("D:/Documents/Project Files/N-Body/SimImages/").ToList();
+
+            await new Conversion().SetInputFrameRate(1).BuildVideoFromImages(files).SetFrameRate(60).SetOutputFormat(Format.avi).SetOutput("D:/Documents/Project Files/N-Body/SimImages/output.mp4").Start();
+        }
+
         private void RaiseEventOnUIThread(Delegate theEvent, object[] args)
         {
             foreach (Delegate d in theEvent.GetInvocationList())
@@ -411,7 +424,13 @@ namespace Parallel_N_Body
         {
             m_ProgramManager.QuadTree.SetSimConfigShouldStopSim(true);
         }
-        
+
+
+        private void Btn_GenerateVideo_OnClick(object sender, RoutedEventArgs e)
+        {
+            GenerateVideo();
+        }
+
         private void Btn_SelectSimSaveLocation_OnClick(object sender, RoutedEventArgs e)
         {
             //TODO Implement animation saving.
@@ -445,7 +464,7 @@ namespace Parallel_N_Body
         }
 
 
-
+        private int imageNum = 0;
         private void ps_SimSpace(object sender, SKPaintSurfaceEventArgs e)
         {
             Debug.Print("Redrawing graphics! ===========");
@@ -491,10 +510,23 @@ namespace Parallel_N_Body
                     };
                     canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
                 }
+
+                SKImage image = e.Surface.Snapshot();
+                var data = image.Encode();
+
+                using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/Image_{imageNum}.png"))
+                {
+                    // save the data to a stream
+                    data.SaveTo(stream);
+                    stream.Close();
+                    imageNum++;
+                }
+
             }
 
-             
+
         }
         #endregion
+
     }
 }

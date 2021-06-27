@@ -6,9 +6,11 @@ using System.Diagnostics;
 using static System.Math;
 using System.Drawing;
 using System.Drawing.Text;
+using System.Net.Mime;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace PNB_Lib
 {
@@ -29,9 +31,9 @@ namespace PNB_Lib
         private bool[,] m_ParticleMap;
         private float m_Theta = 2f;
         private float m_G = (float)(6.67408 * Pow(10, -7));
-        private float m_Softening = 0.8f;
+        private float m_Softening = 0.9f;
         private Stopwatch m_Sw;
-        private float m_Dt = 0.5f;
+        private float m_Dt = 0.4f;
         private float m_Boost = 3000;
 
         private InteractionAlgorithm m_AlgToUse;
@@ -272,36 +274,36 @@ namespace PNB_Lib
 
         public void StartSimulation()
         {
-            //frameSw.Start();
-            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
-            PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
-            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
-            //frameSw.Stop();
 
-            //Stopwatch frameSw = new Stopwatch();
-            //switch (m_AlgToUse)
-            //{
-            //    case InteractionAlgorithm.PWI:
 
-            //        for (int i = 0; i < m_SimConfigNumberOfFrames; i++)
-            //        {
-            //            frameSw.Start();
-            //            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
-            //            PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
-            //            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
-            //            frameSw.Stop();
-            //            SimFrameCompleteArgs args = new SimFrameCompleteArgs(frameSw.Elapsed, i);
-            //            RaiseEventOnUIThread(OnFrameComplete, new object[]{null, args});
-            //            frameSw.Reset();
-            //        }
+            Stopwatch frameSw = new Stopwatch();
+            switch (m_AlgToUse)
+            {
+                case InteractionAlgorithm.PWI:
 
-            //        break;
-            //    case InteractionAlgorithm.BH:
-            //        //TODO Implement BH alg.
-            //        break;
-            //    default:
-            //        throw new ArgumentOutOfRangeException();
-            //}
+                    for (int i = 0; i < m_SimConfigNumberOfFrames; i++)
+                    {
+                        frameSw.Start();
+                        PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
+                        PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
+                        PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
+                        frameSw.Stop();
+                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+                        {
+                            SimFrameCompleteArgs args = new SimFrameCompleteArgs(frameSw.Elapsed, i);
+                            RaiseEventOnUIThread(OnFrameComplete, new object[] { null, args });
+                        }), DispatcherPriority.Background);
+                      
+                        frameSw.Reset();
+                    }
+
+                    break;
+                case InteractionAlgorithm.BH:
+                    //TODO Implement BH alg.
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         #region First Simulation Step
