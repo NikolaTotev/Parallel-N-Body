@@ -27,41 +27,86 @@ namespace Parallel_N_Body
         private string defaultSimImage = "./Resources/Images/default_sim_image.svg";
         private SKSvg m_SKSvg;
         private bool m_IsStartUp = true;
-        private ProgramManager m_ProgramManager;
+        private ProgramManager m_ProgramManager = new ProgramManager(0,0); 
         private int m_SimHeight;
         private int m_SimWidth;
-        
+
+
+        private string m_PrevNumberOfParticles;
+        private string m_PrevTheta;
         public MainWindow()
         {
             InitializeComponent();
             m_SimWidth = (int)g_SimGrid.Width;
-            m_SimHeight = (int) g_SimGrid.Height;
+            m_SimHeight = (int)g_SimGrid.Height;
             m_ProgramManager = new ProgramManager(m_SimWidth, m_SimHeight);
-        }
+         }
+
+
+        #region General Settings
 
         private void Tb_ParticleCount_OnTextChanged(object sender, TextChangedEventArgs e)
         {
+            if (!string.IsNullOrWhiteSpace(Tb_NumberOfParticles.Text))
+            {
+                try
+                {
+                    m_ProgramManager.QuadTree.SetParticleCount(int.Parse(Tb_NumberOfParticles.Text));
+                }
+                catch (Exception exception)
+                {
+                    Debug.Print($"INPUT EXCEPTION: Tb_NumberOfParticles OnTextChanged threw an exception. Text was: {Tb_NumberOfParticles.Text}");
+                }
+                
+            }
         }
 
         private void Tb_ParticleCount_OnGotFocus(object sender, RoutedEventArgs e)
         {
+            m_PrevNumberOfParticles = Tb_NumberOfParticles.Text;
+            Tb_NumberOfParticles.Text = "";
         }
 
         private void Tb_ParticleCount_OnLostFocus(object sender, RoutedEventArgs e)
         {
-        }
-
-        private void Tb_Theta_OnLostFocus(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void Tb_Theta_OnGotFocus(object sender, RoutedEventArgs e)
-        {
+            if(Tb_NumberOfParticles.Text == "")
+            {
+                Tb_NumberOfParticles.Text = m_PrevNumberOfParticles;
+            }
         }
 
         private void Tb_Theta_OnTextChanged(object sender, TextChangedEventArgs e)
         {
+            if (!string.IsNullOrWhiteSpace(Tb_Theta.Text))
+            {
+                try
+                {
+                    m_ProgramManager.QuadTree.SetTheta(int.Parse(Tb_Theta.Text));
+                }
+                catch (Exception exception)
+                {
+                    Debug.Print($"INPUT EXCEPTION: Tb_NumberOfParticles OnTextChanged threw an exception. Text was: {Tb_Theta.Text}");
+                }
+
+            }
         }
+
+        private void Tb_Theta_OnGotFocus(object sender, RoutedEventArgs e)
+        {
+            m_PrevTheta = Tb_Theta.Text;
+            Tb_Theta.Text = "";
+        }
+
+
+        private void Tb_Theta_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            if (Tb_Theta.Text == "")
+            {
+                Tb_Theta.Text = m_PrevTheta;
+            }
+        }
+
+       
 
         private void Btn_Generate_Click(object sender, RoutedEventArgs e)
         {
@@ -74,7 +119,7 @@ namespace Parallel_N_Body
         private void Btn_Reset_Click(object sender, RoutedEventArgs e)
         {
         }
-        
+
         private void Rb_PairwiseSelector_OnChecked(object sender, RoutedEventArgs e)
         {
         }
@@ -86,6 +131,11 @@ namespace Parallel_N_Body
         private void Cb_ParallelSelector_OnChecked(object sender, RoutedEventArgs e)
         {
         }
+        #endregion
+
+
+        #region Single Particle Testing
+
 
         private void Tb_TargetParticle_OnLostFocus(object sender, RoutedEventArgs e)
         {
@@ -107,6 +157,10 @@ namespace Parallel_N_Body
         {
         }
 
+        #endregion
+
+
+        #region Visualization Settings
         private void Cb_ShowTree_OnChecked(object sender, RoutedEventArgs e)
         {
         }
@@ -122,6 +176,17 @@ namespace Parallel_N_Body
         private void Cb_ShowEmptyCells_OnChecked(object sender, RoutedEventArgs e)
         {
         }
+
+        private void Cb_EnableMultiColorParticles_OnChecked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        #endregion
+
+
+        #region Auto Test Settings
+
 
         private void Tb_MaxThreadsForAuto_OnLostFocus(object sender, RoutedEventArgs e)
         {
@@ -150,6 +215,41 @@ namespace Parallel_N_Body
         {
         }
 
+        #endregion
+
+
+        #region Thread Settings
+
+
+        private void Tb_NumberOfThreads_OnGotFocus(object sender, RoutedEventArgs e)
+        {
+ 
+        }
+
+        private void Tb_NumberOfThreads_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+ 
+        }
+
+        private void Tb_NumberOfThreads_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+ 
+        }
+
+        private void Rb_UserCustomThreads_OnChecked(object sender, RoutedEventArgs e)
+        {
+ 
+        }
+
+        private void Rb_UseTPLThreads_OnChecked(object sender, RoutedEventArgs e)
+        {
+ 
+        }
+        #endregion
+
+
+        #region Simulation Settings
+
         private void Tb_NumberOfFrames_OnLostFocus(object sender, RoutedEventArgs e)
         {
         }
@@ -164,24 +264,38 @@ namespace Parallel_N_Body
 
         private void Btn_StopSimulation_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+ 
         }
 
         private void Btn_StartSimulation_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+ 
         }
+
+        private void Btn_SelectSimSaveLocation_OnClick(object sender, RoutedEventArgs e)
+        {
+ 
+        }
+        #endregion
+
+
+        #region Performace Charts 
 
         private void Lc_LevelOfParallelism_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            throw new NotImplementedException();
+ 
         }
 
         private void Lc_ExecutionTime_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            throw new NotImplementedException();
+ 
         }
 
+        #endregion
+
+
+
+        #region Drawing Logic
 
         private void LoadSVG()
         {
@@ -189,6 +303,8 @@ namespace Parallel_N_Body
             m_SKSvg = new SKSvg();
             m_SKSvg.Load(defaultSimImage);
         }
+
+
 
         private void ps_SimSpace(object sender, SKPaintSurfaceEventArgs e)
         {
@@ -217,10 +333,7 @@ namespace Parallel_N_Body
             {
 
             }
-            
-            
-            
-            
+
             //// draw some text
             //var paint = new SKPaint
             //{
@@ -233,30 +346,6 @@ namespace Parallel_N_Body
             //var coord = new SKPoint(scaledSize.Width / 2, (scaledSize.Height + paint.TextSize) / 2);
             //canvas.DrawText("SkiaSharp", coord, paint);
         }
-
-        private void Tb_NumberOfThreads_OnGotFocus(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Tb_NumberOfThreads_OnLostFocus(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Tb_NumberOfThreads_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Rb_UserCustomThreads_OnChecked(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Rb_UseTPLThreads_OnChecked(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }

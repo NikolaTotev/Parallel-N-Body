@@ -33,7 +33,7 @@ namespace PNB_Lib
         private bool m_DrawFlagShowVelDirection;
         private bool m_DrawFlagShowBHGrouping;
         private bool m_DrawFlagShowEmptyTreeCells;
-
+        private bool m_DrawFlagUserDifferentColors;
 
         private int m_AutoConfigMaxThreads;
         private ThreadMode m_AutoConfigThreadMode;
@@ -44,6 +44,7 @@ namespace PNB_Lib
 
         private int m_ThreadConfigMaxThreads;
         private ThreadMode m_ThreadConfigThreadMode;
+
 
 
         public QuadTree(int simSpaceX, int simSpaceY)
@@ -88,7 +89,7 @@ namespace PNB_Lib
         }
 
 
-        public void Simulate(int framesToSimulate)
+        public void StartSimulation (int framesToSimulate)
         {
 
         }

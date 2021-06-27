@@ -20,7 +20,7 @@
         <!--<skia:SKElement Name="AUView" Grid.Column="0" PaintSurface="ps_SimSpace" />-->
         
 
-        <Grid  x:Name="g_SimGrid" Grid.Column="0">
+        <Grid  x:Name="g_SimGrid" Width="737" Height="979" Grid.Column="0">
             <skia:SKElement PaintSurface="ps_SimSpace" />
         </Grid>
         
@@ -287,7 +287,7 @@
                         </CheckBox.Resources>
                     </CheckBox>
 
-                    <CheckBox x:Name="Cb_EnableMultiColorParticles"  Content="Use multicolor particles" FontSize="15" Grid.Row="5"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_ShowBHGrouping_OnChecked">
+                    <CheckBox x:Name="Cb_EnableMultiColorParticles"  Content="Use multicolor particles" FontSize="15" Grid.Row="5"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_EnableMultiColorParticles_OnChecked">
                         <CheckBox.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -502,7 +502,7 @@
                     <Label x:Name="Lb_SimulationSavePath" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center"  Content="Save Path: No path selected!"   FontStyle="Normal" FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
 
                     <!--#region Button Start Auto Test-->
-                    <Button x:Name="Btn_SelectSimSaveLocation" Grid.Row="4"  Height="40" Width="120" FontSize="14" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Click="Btn_StartSimulation_OnClick"  Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
+                    <Button x:Name="Btn_SelectSimSaveLocation" Grid.Row="4"  Height="40" Width="120" FontSize="14" ToolTipService.InitialShowDelay="1000" Template="{StaticResource OrangeHighLight}" Click="Btn_SelectSimSaveLocation_OnClick"  Background="White" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Bold" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" HorizontalContentAlignment="Center">
                         <Button.ToolTip>
                             <ToolTip Background="White" BorderThickness="2" BorderBrush="{StaticResource NavyBlueBase}" ToolTipService.ShowDuration="{StaticResource StandardToolTipShowDuration}" ToolTipService.InitialShowDelay="{StaticResource StandardToolTipInitialDelayDuration}">
                                 <ToolTip.Resources>
