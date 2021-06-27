@@ -402,30 +402,60 @@ namespace Parallel_N_Body
         private void Btn_StartSimulation_OnClick(object sender, RoutedEventArgs e)
         {
             m_ProgramManager.QuadTree.SetSimConfigShouldStopSim(false);
-            m_SimulationThread = new Thread(StartSimulation);
-            m_SimulationThread.Name = "SimulationThread";
-            m_SimulationThread.Start();
+            StartSimulation();
+            //m_SimulationThread = new Thread(StartSimulation);
+            //m_SimulationThread.Name = "SimulationThread";
+            //m_SimulationThread.Start();
         }
 
         public void StartSimulation()
         {
+            int imageNum = 0;
+
             for (int i = 0; i < m_SimFrameCount; i++)
             {
                 m_ProgramManager.QuadTree.StartSimulation();
 
-                //TimeSpan defaultTS = new TimeSpan();
+                TimeSpan defaultTS = new TimeSpan();
                 Debug.WriteLine($"On Frame {i}");
+
+                SKImageInfo info = new SKImageInfo(737, 979);
+                SKBitmap newBitm = new SKBitmap(info);
+                SKCanvas canvas = new SKCanvas(newBitm);
+                canvas.Clear(SKColors.White);
+
+                foreach (Particle particle in m_ProgramManager.QuadTree.GetParticles())
+                {
+
+                    var paint = new SKPaint
+                    {
+                        Color = particle.particleColor.ToSKColor(),
+                        IsAntialias = true,
+                        Style = SKPaintStyle.Fill,
+                    };
+                    canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
+                }
+
+
+                SKImage image = SKImage.FromBitmap(newBitm);
+                var data = image.Encode();
+
+
+                using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/{imageNum}.png"))
+                {
+                    // save the data to a stream
+                    data.SaveTo(stream);
+                    stream.Close();
+                    stream.Dispose();
+                    imageNum++;
+                }
 
                 Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    skg_SimGraphics.InvalidateVisual();
-                    // SimFrameCompleteArgs args = new SimFrameCompleteArgs(defaultTS, i);
-                    // RaiseEventOnUIThread(OnFrameDraw, new object[] { null, args });
-                }), DispatcherPriority.Background);
+                    SimFrameCompleteArgs args = new SimFrameCompleteArgs(defaultTS, i);
+                    RaiseEventOnUIThread(OnFrameDraw, new object[] { null, args });
+                }), DispatcherPriority.Send);
 
-                SKBitmap bitM  = new SKBitmap();
-                SKCanvas canvas = new SKCanvas(bitM);
-                canvas.Si
 
 
             }
@@ -441,9 +471,15 @@ namespace Parallel_N_Body
 
         async void GenerateVideo()
         {
-            List<string> files = Directory.EnumerateFiles("D:/Documents/Project Files/N-Body/SimImages/").ToList();
+            string dir = "D:/Documents/Project Files/N-Body/SimImages/";
+            List<string> files = new List<string>();
+            
+            for (int i = 0; i < m_SimFrameCount; i++)
+            {
+                files.Add($"{dir}/{i}.png");
+            }
 
-            await new Conversion().SetInputFrameRate(30).BuildVideoFromImages(files).SetFrameRate(30).SetOutputFormat(Format.avi).SetOutput("D:/Documents/Project Files/N-Body/SimImages/output.avi").Start();
+            await new Conversion().SetInputFrameRate(60).BuildVideoFromImages(files).SetFrameRate(60).SetOutputFormat(Format.mp4).SetOutput("D:/Documents/Project Files/N-Body/SimImages/output.mp4").Start();
         }
 
         private void RaiseEventOnUIThread(Delegate theEvent, object[] args)
@@ -507,7 +543,6 @@ namespace Parallel_N_Body
         }
 
 
-        private int imageNum = 0;
         private void ps_SimSpace(object sender, SKPaintSurfaceEventArgs e)
         {
             Debug.Print("Redrawing graphics! ===========");
@@ -524,6 +559,7 @@ namespace Parallel_N_Body
             canvas.Scale(scale);
             // make sure the canvas is blank
             canvas.Clear(SKColors.White);
+
 
 
             if (m_IsStartUp)
@@ -546,10 +582,9 @@ namespace Parallel_N_Body
                     canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
                 }
 
-                SKImage image = e.Surface.Snapshot();
-               // var data = image.Encode();
-                //image.Dispose();
-                //data = null;
+                //SKImage image = e.Surface.Snapshot();
+                //var data = image.Encode();
+
 
                 //using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/Image_{imageNum}.png"))
                 //{
