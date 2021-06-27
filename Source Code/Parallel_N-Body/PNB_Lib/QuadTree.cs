@@ -5,6 +5,7 @@ using static System.Math;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PNB_Lib
@@ -33,7 +34,8 @@ namespace PNB_Lib
         private bool m_DrawFlagShowVelDirection;
         private bool m_DrawFlagShowBHGrouping;
         private bool m_DrawFlagShowEmptyTreeCells;
-        private bool m_DrawFlagUserDifferentColors;
+        private bool m_DrawFlagUseDifferentColors;
+        private bool m_DrawFlagShowCOG;
 
         private int m_AutoConfigMaxThreads;
         private ThreadMode m_AutoConfigThreadMode;
@@ -52,7 +54,7 @@ namespace PNB_Lib
             m_Particles = new List<Particle>();
             m_SimSpaceXLen = simSpaceX;
             m_SimSpaceYLen = simSpaceY;
-            m_ParticleMap = new bool[m_SimSpaceXLen,m_SimSpaceYLen];
+            m_ParticleMap = new bool[m_SimSpaceXLen, m_SimSpaceYLen];
             m_Sw = new Stopwatch();
         }
 
@@ -67,29 +69,110 @@ namespace PNB_Lib
             m_ParticleCount = newParticleCount;
         }
 
-        public void SetAlgorithm (InteractionAlgorithm newAlg)
+        public void SetAlgorithm(InteractionAlgorithm newAlg)
         {
-
+            m_AlgToUse = newAlg;
         }
-        
-        public void SetParallelStatus(bool newStatus)
-        {
 
+        public void SetParallelStatus(bool? newStatus)
+        {
+            m_IsParallel = newStatus ?? false;
         }
 
         public void SetTargetParticle(int newTarget)
         {
-
+            m_TargetParticle = newTarget;
         }
 
 
-        public void GenerateParticles(bool useDifferentColors)
+        public void SetDrawFlagShowAccelDirection(bool? newFlag)
+        {
+            m_DrawFlagShowAccelDirection = newFlag ?? false;
+        }
+
+        public void SetDrawFlagShowVelDirection(bool? newFlag)
+        {
+            m_DrawFlagShowVelDirection = newFlag ?? false;
+        }
+
+        public void SetDrawFlagShowTree(bool? newFlag)
+        {
+            m_DrawFlagShowTree = newFlag ?? false;
+        }
+
+        public void SetDrawFlagShowEmptyTreeCells(bool? newFlag)
+        {
+            m_DrawFlagShowEmptyTreeCells = newFlag ?? false;
+        }
+
+        public void SetDrawFlagShowBHGrouping(bool? newFlag)
+        {
+
+            m_DrawFlagShowBHGrouping = newFlag ?? false;
+        }
+
+        public void SetDrawFlagUseDifferentColors(bool? newFlag)
+        {
+            m_DrawFlagUseDifferentColors = newFlag ?? false;
+        }
+
+        public void SetDrawFlagShowCOG(bool? newFlag)
+        {
+            m_DrawFlagShowCOG = newFlag ?? false;
+        }
+
+        public void SetAutoConfigMaxThreadCount(int newMaxCount)
+        {
+            m_AutoConfigMaxThreads = newMaxCount;
+        }
+
+        public void SetAutoConfigThreadMode(ThreadMode newMode)
+        {
+            m_AutoConfigThreadMode = newMode;
+        }
+
+        public void SetAutoConfigShouldStopTest(bool shouldStop)
+        {
+            m_AutoConfigShouldStopTest = shouldStop;
+        }
+
+
+        public void SetThreadConfigMaxThreads(int newMaxCount)
+        {
+            m_ThreadConfigMaxThreads = newMaxCount;
+        }
+
+        public void SetThreadConfigThreadMode(ThreadMode newMode)
+        {
+            m_ThreadConfigThreadMode = newMode;
+        }
+
+        public void SetSimConfigNumberOfFrames(int newFrameCount)
+        {
+            m_SimConfigNumberOfFrames = newFrameCount;
+        }
+
+        public void SetSimConfigShouldStopSim(bool shouldStop)
+        {
+            m_SimConfigShouldStopSim = shouldStop;
+        }
+
+        public void GenerateParticles()
         {
 
         }
 
+        public void Partition()
+        {
 
-        public void StartSimulation (int framesToSimulate)
+        }
+
+        public void StartAutoTest()
+        {
+
+        }
+
+        public void StartSimulation()
         {
 
         }
@@ -97,14 +180,14 @@ namespace PNB_Lib
 
         public void FirstSimulationStep(Particle currentParticle)
         {
-            currentParticle.VelocityComponents.X += m_Boost* currentParticle.AccelerationComponents.X * m_Dt/ 2;
+            currentParticle.VelocityComponents.X += m_Boost * currentParticle.AccelerationComponents.X * m_Dt / 2;
             currentParticle.VelocityComponents.Y += m_Boost * currentParticle.AccelerationComponents.Y * m_Dt / 2;
 
             PointF newCenter = currentParticle.CenterPoint;
 
             newCenter.X += currentParticle.VelocityComponents.X * m_Dt;
             newCenter.Y += currentParticle.VelocityComponents.Y * m_Dt;
-            
+
             currentParticle.CenterPoint = newCenter;
 
             if (currentParticle.CenterPoint.X > m_SimSpaceXLen)
@@ -129,7 +212,7 @@ namespace PNB_Lib
         public void SecondSimulationStep(Particle currentParticle)
         {
             currentParticle.VelocityComponents.X += m_Boost * currentParticle.AccelerationComponents.X * m_Dt / 2;
-            currentParticle.VelocityComponents.Y += m_Boost * currentParticle.AccelerationComponents.Y * m_Dt/ 2;
+            currentParticle.VelocityComponents.Y += m_Boost * currentParticle.AccelerationComponents.Y * m_Dt / 2;
         }
 
         public TimeSpan PairwiseForceCalculation(bool isParalell, int threadCount = 1)
@@ -195,7 +278,7 @@ namespace PNB_Lib
         {
             List<float> distanceInfo =
                 CalculateDistanceBetweenPoints(targetParticle.CenterPoint, effector.CenterPoint);
-   
+
             float diffXT = distanceInfo[3]; // AllParticles[j].CenterPoint.X - currentParticle.CenterPoint.X;
             float diffYT = distanceInfo[4]; // AllParticles[j].CenterPoint.Y - currentParticle.CenterPoint.Y;
 
@@ -210,7 +293,7 @@ namespace PNB_Lib
         {
             //TODO Implement Particle -> Node interaction
         }
-        
+
 
         public List<float> CalculateDistanceBetweenPoints(PointF firstPoint, PointF secondPoint)
         {
@@ -256,7 +339,7 @@ namespace PNB_Lib
             m_RootNode = new Node(topRight, bottomLeft);
             m_RootNode.IsRoot = true;
         }
-        
-        
+
+
     }
 }

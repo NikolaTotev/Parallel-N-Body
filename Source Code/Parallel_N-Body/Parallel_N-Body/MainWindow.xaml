@@ -174,7 +174,7 @@
 
                     <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBox  x:Name="Tb_Target" Text="Target Particle" TextChanged="Tb_TargetParticle_OnTextChanged" GotFocus="Tb_TargetParticle_OnGotFocus" LostFocus="Tb_TargetParticle_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                            <TextBox  x:Name="Tb_TargetParticle" Text="Target Particle" TextChanged="Tb_TargetParticle_OnTextChanged" GotFocus="Tb_TargetParticle_OnGotFocus" LostFocus="Tb_TargetParticle_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
                         </StackPanel>
                     </Border>
 
