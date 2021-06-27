@@ -29,6 +29,8 @@ using Path = System.IO.Path;
 
 namespace Parallel_N_Body
 {
+    public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -48,17 +50,39 @@ namespace Parallel_N_Body
         private string m_PrevAutoConfigMaxThreads;
         private string m_PrevThreadConfigMaxThreads;
         private string m_PrevSimConfigNumberOfFrames;
+        private int m_SimFrameCount;
 
         private SKCanvas m_SimCanvas;
+        private Thread m_SimulationThread;
+        public event SimFrameCompleteEventHandler OnFrameDraw;
+        public event EventHandler OnSimulationComplete;
         public MainWindow()
         {
             InitializeComponent();
             m_SimWidth = (int)g_SimGrid.Width;
             m_SimHeight = (int)g_SimGrid.Height;
             m_ProgramManager = new ProgramManager(m_SimWidth, m_SimHeight);
-            m_ProgramManager.QuadTree.OnFrameComplete += QuadTree_OnFrameComplete;
-            //OnFrameDraw += MainWindow_OnFrameDraw;
+            OnFrameDraw += MainWindow_OnFrameDraw;
+            OnSimulationComplete += MainWindow_OnSimulationComplete;
             FFmpegDownloader.GetLatestVersion(FFmpegVersion.Full);
+        }
+
+        private void MainWindow_OnSimulationComplete(object sender, EventArgs e)
+        {
+            if (m_SimulationThread != null)
+            {
+                if (m_SimulationThread.IsAlive)
+                {
+                    if (m_SimulationThread.Join(500))
+                    {
+                        Debug.WriteLine("Simulation thread joined");
+                    }
+                    else
+                    {
+                        m_SimulationThread.Abort();
+                    }
+                }
+            }
         }
 
         private void MainWindow_OnFrameDraw(object sender, EventArgs e)
@@ -68,9 +92,7 @@ namespace Parallel_N_Body
 
         private void QuadTree_OnFrameComplete(object source, SimFrameCompleteArgs e)
         {
-            Debug.Print("Drawing frame");
             skg_SimGraphics.InvalidateVisual();
-
         }
 
 
@@ -353,6 +375,7 @@ namespace Parallel_N_Body
             {
                 try
                 {
+                    m_SimFrameCount = int.Parse(Tb_NumberOfFrames.Text);
                     m_ProgramManager.QuadTree.SetSimConfigNumberOfFrames(int.Parse(Tb_NumberOfFrames.Text));
                 }
                 catch (Exception exception)
@@ -379,19 +402,39 @@ namespace Parallel_N_Body
         private void Btn_StartSimulation_OnClick(object sender, RoutedEventArgs e)
         {
             m_ProgramManager.QuadTree.SetSimConfigShouldStopSim(false);
-            Thread simThread = new Thread(m_ProgramManager.QuadTree.StartSimulation);
-            simThread.Start();
+            m_SimulationThread = new Thread(StartSimulation);
+            m_SimulationThread.Name = "SimulationThread";
+            m_SimulationThread.Start();
         }
-        public event EventHandler OnFrameDraw;
 
-        public void SimTest()
+        public void StartSimulation()
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < m_SimFrameCount; i++)
             {
                 m_ProgramManager.QuadTree.StartSimulation();
-               
-                //RaiseEventOnUIThread(OnFrameDraw, new object[] { null, new EventArgs() });
+
+                //TimeSpan defaultTS = new TimeSpan();
+                Debug.WriteLine($"On Frame {i}");
+
+                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    skg_SimGraphics.InvalidateVisual();
+                    // SimFrameCompleteArgs args = new SimFrameCompleteArgs(defaultTS, i);
+                    // RaiseEventOnUIThread(OnFrameDraw, new object[] { null, args });
+                }), DispatcherPriority.Background);
+
+                SKBitmap bitM  = new SKBitmap();
+                SKCanvas canvas = new SKCanvas(bitM);
+                canvas.Si
+
+
             }
+
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                RaiseEventOnUIThread(OnSimulationComplete, new object[] { null, new EventArgs() });
+            }), DispatcherPriority.Background);
+
 
         }
 
@@ -400,7 +443,7 @@ namespace Parallel_N_Body
         {
             List<string> files = Directory.EnumerateFiles("D:/Documents/Project Files/N-Body/SimImages/").ToList();
 
-            await new Conversion().SetInputFrameRate(1).BuildVideoFromImages(files).SetFrameRate(60).SetOutputFormat(Format.avi).SetOutput("D:/Documents/Project Files/N-Body/SimImages/output.mp4").Start();
+            await new Conversion().SetInputFrameRate(30).BuildVideoFromImages(files).SetFrameRate(30).SetOutputFormat(Format.avi).SetOutput("D:/Documents/Project Files/N-Body/SimImages/output.avi").Start();
         }
 
         private void RaiseEventOnUIThread(Delegate theEvent, object[] args)
@@ -490,15 +533,7 @@ namespace Parallel_N_Body
                 canvas.DrawPicture(m_SKSvg.Picture);
             }
             else
-            { //particle.ParticleColor.ToSKColor(),
-                //var paint = new SKPaint
-                //{
-                //    Color = Colors.Orange.ToSKColor(),
-                //    IsAntialias = true,
-                //    Style = SKPaintStyle.Fill,
-                //};
-                //canvas.DrawCircle(300, 700, 5, paint);
-
+            {
                 foreach (Particle particle in m_ProgramManager.QuadTree.GetParticles())
                 {
 
@@ -512,21 +547,20 @@ namespace Parallel_N_Body
                 }
 
                 SKImage image = e.Surface.Snapshot();
-                var data = image.Encode();
+               // var data = image.Encode();
+                //image.Dispose();
+                //data = null;
 
-                using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/Image_{imageNum}.png"))
-                {
-                    // save the data to a stream
-                    data.SaveTo(stream);
-                    stream.Close();
-                    imageNum++;
-                }
-
+                //using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/Image_{imageNum}.png"))
+                //{
+                //    // save the data to a stream
+                //    data.SaveTo(stream);
+                //    stream.Close();
+                //    stream.Dispose();
+                //    imageNum++;
+                //}
             }
-
-
         }
         #endregion
-
     }
 }

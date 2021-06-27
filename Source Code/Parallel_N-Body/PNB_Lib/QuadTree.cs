@@ -14,7 +14,7 @@ using System.Windows.Threading;
 
 namespace PNB_Lib
 {
-    public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
+    //public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
 
     public enum SimulationStep
     {
@@ -37,7 +37,7 @@ namespace PNB_Lib
         private float m_Boost = 3000;
 
         private InteractionAlgorithm m_AlgToUse;
-        private bool m_IsParallel;
+        private bool m_IsParallel = false;
         private int m_TargetParticle = 0;
 
         private bool m_DrawFlagShowAccelDirection;
@@ -58,7 +58,7 @@ namespace PNB_Lib
         private int m_ThreadConfigMaxThreads = 1;
         private ThreadMode m_ThreadConfigThreadMode = ThreadMode.customThreads;
 
-        public event SimFrameCompleteEventHandler OnFrameComplete;
+        //public event SimFrameCompleteEventHandler OnFrameComplete;
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {
@@ -247,7 +247,7 @@ namespace PNB_Lib
                         {
                             newParticle.particleColor = Color.Orange;
                         }
-                        
+
                         m_Particles.Add(newParticle);
                         m_ParticleMap[x, y] = true;
                         pointSet = true;
@@ -280,22 +280,13 @@ namespace PNB_Lib
             switch (m_AlgToUse)
             {
                 case InteractionAlgorithm.PWI:
+                    frameSw.Start();
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
+                    PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
+                    frameSw.Stop();
+                    frameSw.Reset();
 
-                    for (int i = 0; i < m_SimConfigNumberOfFrames; i++)
-                    {
-                        frameSw.Start();
-                        PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
-                        PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
-                        PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
-                        frameSw.Stop();
-                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
-                        {
-                            SimFrameCompleteArgs args = new SimFrameCompleteArgs(frameSw.Elapsed, i);
-                            RaiseEventOnUIThread(OnFrameComplete, new object[] { null, args });
-                        }), DispatcherPriority.Background);
-                      
-                        frameSw.Reset();
-                    }
 
                     break;
                 case InteractionAlgorithm.BH:
@@ -488,7 +479,7 @@ namespace PNB_Lib
 
         public TimeSpan PairwiseForceCalculation(bool isParalell, int threadCount = 1)
         {
-            
+
             foreach (Particle currentParticle in m_Particles)
             {
                 currentParticle.AccelerationComponents.X = 0;
