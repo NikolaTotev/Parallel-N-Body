@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PNB_Lib;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 
 namespace Parallel_N_Body
 {
@@ -20,13 +24,19 @@ namespace Parallel_N_Body
     /// </summary>
     public partial class MainWindow : Window
     {
-        public string SimImage { get; set; }
-        private string defaultSimImage = "/Resources/images/default_sim_image.png";
+        private string defaultSimImage = "./Resources/Images/default_sim_image.svg";
+        private SKSvg m_SKSvg;
+        private bool m_IsStartUp = true;
+        private ProgramManager m_ProgramManager;
+        private int m_SimHeight;
+        private int m_SimWidth;
+        
         public MainWindow()
         {
             InitializeComponent();
-
-            I_SimWindow.Source = new BitmapImage(new Uri(defaultSimImage, UriKind.RelativeOrAbsolute));
+            m_SimWidth = (int)g_SimGrid.Width;
+            m_SimHeight = (int) g_SimGrid.Height;
+            m_ProgramManager = new ProgramManager(m_SimWidth, m_SimHeight);
         }
 
         private void Tb_ParticleCount_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -168,6 +178,83 @@ namespace Parallel_N_Body
         }
 
         private void Lc_ExecutionTime_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        private void LoadSVG()
+        {
+            // create a new SVG object
+            m_SKSvg = new SKSvg();
+            m_SKSvg.Load(defaultSimImage);
+        }
+
+        private void ps_SimSpace(object sender, SKPaintSurfaceEventArgs e)
+        {
+            // the the canvas and properties
+            var canvas = e.Surface.Canvas;
+
+            // get the screen density for scaling
+            var scale = (float)PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.M11;
+            var scaledSize = new SKSize(e.Info.Width / scale, e.Info.Height / scale);
+            Debug.Print($"Width: {e.Info.Width / scale} Height:e.Info.Height / scale");
+
+
+            // handle the device screen density
+            canvas.Scale(scale);
+            // make sure the canvas is blank
+            canvas.Clear(SKColors.White);
+
+
+            if (m_IsStartUp)
+            {
+                m_SKSvg = new SKSvg();
+                m_SKSvg.Load(defaultSimImage);
+                canvas.DrawPicture(m_SKSvg.Picture);
+            }
+            else
+            {
+
+            }
+            
+            
+            
+            
+            //// draw some text
+            //var paint = new SKPaint
+            //{
+            //    Color = SKColors.Black,
+            //    IsAntialias = true,
+            //    Style = SKPaintStyle.Fill,
+            //    TextAlign = SKTextAlign.Center,
+            //    TextSize = 24
+            //};
+            //var coord = new SKPoint(scaledSize.Width / 2, (scaledSize.Height + paint.TextSize) / 2);
+            //canvas.DrawText("SkiaSharp", coord, paint);
+        }
+
+        private void Tb_NumberOfThreads_OnGotFocus(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Tb_NumberOfThreads_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Tb_NumberOfThreads_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Rb_UserCustomThreads_OnChecked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Rb_UseTPLThreads_OnChecked(object sender, RoutedEventArgs e)
         {
             throw new NotImplementedException();
         }

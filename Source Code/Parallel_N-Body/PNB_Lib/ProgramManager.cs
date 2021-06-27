@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace PNB_Lib
 {
-    public enum threadMode
+    public enum ThreadMode
     {
         customThreads,
         tplThreads
 
     };
 
-    public enum AlgToUse
+    public enum InteractionAlgorithm
     {
         PWI, BH
     }
@@ -25,11 +25,12 @@ namespace PNB_Lib
         public int SimSpaceYLen { get; set; }
         public QuadTree QuadTree { get; }
 
+
         public ProgramManager(int simXLen, int simYLen )
         {
             SimSpaceXLen = simXLen;
             SimSpaceYLen = simYLen;
-            QuadTree = new QuadTree();
+            QuadTree = new QuadTree(simXLen, simYLen);
         }
 
         

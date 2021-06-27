@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
         xmlns:local="clr-namespace:Parallel_N_Body"
         mc:Ignorable="d"
         Title="MainWindow" Height="1010" Width="1700" WindowStartupLocation="CenterScreen">
@@ -14,12 +15,15 @@
         </Grid.ColumnDefinitions>
 
 
-        <Image Grid.Column="0" x:Name="I_SimWindow" Source="{Binding SimImage}" Effect="{StaticResource DropShadow}">
+        <!--<Image Grid.Column="0" x:Name="I_SimWindow" Source="{Binding SimImage}" Effect="{StaticResource DropShadow}">-->
+        <!--</Image>-->
+        <!--<skia:SKElement Name="AUView" Grid.Column="0" PaintSurface="ps_SimSpace" />-->
+        
 
-
-
-
-        </Image>
+        <Grid  x:Name="g_SimGrid" Grid.Column="0">
+            <skia:SKElement PaintSurface="ps_SimSpace" />
+        </Grid>
+        
 
         <Grid Grid.Column="1" Margin="15,0,0,0">
             <Grid.RowDefinitions>
@@ -233,7 +237,7 @@
                                 </CheckBox.Resources>
                             </CheckBox>
                         </Grid>
-                        
+
 
                     </Grid>
 
@@ -375,7 +379,7 @@
                         </Button>
                     </Grid>
 
-                    
+
 
 
                 </Grid>
@@ -408,11 +412,11 @@
                     <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
                         <StackPanel Margin="5"
                                     Orientation="Horizontal">
-                            <TextBox  x:Name="Tb_NumberOfThreads" Text="Max threads (up to 12)" TextChanged="Tb_MaxThreadsForAuto_OnTextChanged" GotFocus="Tb_MaxThreadsForAuto_OnGotFocus" LostFocus="Tb_MaxThreadsForAuto_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                            <TextBox  x:Name="Tb_NumberOfThreads" Text="Max threads (up to 12)" TextChanged="Tb_NumberOfThreads_OnTextChanged" GotFocus="Tb_NumberOfThreads_OnGotFocus" LostFocus="Tb_NumberOfThreads_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
                         </StackPanel>
                     </Border>
 
-                    <RadioButton x:Name="Rb_UserCustomThreads" FontSize="15" Grid.Row="2" Content="Use custom threads"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_AutoTestCustomThreads_OnChecked">
+                    <RadioButton x:Name="Rb_UserCustomThreads" FontSize="15" Grid.Row="2" Content="Use custom threads"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_UserCustomThreads_OnChecked">
                         <RadioButton.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -420,7 +424,7 @@
                         </RadioButton.Resources>
                     </RadioButton>
 
-                    <RadioButton x:Name="Rb_UseTPLThreads" FontSize="15" Grid.Row="3"  Content="Use TPL threads"  BorderBrush="{StaticResource OrangeAccent}" FontFamily="{StaticResource Montserrat}" BorderThickness="3" VerticalContentAlignment="Center" Checked="Rb_AutoTestTPLThreads_OnChecked">
+                    <RadioButton x:Name="Rb_UseTPLThreads" FontSize="15" Grid.Row="3"  Content="Use TPL threads"  BorderBrush="{StaticResource OrangeAccent}" FontFamily="{StaticResource Montserrat}" BorderThickness="3" VerticalContentAlignment="Center" Checked="Rb_UseTPLThreads_OnChecked">
                         <RadioButton.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -428,8 +432,8 @@
                         </RadioButton.Resources>
                     </RadioButton>
                 </Grid>
-                
-                
+
+
             </Grid>
 
             <Grid x:Name="G_ThirdRow" Grid.Row="2" Margin="0,0,0,50">
@@ -532,8 +536,8 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Text="Simulation Status" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
-                    
-                    
+
+
                     <Label x:Name="Lb_FrameRate" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="FPS: 0"   FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
                     <Label x:Name="Lb_CurrentFrame" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Current Frame: 0/0"   FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
                     <Label x:Name="Lb_ElapsedTime" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Elapsed Time: 0"   FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
@@ -541,8 +545,8 @@
 
 
                 </Grid>
-                
-                
+
+
             </Grid>
 
             <Grid x:Name="G_ForthRow" Grid.Row="3">

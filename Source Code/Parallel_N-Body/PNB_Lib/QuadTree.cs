@@ -11,7 +11,7 @@ namespace PNB_Lib
 {
     public class QuadTree
     {
-
+        private int m_ParticleCount;
         private List<Particle> m_Particles;
         private int m_SimSpaceXLen;
         private int m_SimSpaceYLen;
@@ -22,8 +22,29 @@ namespace PNB_Lib
         private float m_Softening = 0.8f;
         private Stopwatch m_Sw;
         private float m_Dt = 0.5f;
-        private float time = 0;
         private float m_Boost = 3000;
+
+        private InteractionAlgorithm m_AlgToUse;
+        private bool m_IsParallel;
+        private int m_TargetParticle = 0;
+
+        private bool m_DrawFlagShowAccelDirection;
+        private bool m_DrawFlagShowTree;
+        private bool m_DrawFlagShowVelDirection;
+        private bool m_DrawFlagShowBHGrouping;
+        private bool m_DrawFlagShowEmptyTreeCells;
+
+
+        private int m_AutoConfigMaxThreads;
+        private ThreadMode m_AutoConfigThreadMode;
+        private bool m_AutoConfigShouldStopTest;
+
+        private int m_SimConfigNumberOfFrames;
+        private bool m_SimConfigShouldStopSim;
+
+        private int m_ThreadConfigMaxThreads;
+        private ThreadMode m_ThreadConfigThreadMode;
+
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {
@@ -32,6 +53,38 @@ namespace PNB_Lib
             m_SimSpaceYLen = simSpaceY;
             m_ParticleMap = new bool[m_SimSpaceXLen,m_SimSpaceYLen];
             m_Sw = new Stopwatch();
+        }
+
+
+        public void SetTheta(float newTheta)
+        {
+            m_Theta = newTheta;
+        }
+
+        public void SetParticleCount(int newParticleCount)
+        {
+            m_ParticleCount = newParticleCount;
+        }
+
+        public void SetAlgorithm (InteractionAlgorithm newAlg)
+        {
+
+        }
+        
+        public void SetParallelStatus(bool newStatus)
+        {
+
+        }
+
+        public void SetTargetParticle(int newTarget)
+        {
+
+        }
+
+
+        public void GenerateParticles(bool useDifferentColors)
+        {
+
         }
 
 
