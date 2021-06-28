@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,22 +15,26 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using LiveCharts;
+using LiveCharts.Wpf;
 using PNB_Lib;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
 using Xabe.FFmpeg;
 using Xabe.FFmpeg.Downloader;
+using Brushes = System.Drawing.Brushes;
 using Path = System.IO.Path;
 
 
 namespace Parallel_N_Body
 {
-    public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
+    //public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -55,8 +60,8 @@ namespace Parallel_N_Body
         private SKCanvas m_SimCanvas;
         private Thread m_SimulationThread;
         private Thread m_VideoGenerationThread;
-        public event SimFrameCompleteEventHandler OnFrameDraw;
-        public event EventHandler OnSimulationComplete;
+        //public event SimFrameCompleteEventHandler OnFrameDraw;
+        //public event EventHandler OnSimulationComplete;
         public event EventHandler OnVideoGenerationComplete;
         public MainWindow()
         {
@@ -64,17 +69,49 @@ namespace Parallel_N_Body
             m_SimWidth = (int)g_SimGrid.Width;
             m_SimHeight = (int)g_SimGrid.Height;
             m_ProgramManager = new ProgramManager(m_SimWidth, m_SimHeight);
-            OnFrameDraw += MainWindow_OnFrameDraw;
-            OnSimulationComplete += MainWindow_OnSimulationComplete;
+            //OnFrameDraw += MainWindow_OnFrameDraw;
+            //OnSimulationComplete += MainWindow_OnSimulationComplete;
             OnVideoGenerationComplete += MainWindow_OnVideoGenerationComplete;
-            //m_ProgramManager.QuadTree.OnFrameComplete += QuadTree_OnFrameComplete;
+            m_ProgramManager.QuadTree.OnFrameComplete += QuadTree_OnFrameComplete;
+            m_ProgramManager.QuadTree.OnSimulationComplete += QuadTree_OnSimulationComplete;
+            m_ProgramManager.QuadTree.OnAutoTestComplete += QuadTree_OnAutoTestComplete;
+            m_ProgramManager.QuadTree.OnAutoTestStepComplete += QuadTree_OnAutoTestStepComplete;
+
+            m_ProgramManager.QuadTree.SetAlgorithm(InteractionAlgorithm.PWI);
+            m_ProgramManager.QuadTree.SetParallelStatus(true);
+            m_ProgramManager.QuadTree.SetDrawFlagUseDifferentColors(true);
+            m_ProgramManager.QuadTree.SetAutoConfigThreadMode(ThreadMode.customThreads);
+            m_ProgramManager.QuadTree.SetThreadConfigThreadMode(ThreadMode.customThreads);
             FFmpegDownloader.GetLatestVersion(FFmpegVersion.Full);
+        }
+
+        private void QuadTree_OnAutoTestStepComplete(object source, AutoTestStepCompleteArgs e)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Lb_AutoTestStatCurrentThreadCount.Content = $"{e.GetCurrentThreadCount()}/{e.GetTotalThreadCount()}";
+                TimeSpan elapsedTime = e.GetElapsedTime();
+                Lb_AutoTestStatElapsedTime.Content = $"{elapsedTime.Minutes} min, {elapsedTime.Seconds} sec, {elapsedTime.Milliseconds}";
+                Lb_AutoTestStatTimeForLastTest.Content = e.GetLastThreadExecTime();
+            }), DispatcherPriority.Normal);
+        }
+
+        private void QuadTree_OnAutoTestComplete(object source, AutoTestCompleteArgs e)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Btn_StartAutoTest.IsEnabled = true;
+                GenerateChartSeries(e.GetParlLevels(), e.GetExecTimes());
+            }), DispatcherPriority.Normal);
+        }
+
+        private void QuadTree_OnSimulationComplete(object sender, EventArgs e)
+        {
+
         }
 
         private void QuadTree_OnFrameComplete(object source, SimFrameCompleteArgs e)
         {
-           
-
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 string currentFrame = e.GetFrameNumber().ToString();
@@ -142,9 +179,11 @@ namespace Parallel_N_Body
                 try
                 {
                     m_ProgramManager.QuadTree.SetParticleCount(int.Parse(Tb_NumberOfParticles.Text));
+                    //Tb_NumberOfParticles.BorderBrush = new SolidColorBrush(Colors.Transparent);
                 }
                 catch (Exception exception)
                 {
+                    //Tb_NumberOfParticles.BorderBrush= new SolidColorBrush((System.Windows.Media.Color)App.Current.Resources["InputErrorColor"]);
                     Debug.Print($"INPUT EXCEPTION: Tb_NumberOfParticles OnTextChanged threw an exception. Text was: {Tb_NumberOfParticles.Text}");
                 }
 
@@ -201,8 +240,14 @@ namespace Parallel_N_Body
         private void Btn_Generate_Click(object sender, RoutedEventArgs e)
         {
             m_IsStartUp = false;
+            if (m_ProgramManager.QuadTree.GetParticleCount() > 250)
+            {
+                Lb_ErrorMsg.Content = "";
+            }
+
             m_ProgramManager.QuadTree.GenerateParticles();
             skg_SimGraphics.InvalidateVisual();
+
         }
 
         private void Btn_Partition_Click(object sender, RoutedEventArgs e)
@@ -351,13 +396,75 @@ namespace Parallel_N_Body
 
         private void Btn_StartAutoTest_OnClick(object sender, RoutedEventArgs e)
         {
-            m_ProgramManager.QuadTree.SetAutoConfigShouldStopTest(false);
-            m_ProgramManager.QuadTree.StartAutoTest();
+            
+            if (m_ProgramManager.QuadTree.GetParticleCount() > 250)
+            {
+                Btn_StartAutoTest.IsEnabled = false;
+                Lb_ErrorMsg.Content = "";
+                m_ProgramManager.QuadTree.SetAutoConfigShouldStopTest(false);
+                m_ProgramManager.QuadTree.StartAutoTest();
+            }
+            else
+            {
+                Lb_ErrorMsg.Content = "Use more than 250 particles \n for Auto Test";
+            }
+            
         }
 
         private void Btn_StopAutoTest_OnClick(object sender, RoutedEventArgs e)
         {
             m_ProgramManager.QuadTree.SetAutoConfigShouldStopTest(true);
+        }
+
+        private void GenerateChartSeries(List<double> parlLevels, List<double> execTimes)
+        {
+            SeriesCollection parlLevelsSeries = new SeriesCollection();
+            SeriesCollection execTimeSeries = new SeriesCollection();
+
+            List<string> threadCounts = new List<string>();
+
+            for (int i = 0; i < parlLevels.Count; i++)
+            {
+                threadCounts.Add($"{i + 1}");
+            }
+
+            Lc_LevelOfParallelism.AxisX.RemoveAt(0);
+            Lc_LevelOfParallelism.AxisX.Add(new Axis() { Title = "Thread Count", Labels = threadCounts });
+
+            Lc_LevelOfParallelism.AxisY.RemoveAt(0);
+            Lc_LevelOfParallelism.AxisY.Add(new Axis() { Title = "Level of Parallelism" });
+
+            Lc_LevelOfParallelism.LegendLocation = LegendLocation.Bottom;
+            Lc_LevelOfParallelism.Series.Clear();
+
+            parlLevelsSeries.Add(new LineSeries()
+            {
+                Title = "Level of Parallelism",
+                Values = new ChartValues<double>(parlLevels),
+                PointGeometry = DefaultGeometries.Circle
+            });
+
+            Lc_LevelOfParallelism.Series = parlLevelsSeries;
+
+
+
+            Lc_ExecutionTime.AxisX.RemoveAt(0);
+            Lc_ExecutionTime.AxisX.Add(new Axis() { Title = "Thread Count", Labels = threadCounts });
+
+            Lc_ExecutionTime.AxisY.RemoveAt(0);
+            Lc_ExecutionTime.AxisY.Add(new Axis() { Title = "Execution times" });
+
+            Lc_ExecutionTime.LegendLocation = LegendLocation.Bottom;
+            Lc_ExecutionTime.Series.Clear();
+
+            execTimeSeries.Add(new LineSeries()
+            {
+                Title = "Execution times",
+                Values = new ChartValues<double>(execTimes),
+                PointGeometry = DefaultGeometries.Circle
+            });
+
+            Lc_ExecutionTime.Series = execTimeSeries;
         }
 
         #endregion
@@ -446,62 +553,62 @@ namespace Parallel_N_Body
 
         public void StartSimulation()
         {
-            int imageNum = 0;
 
-            for (int i = 0; i < m_SimFrameCount; i++)
-            {
-                m_ProgramManager.QuadTree.StartSimulation();
+            m_ProgramManager.QuadTree.StartSimulation();
+            //int imageNum = 0;
 
-                TimeSpan defaultTS = new TimeSpan();
-                Debug.WriteLine($"On Frame {i}");
+            //for (int i = 0; i < m_SimFrameCount; i++)
+            //{
+            //    m_ProgramManager.QuadTree.StartSimulation();
 
-                SKImageInfo info = new SKImageInfo(737, 979);
-                SKBitmap newBitm = new SKBitmap(info);
-                SKCanvas canvas = new SKCanvas(newBitm);
-                canvas.Clear(SKColors.White);
+            //    TimeSpan defaultTS = new TimeSpan();
+            //    Debug.WriteLine($"On Frame {i}");
 
-                foreach (Particle particle in m_ProgramManager.QuadTree.GetParticles())
-                {
+            //    SKImageInfo info = new SKImageInfo(737, 979);
+            //    SKBitmap newBitm = new SKBitmap(info);
+            //    SKCanvas canvas = new SKCanvas(newBitm);
+            //    canvas.Clear(SKColors.White);
 
-                    var paint = new SKPaint
-                    {
-                        Color = particle.particleColor.ToSKColor(),
-                        IsAntialias = true,
-                        Style = SKPaintStyle.Fill,
-                    };
-                    canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
-                }
+            //    foreach (Particle particle in m_ProgramManager.QuadTree.GetParticles())
+            //    {
 
-
-                SKImage image = SKImage.FromBitmap(newBitm);
-                var data = image.Encode();
+            //        var paint = new SKPaint
+            //        {
+            //            Color = particle.particleColor.ToSKColor(),
+            //            IsAntialias = true,
+            //            Style = SKPaintStyle.Fill,
+            //        };
+            //        canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
+            //    }
 
 
-                using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/{imageNum}.png"))
-                {
-                    // save the data to a stream
-                    data.SaveTo(stream);
-                    stream.Close();
-                    stream.Dispose();
-                    imageNum++;
-                }
-
-                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    SimFrameCompleteArgs args = new SimFrameCompleteArgs(defaultTS, i);
-                    RaiseEventOnUIThread(OnFrameDraw, new object[] { null, args });
-                }), DispatcherPriority.Normal);
+            //    SKImage image = SKImage.FromBitmap(newBitm);
+            //    var data = image.Encode();
 
 
+            //    using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/{imageNum}.png"))
+            //    {
+            //        // save the data to a stream
+            //        data.SaveTo(stream);
+            //        stream.Close();
+            //        stream.Dispose();
+            //        imageNum++;
+            //    }
 
-            }
+            //    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            //    {
+            //        SimFrameCompleteArgs args = new SimFrameCompleteArgs(defaultTS, i);
+            //        RaiseEventOnUIThread(OnFrameDraw, new object[] { null, args });
+            //    }), DispatcherPriority.Normal);
 
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                RaiseEventOnUIThread(OnSimulationComplete, new object[] { null, new EventArgs() });
-            }), DispatcherPriority.Normal);
 
 
+            //}
+
+            //Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            //{
+            //    RaiseEventOnUIThread(OnSimulationComplete, new object[] { null, new EventArgs() });
+            //}), DispatcherPriority.Normal);
         }
 
         void VideoGenerationParentFunction()
@@ -536,7 +643,7 @@ namespace Parallel_N_Body
             {
                 RaiseEventOnUIThread(OnVideoGenerationComplete, new object[] { null, new EventArgs() });
             }), DispatcherPriority.Normal);
-            
+
         }
         async Task GenerateVideo(List<string> files)
         {
@@ -617,14 +724,14 @@ namespace Parallel_N_Body
             // get the screen density for scaling
             var scale = (float)PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.M11;
             var scaledSize = new SKSize(e.Info.Width / scale, e.Info.Height / scale);
-            
+
             // handle the device screen density
             canvas.Scale(scale);
             // make sure the canvas is blank
             canvas.Clear(SKColors.White);
 
 
-
+            int particleNumber = 0;
             if (m_IsStartUp)
             {
                 m_SKSvg = new SKSvg();
@@ -643,6 +750,8 @@ namespace Parallel_N_Body
                         Style = SKPaintStyle.Fill,
                     };
                     canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
+                    Debug.WriteLine($"Drawing particle {particleNumber} at X: {particle.CenterPoint.X} Y: {particle.CenterPoint.Y}");
+                    particleNumber++;
                 }
 
                 //SKImage image = e.Surface.Snapshot();
