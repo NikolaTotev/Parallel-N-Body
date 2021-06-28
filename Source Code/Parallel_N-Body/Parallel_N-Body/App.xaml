@@ -16,6 +16,7 @@
         <Brush x:Key="TextboxPrompt">#A2A9B9</Brush>
         <Color x:Key="OrangeButtonHighlightColor">#FFEFE2</Color>
         <Color x:Key="NormalPurple">#9D4EDD</Color>
+        <Color x:Key="InputErrorColor">#FFFFD5D5</Color>
 
 
 

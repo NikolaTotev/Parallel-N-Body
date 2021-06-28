@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -26,6 +28,7 @@ using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.WPF;
 using Xabe.FFmpeg;
 using Xabe.FFmpeg.Downloader;
+using Brushes = System.Drawing.Brushes;
 using Path = System.IO.Path;
 
 
@@ -73,6 +76,12 @@ namespace Parallel_N_Body
             m_ProgramManager.QuadTree.OnSimulationComplete += QuadTree_OnSimulationComplete;
             m_ProgramManager.QuadTree.OnAutoTestComplete += QuadTree_OnAutoTestComplete;
             m_ProgramManager.QuadTree.OnAutoTestStepComplete += QuadTree_OnAutoTestStepComplete;
+
+            m_ProgramManager.QuadTree.SetAlgorithm(InteractionAlgorithm.PWI);
+            m_ProgramManager.QuadTree.SetParallelStatus(true);
+            m_ProgramManager.QuadTree.SetDrawFlagUseDifferentColors(true);
+            m_ProgramManager.QuadTree.SetAutoConfigThreadMode(ThreadMode.customThreads);
+            m_ProgramManager.QuadTree.SetThreadConfigThreadMode(ThreadMode.customThreads);
             FFmpegDownloader.GetLatestVersion(FFmpegVersion.Full);
         }
 
@@ -80,11 +89,11 @@ namespace Parallel_N_Body
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                //Lb_AutoTestStatCurrentThreadCount.Content = $"{e.GetCurrentThreadCount()}/{e.GetTotalThreadCount()}"; 
-                //    TimeSpan elapsedTime = e.GetElapsedTime();
-                   // Lb_AutoTestStatElapsedTime.Content = $"{elapsedTime.Minutes} min, {elapsedTime.Seconds} sec, {elapsedTime.Milliseconds}";
-                   // Lb_AutoTestStatTimeForLastTest.Content = e.GetLastThreadExecTime();
-                }), DispatcherPriority.Normal);
+                Lb_AutoTestStatCurrentThreadCount.Content = $"{e.GetCurrentThreadCount()}/{e.GetTotalThreadCount()}";
+                TimeSpan elapsedTime = e.GetElapsedTime();
+                Lb_AutoTestStatElapsedTime.Content = $"{elapsedTime.Minutes} min, {elapsedTime.Seconds} sec, {elapsedTime.Milliseconds}";
+                Lb_AutoTestStatTimeForLastTest.Content = e.GetLastThreadExecTime();
+            }), DispatcherPriority.Normal);
         }
 
         private void QuadTree_OnAutoTestComplete(object source, AutoTestCompleteArgs e)
@@ -170,9 +179,11 @@ namespace Parallel_N_Body
                 try
                 {
                     m_ProgramManager.QuadTree.SetParticleCount(int.Parse(Tb_NumberOfParticles.Text));
+                    //Tb_NumberOfParticles.BorderBrush = new SolidColorBrush(Colors.Transparent);
                 }
                 catch (Exception exception)
                 {
+                    //Tb_NumberOfParticles.BorderBrush= new SolidColorBrush((System.Windows.Media.Color)App.Current.Resources["InputErrorColor"]);
                     Debug.Print($"INPUT EXCEPTION: Tb_NumberOfParticles OnTextChanged threw an exception. Text was: {Tb_NumberOfParticles.Text}");
                 }
 
@@ -229,8 +240,14 @@ namespace Parallel_N_Body
         private void Btn_Generate_Click(object sender, RoutedEventArgs e)
         {
             m_IsStartUp = false;
+            if (m_ProgramManager.QuadTree.GetParticleCount() > 250)
+            {
+                Lb_ErrorMsg.Content = "";
+            }
+
             m_ProgramManager.QuadTree.GenerateParticles();
             skg_SimGraphics.InvalidateVisual();
+
         }
 
         private void Btn_Partition_Click(object sender, RoutedEventArgs e)
@@ -379,9 +396,19 @@ namespace Parallel_N_Body
 
         private void Btn_StartAutoTest_OnClick(object sender, RoutedEventArgs e)
         {
-            Btn_StartAutoTest.IsEnabled = false;
-            m_ProgramManager.QuadTree.SetAutoConfigShouldStopTest(false);
-            m_ProgramManager.QuadTree.StartAutoTest();
+            
+            if (m_ProgramManager.QuadTree.GetParticleCount() > 250)
+            {
+                Btn_StartAutoTest.IsEnabled = false;
+                Lb_ErrorMsg.Content = "";
+                m_ProgramManager.QuadTree.SetAutoConfigShouldStopTest(false);
+                m_ProgramManager.QuadTree.StartAutoTest();
+            }
+            else
+            {
+                Lb_ErrorMsg.Content = "Use more than 250 particles \n for Auto Test";
+            }
+            
         }
 
         private void Btn_StopAutoTest_OnClick(object sender, RoutedEventArgs e)

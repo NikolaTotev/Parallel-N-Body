@@ -320,7 +320,7 @@
                     <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
                         <StackPanel Margin="5"
                                     Orientation="Horizontal">
-                            <TextBox  x:Name="Tb_MaxThreadsForAuto" Text="Max threads to test " TextChanged="Tb_MaxThreadsForAuto_OnTextChanged" GotFocus="Tb_MaxThreadsForAuto_OnGotFocus" LostFocus="Tb_MaxThreadsForAuto_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                            <TextBox  x:Name="Tb_MaxThreadsForAuto" Text="6" TextChanged="Tb_MaxThreadsForAuto_OnTextChanged" GotFocus="Tb_MaxThreadsForAuto_OnGotFocus" LostFocus="Tb_MaxThreadsForAuto_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
                         </StackPanel>
                     </Border>
 
@@ -398,8 +398,8 @@
                     <TextBlock Grid.Row="0" Text="Auto Test Status" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
                     <Label x:Name="Lb_AutoTestStatCurrentThreadCount"  Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Current thread:" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
                     <Label x:Name="Lb_AutoTestStatElapsedTime" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Elapsed time:"   FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
-                    <Label x:Name="Lb_AutoTestStatCurrentOperation"  Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Current operation:" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
-                    <Label x:Name="Lb_AutoTestStatTimeForLastTest" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Last thread time:"   FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
+                    <Label x:Name="Lb_AutoTestStatTimeForLastTest" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="Last thread time:"   FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyBlueBase}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
+                    <Label x:Name="Lb_ErrorMsg"  Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Left"  Content="" FontStyle="Normal" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource WarningRed}" BorderBrush="Transparent" FontFamily="{StaticResource Montserrat}"/>
 
                 </Grid>
 
@@ -415,7 +415,7 @@
                     <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
                         <StackPanel Margin="5"
                                     Orientation="Horizontal">
-                            <TextBox  x:Name="Tb_NumberOfThreads" Text="Max threads (up to 12)" TextChanged="Tb_NumberOfThreads_OnTextChanged" GotFocus="Tb_NumberOfThreads_OnGotFocus" LostFocus="Tb_NumberOfThreads_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                            <TextBox  x:Name="Tb_NumberOfThreads" Text="6" TextChanged="Tb_NumberOfThreads_OnTextChanged" GotFocus="Tb_NumberOfThreads_OnGotFocus" LostFocus="Tb_NumberOfThreads_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
                         </StackPanel>
                     </Border>
 

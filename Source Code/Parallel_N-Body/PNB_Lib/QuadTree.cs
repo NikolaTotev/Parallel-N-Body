@@ -103,6 +103,11 @@ namespace PNB_Lib
         {
             return m_Particles;
         }
+
+        public int GetParticleCount()
+        {
+            return m_ParticleCount;
+        }
         public void SetTheta(float newTheta)
         {
             m_Theta = newTheta;
@@ -303,13 +308,13 @@ namespace PNB_Lib
             int prevMilis;
             int currentMilis;
             Stopwatch frameSw = Stopwatch.StartNew();
-            //Stopwatch totalSw = new Stopwatch();
+            Stopwatch totalSw = new Stopwatch();
             m_IsParallel = true;
             int repeatFactor = 10;
             double execTimeSum = 0;
             double avgExecTime;
             List<double> execTimes = new List<double>();
-            //totalSw.Start();
+            totalSw.Start();
             for (int i = 0; i < m_AutoConfigMaxThreads; i++)
             {
                 for (int j = 0; j < repeatFactor; j++)
@@ -323,9 +328,9 @@ namespace PNB_Lib
 
                 avgExecTime = execTimeSum / repeatFactor;
                 execTimes.Add(avgExecTime);
-                // AutoTestStepCompleteArgs args = new AutoTestStepCompleteArgs(i, m_AutoConfigMaxThreads, totalSw.Elapsed, avgExecTime);
+                AutoTestStepCompleteArgs args = new AutoTestStepCompleteArgs(i, m_AutoConfigMaxThreads, totalSw.Elapsed, avgExecTime);
                 execTimeSum = 0;
-                //OnAutoTestStepComplete?.Invoke(this, args);
+                OnAutoTestStepComplete?.Invoke(this, args);
             }
 
             GenerateChartSeriesData(execTimes);
@@ -425,7 +430,7 @@ namespace PNB_Lib
 
         public void PrepareStepExecution(ThreadMode threadMode, int threadCount, SimulationStep simulationStep)
         {
-            if (!m_IsParallel)
+            if (m_IsParallel)
             {
                 int particlesPerThread = m_Particles.Count / threadCount;
 
