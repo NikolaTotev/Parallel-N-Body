@@ -14,7 +14,7 @@ using System.Windows.Threading;
 
 namespace PNB_Lib
 {
-    //public delegate void Something (object source, SimFrameCompleteArgs e);
+   // public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
 
     public enum SimulationStep
     {
@@ -58,7 +58,7 @@ namespace PNB_Lib
         private int m_ThreadConfigMaxThreads = 1;
         private ThreadMode m_ThreadConfigThreadMode = ThreadMode.customThreads;
 
-        //public event Something OnFrameComplete;
+       // public event SimFrameCompleteEventHandler OnFrameComplete;
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {
@@ -280,6 +280,10 @@ namespace PNB_Lib
             switch (m_AlgToUse)
             {
                 case InteractionAlgorithm.PWI:
+
+
+
+
                     frameSw.Start();
                     PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
                     PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);

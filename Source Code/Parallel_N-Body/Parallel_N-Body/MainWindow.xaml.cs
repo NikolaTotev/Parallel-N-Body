@@ -71,10 +71,19 @@ namespace Parallel_N_Body
             FFmpegDownloader.GetLatestVersion(FFmpegVersion.Full);
         }
 
-        //private void QuadTree_OnFrameComplete(object source, SimFrameCompleteArgs e)
-        //{
-        //    //Dispatcher thing lives in here
-        //}
+        private void QuadTree_OnFrameComplete(object source, SimFrameCompleteArgs e)
+        {
+           
+
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                string currentFrame = e.GetFrameNumber().ToString();
+                //TimeSpan timeForLastFrame = e.GetExecTime();
+
+                Lb_CurrentFrame.Content = $"{currentFrame}/{m_SimFrameCount}";
+                //skg_SimGraphics.InvalidateVisual();
+            }), DispatcherPriority.Normal);
+        }
 
         private void MainWindow_OnVideoGenerationComplete(object sender, EventArgs e)
         {
