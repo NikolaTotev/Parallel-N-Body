@@ -14,7 +14,7 @@ using System.Windows.Threading;
 
 namespace PNB_Lib
 {
-    //public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
+    //public delegate void Something (object source, SimFrameCompleteArgs e);
 
     public enum SimulationStep
     {
@@ -58,7 +58,7 @@ namespace PNB_Lib
         private int m_ThreadConfigMaxThreads = 1;
         private ThreadMode m_ThreadConfigThreadMode = ThreadMode.customThreads;
 
-        //public event SimFrameCompleteEventHandler OnFrameComplete;
+        //public event Something OnFrameComplete;
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {

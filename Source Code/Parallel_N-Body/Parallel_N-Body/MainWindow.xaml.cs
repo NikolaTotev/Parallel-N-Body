@@ -54,8 +54,10 @@ namespace Parallel_N_Body
 
         private SKCanvas m_SimCanvas;
         private Thread m_SimulationThread;
+        private Thread m_VideoGenerationThread;
         public event SimFrameCompleteEventHandler OnFrameDraw;
         public event EventHandler OnSimulationComplete;
+        public event EventHandler OnVideoGenerationComplete;
         public MainWindow()
         {
             InitializeComponent();
@@ -64,7 +66,35 @@ namespace Parallel_N_Body
             m_ProgramManager = new ProgramManager(m_SimWidth, m_SimHeight);
             OnFrameDraw += MainWindow_OnFrameDraw;
             OnSimulationComplete += MainWindow_OnSimulationComplete;
+            OnVideoGenerationComplete += MainWindow_OnVideoGenerationComplete;
+            //m_ProgramManager.QuadTree.OnFrameComplete += QuadTree_OnFrameComplete;
             FFmpegDownloader.GetLatestVersion(FFmpegVersion.Full);
+        }
+
+        //private void QuadTree_OnFrameComplete(object source, SimFrameCompleteArgs e)
+        //{
+        //    //Dispatcher thing lives in here
+        //}
+
+        private void MainWindow_OnVideoGenerationComplete(object sender, EventArgs e)
+        {
+            if (m_VideoGenerationThread != null && Thread.CurrentThread != m_VideoGenerationThread)
+            {
+                if (m_VideoGenerationThread.IsAlive)
+                {
+                    if (m_VideoGenerationThread.Join(3000))
+                    {
+                        Debug.WriteLine("Video generation thread joined!");
+                    }
+                    else
+                    {
+                        m_VideoGenerationThread.Abort();
+                    }
+                }
+            }
+
+            Btn_GenerateVideo.IsEnabled = true;
+            Btn_SelectSimSaveLocation.IsEnabled = true;
         }
 
         private void MainWindow_OnSimulationComplete(object sender, EventArgs e)
@@ -73,7 +103,7 @@ namespace Parallel_N_Body
             {
                 if (m_SimulationThread.IsAlive)
                 {
-                    if (m_SimulationThread.Join(500))
+                    if (m_SimulationThread.Join(3000))
                     {
                         Debug.WriteLine("Simulation thread joined");
                     }
@@ -85,16 +115,14 @@ namespace Parallel_N_Body
             }
         }
 
-        private void MainWindow_OnFrameDraw(object sender, EventArgs e)
+        private void MainWindow_OnFrameDraw(object sender, SimFrameCompleteArgs e)
         {
-            skg_SimGraphics.InvalidateVisual();
-        }
+            string currentFrame = e.GetFrameNumber().ToString();
+            //TimeSpan timeForLastFrame = e.GetExecTime();
 
-        private void QuadTree_OnFrameComplete(object source, SimFrameCompleteArgs e)
-        {
-            skg_SimGraphics.InvalidateVisual();
+            Lb_CurrentFrame.Content = $"{currentFrame}/{m_SimFrameCount}";
+            //skg_SimGraphics.InvalidateVisual();
         }
-
 
         #region General Settings
 
@@ -402,10 +430,9 @@ namespace Parallel_N_Body
         private void Btn_StartSimulation_OnClick(object sender, RoutedEventArgs e)
         {
             m_ProgramManager.QuadTree.SetSimConfigShouldStopSim(false);
-            StartSimulation();
-            //m_SimulationThread = new Thread(StartSimulation);
-            //m_SimulationThread.Name = "SimulationThread";
-            //m_SimulationThread.Start();
+            m_SimulationThread = new Thread(StartSimulation);
+            m_SimulationThread.Name = "SimulationThread";
+            m_SimulationThread.Start();
         }
 
         public void StartSimulation()
@@ -454,7 +481,7 @@ namespace Parallel_N_Body
                 {
                     SimFrameCompleteArgs args = new SimFrameCompleteArgs(defaultTS, i);
                     RaiseEventOnUIThread(OnFrameDraw, new object[] { null, args });
-                }), DispatcherPriority.Send);
+                }), DispatcherPriority.Normal);
 
 
 
@@ -463,23 +490,48 @@ namespace Parallel_N_Body
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 RaiseEventOnUIThread(OnSimulationComplete, new object[] { null, new EventArgs() });
-            }), DispatcherPriority.Background);
+            }), DispatcherPriority.Normal);
 
 
         }
 
-
-        async void GenerateVideo()
+        void VideoGenerationParentFunction()
         {
             string dir = "D:/Documents/Project Files/N-Body/SimImages/";
             List<string> files = new List<string>();
-            
+
             for (int i = 0; i < m_SimFrameCount; i++)
             {
                 files.Add($"{dir}/{i}.png");
             }
 
-            await new Conversion().SetInputFrameRate(60).BuildVideoFromImages(files).SetFrameRate(60).SetOutputFormat(Format.mp4).SetOutput("D:/Documents/Project Files/N-Body/SimImages/output.mp4").Start();
+
+            Conversion conv = new Conversion();
+            conv.SetInputFrameRate(60).BuildVideoFromImages(files).SetFrameRate(60).SetOutputFormat(Format.mp4).SetOutput("D:/Documents/Project Files/N-Body/SimImages/output.mp4").Start();
+
+            //var generationTask = GenerateVideo(files);
+
+            //generationTask.Wait();
+
+            //if (generationTask.Status == TaskStatus.Faulted)
+            //{
+            //    Debug.WriteLine("TASK FAILURE: Failed to generate video.");
+            //}
+
+            //if (generationTask.IsCompleted)
+            //{
+
+            //}
+
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                RaiseEventOnUIThread(OnVideoGenerationComplete, new object[] { null, new EventArgs() });
+            }), DispatcherPriority.Normal);
+            
+        }
+        async Task GenerateVideo(List<string> files)
+        {
+            await Task.Run(() => new Conversion().SetInputFrameRate(60).BuildVideoFromImages(files).SetFrameRate(60).SetOutputFormat(Format.mp4).SetOutput("D:/Documents/Project Files/N-Body/SimImages/output.mp4").Start());
         }
 
         private void RaiseEventOnUIThread(Delegate theEvent, object[] args)
@@ -507,7 +559,12 @@ namespace Parallel_N_Body
 
         private void Btn_GenerateVideo_OnClick(object sender, RoutedEventArgs e)
         {
-            GenerateVideo();
+            Btn_GenerateVideo.IsEnabled = false;
+            Btn_SelectSimSaveLocation.IsEnabled = false;
+            m_VideoGenerationThread = new Thread(VideoGenerationParentFunction);
+            m_VideoGenerationThread.Name = "VideoGenThread";
+            m_VideoGenerationThread.Start();
+            Debug.WriteLine("Starting video generation.");
         }
 
         private void Btn_SelectSimSaveLocation_OnClick(object sender, RoutedEventArgs e)
@@ -545,16 +602,13 @@ namespace Parallel_N_Body
 
         private void ps_SimSpace(object sender, SKPaintSurfaceEventArgs e)
         {
-            Debug.Print("Redrawing graphics! ===========");
             // the the canvas and properties
             var canvas = e.Surface.Canvas;
 
             // get the screen density for scaling
             var scale = (float)PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.M11;
             var scaledSize = new SKSize(e.Info.Width / scale, e.Info.Height / scale);
-            Debug.Print($"Width: {e.Info.Width / scale} Height:e.Info.Height / scale");
-
-
+            
             // handle the device screen density
             canvas.Scale(scale);
             // make sure the canvas is blank
