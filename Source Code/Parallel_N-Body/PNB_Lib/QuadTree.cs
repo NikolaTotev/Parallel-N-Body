@@ -6,15 +6,21 @@ using System.Diagnostics;
 using static System.Math;
 using System.Drawing;
 using System.Drawing.Text;
+using System.IO;
 using System.Net.Mime;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using LiveCharts;
+using LiveCharts.Wpf;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 
 namespace PNB_Lib
 {
-   // public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
+    public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
+    public delegate void AutoTestCompleteHandler(object source, AutoTestCompleteArgs e);
 
     public enum SimulationStep
     {
@@ -51,6 +57,7 @@ namespace PNB_Lib
         private int m_AutoConfigMaxThreads = 1;
         private ThreadMode m_AutoConfigThreadMode = ThreadMode.customThreads;
         private bool m_AutoConfigShouldStopTest = false;
+        private int m_AutoConfigCurrentThreadCount = 1;
 
         private int m_SimConfigNumberOfFrames = 200;
         private bool m_SimConfigShouldStopSim = false;
@@ -58,7 +65,10 @@ namespace PNB_Lib
         private int m_ThreadConfigMaxThreads = 1;
         private ThreadMode m_ThreadConfigThreadMode = ThreadMode.customThreads;
 
-       // public event SimFrameCompleteEventHandler OnFrameComplete;
+        public event SimFrameCompleteEventHandler OnFrameComplete;
+        public event AutoTestCompleteHandler OnAutoTestComplete;
+        public event EventHandler OnSimulationComplete;
+        private Thread m_SimulationThread;
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {
@@ -66,7 +76,26 @@ namespace PNB_Lib
             m_SimSpaceXLen = simSpaceX;
             m_SimSpaceYLen = simSpaceY;
             m_ParticleMap = new bool[m_SimSpaceXLen, m_SimSpaceYLen];
+            OnSimulationComplete += QuadTree_OnSimulationComplete;
             m_Sw = new Stopwatch();
+        }
+
+        private void QuadTree_OnSimulationComplete(object sender, EventArgs e)
+        {
+            if (m_SimulationThread != null)
+            {
+                if (m_SimulationThread.IsAlive)
+                {
+                    if (m_SimulationThread.Join(3000))
+                    {
+                        Debug.WriteLine("Simulation thread joined");
+                    }
+                    else
+                    {
+                        m_SimulationThread.Abort();
+                    }
+                }
+            }
         }
 
         public List<Particle> GetParticles()
@@ -198,8 +227,8 @@ namespace PNB_Lib
                 Particle newParticle = new Particle();
                 //int x = rand.Next(5, 730);
                 //int y = rand.Next(5, 730);
-                int x = rand.Next(250, 550);
-                int y = rand.Next(250, 550);
+                int x = rand.Next(5, 730);
+                int y = rand.Next(5, 970);
 
                 bool pointSet = false;
                 int doubleHit = 0;
@@ -239,6 +268,7 @@ namespace PNB_Lib
                                     break;
                                 case 5:
                                     newParticle.particleColor = Color.OrangeRed;
+                                    colorCounter = 0;
                                     break;
                             }
                             colorCounter++;
@@ -255,7 +285,7 @@ namespace PNB_Lib
                     else
                     {
                         x = rand.Next(5, 730);
-                        y = rand.Next(5, 830);
+                        y = rand.Next(5, 970);
                         doubleHit++;
                     }
                 }
@@ -269,29 +299,62 @@ namespace PNB_Lib
 
         public void StartAutoTest()
         {
+            Stopwatch frameSw = new Stopwatch();
+            m_IsParallel = true;
+            int repeatFactor = 10;
+            double execTimeSum = 0;
+            double avgExecTime;
+            List<double> execTimes = new List<double>();
+            for (int i = 0; i < m_AutoConfigMaxThreads; i++)
+            {
+                for (int j = 0; j < repeatFactor; j++)
+                {
+                    frameSw.Reset();
+                    frameSw.Start();
+                    PrepareStepExecution(m_ThreadConfigThreadMode, i+1, SimulationStep.first);
+                    PairwiseForceCalculation(m_IsParallel, i+1);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, i+1, SimulationStep.second);
+                    frameSw.Stop();
+                    execTimeSum += frameSw.Elapsed.Milliseconds;
+                }
+
+                avgExecTime = execTimeSum / repeatFactor;
+                execTimes.Add(avgExecTime);
+                execTimeSum = 0;
+            }
+
+            GenerateChartSeriesData(execTimes);
+        }
+
+        public double CalculateParallelismLevel(double singleThreadExecTime, double multithreadExecTime)
+        {
+            return singleThreadExecTime / multithreadExecTime;
 
         }
 
+        public void GenerateChartSeriesData(List<double> execTimes)
+        {
+            List<double> parallelismLevels = new List<double>();
+
+            for (int i = 0; i < execTimes.Count; i++)
+            {
+                parallelismLevels.Add(CalculateParallelismLevel(execTimes[0], execTimes[i]));
+            }
+
+            AutoTestCompleteArgs args = new AutoTestCompleteArgs(parallelismLevels, execTimes);
+            OnAutoTestComplete?.Invoke(this, args);
+        }
+
+
+
         public void StartSimulation()
         {
-
-
-            Stopwatch frameSw = new Stopwatch();
             switch (m_AlgToUse)
             {
                 case InteractionAlgorithm.PWI:
-
-
-
-
-                    frameSw.Start();
-                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
-                    PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
-                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
-                    frameSw.Stop();
-                    frameSw.Reset();
-
-
+                    m_SimulationThread = new Thread(PWISimulation);
+                    m_SimulationThread.Name = "SimulationThread";
+                    m_SimulationThread.Start();
                     break;
                 case InteractionAlgorithm.BH:
                     //TODO Implement BH alg.
@@ -301,9 +364,62 @@ namespace PNB_Lib
             }
         }
 
-        #region First Simulation Step
+        public void PWISimulation()
+        {
+            Stopwatch frameSw = new Stopwatch();
+
+            int imageNum = 0;
+
+            for (int i = 0; i < m_SimConfigNumberOfFrames; i++)
+            {
+
+                frameSw.Start();
+                PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
+                PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
+                PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
+                frameSw.Stop();
+                frameSw.Reset();
+
+                TimeSpan defaultTS = new TimeSpan();
+                Debug.WriteLine($"On Frame {i}");
+
+                SKImageInfo info = new SKImageInfo(737, 979);
+                SKBitmap newBitm = new SKBitmap(info);
+                SKCanvas canvas = new SKCanvas(newBitm);
+                canvas.Clear(SKColors.White);
+
+                foreach (Particle particle in m_Particles)
+                {
+
+                    var paint = new SKPaint
+                    {
+                        Color = particle.particleColor.ToSKColor(),
+                        IsAntialias = true,
+                        Style = SKPaintStyle.Fill,
+                    };
+                    canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
+                }
 
 
+                SKImage image = SKImage.FromBitmap(newBitm);
+                var data = image.Encode();
+
+
+                using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/{imageNum}.png"))
+                {
+                    // save the data to a stream
+                    data.SaveTo(stream);
+                    stream.Close();
+                    stream.Dispose();
+                    imageNum++;
+                }
+
+                SimFrameCompleteArgs args = new SimFrameCompleteArgs(defaultTS, i);
+                OnFrameComplete.Invoke(this, args);
+            }
+
+            OnSimulationComplete?.Invoke(this, EventArgs.Empty);
+        }
 
 
         public void PrepareStepExecution(ThreadMode threadMode, int threadCount, SimulationStep simulationStep)
@@ -411,11 +527,6 @@ namespace PNB_Lib
             }
         }
 
-        void ErrorInSimPart()
-        {
-
-        }
-
         public void PartitionMultithreadExecution(int startIndex, int endIndex, SimulationStep simulationStep)
         {
             switch (simulationStep)
@@ -472,14 +583,17 @@ namespace PNB_Lib
             }
         }
 
-        #endregion
-
-
         public void ExecuteSecondSimulationStepCalculations(Particle currentParticle)
         {
             currentParticle.VelocityComponents.X += m_Boost * currentParticle.AccelerationComponents.X * m_Dt / 2;
             currentParticle.VelocityComponents.Y += m_Boost * currentParticle.AccelerationComponents.Y * m_Dt / 2;
         }
+
+        void ErrorInSimPart()
+        {
+
+        }
+
 
         public TimeSpan PairwiseForceCalculation(bool isParalell, int threadCount = 1)
         {
