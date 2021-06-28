@@ -72,13 +72,26 @@ namespace Parallel_N_Body
             m_ProgramManager.QuadTree.OnFrameComplete += QuadTree_OnFrameComplete;
             m_ProgramManager.QuadTree.OnSimulationComplete += QuadTree_OnSimulationComplete;
             m_ProgramManager.QuadTree.OnAutoTestComplete += QuadTree_OnAutoTestComplete;
+            m_ProgramManager.QuadTree.OnAutoTestStepComplete += QuadTree_OnAutoTestStepComplete;
             FFmpegDownloader.GetLatestVersion(FFmpegVersion.Full);
+        }
+
+        private void QuadTree_OnAutoTestStepComplete(object source, AutoTestStepCompleteArgs e)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                //Lb_AutoTestStatCurrentThreadCount.Content = $"{e.GetCurrentThreadCount()}/{e.GetTotalThreadCount()}"; 
+                //    TimeSpan elapsedTime = e.GetElapsedTime();
+                   // Lb_AutoTestStatElapsedTime.Content = $"{elapsedTime.Minutes} min, {elapsedTime.Seconds} sec, {elapsedTime.Milliseconds}";
+                   // Lb_AutoTestStatTimeForLastTest.Content = e.GetLastThreadExecTime();
+                }), DispatcherPriority.Normal);
         }
 
         private void QuadTree_OnAutoTestComplete(object source, AutoTestCompleteArgs e)
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
+                Btn_StartAutoTest.IsEnabled = true;
                 GenerateChartSeries(e.GetParlLevels(), e.GetExecTimes());
             }), DispatcherPriority.Normal);
         }
@@ -366,6 +379,7 @@ namespace Parallel_N_Body
 
         private void Btn_StartAutoTest_OnClick(object sender, RoutedEventArgs e)
         {
+            Btn_StartAutoTest.IsEnabled = false;
             m_ProgramManager.QuadTree.SetAutoConfigShouldStopTest(false);
             m_ProgramManager.QuadTree.StartAutoTest();
         }
@@ -391,7 +405,7 @@ namespace Parallel_N_Body
             Lc_LevelOfParallelism.AxisX.Add(new Axis() { Title = "Thread Count", Labels = threadCounts });
 
             Lc_LevelOfParallelism.AxisY.RemoveAt(0);
-            Lc_LevelOfParallelism.AxisY.Add(new Axis() { Title = "Level of Parallelism"});
+            Lc_LevelOfParallelism.AxisY.Add(new Axis() { Title = "Level of Parallelism" });
 
             Lc_LevelOfParallelism.LegendLocation = LegendLocation.Bottom;
             Lc_LevelOfParallelism.Series.Clear();
@@ -401,7 +415,7 @@ namespace Parallel_N_Body
                 Title = "Level of Parallelism",
                 Values = new ChartValues<double>(parlLevels),
                 PointGeometry = DefaultGeometries.Circle
-            }) ;
+            });
 
             Lc_LevelOfParallelism.Series = parlLevelsSeries;
 

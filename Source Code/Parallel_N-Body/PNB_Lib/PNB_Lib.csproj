@@ -95,7 +95,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoTestCompleteArgs.cs" />
+    <Compile Include="AutoTestArgs.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ProgramManager.cs" />

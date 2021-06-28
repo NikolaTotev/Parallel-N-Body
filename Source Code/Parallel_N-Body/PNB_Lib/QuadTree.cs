@@ -21,6 +21,7 @@ namespace PNB_Lib
 {
     public delegate void SimFrameCompleteEventHandler(object source, SimFrameCompleteArgs e);
     public delegate void AutoTestCompleteHandler(object source, AutoTestCompleteArgs e);
+    public delegate void AutoTestStepComplete(object source, AutoTestStepCompleteArgs e);
 
     public enum SimulationStep
     {
@@ -38,7 +39,6 @@ namespace PNB_Lib
         private float m_Theta = 2f;
         private float m_G = (float)(6.67408 * Pow(10, -7));
         private float m_Softening = 0.9f;
-        private Stopwatch m_Sw;
         private float m_Dt = 0.4f;
         private float m_Boost = 3000;
 
@@ -67,6 +67,7 @@ namespace PNB_Lib
 
         public event SimFrameCompleteEventHandler OnFrameComplete;
         public event AutoTestCompleteHandler OnAutoTestComplete;
+        public event AutoTestStepComplete OnAutoTestStepComplete;
         public event EventHandler OnSimulationComplete;
         private Thread m_SimulationThread;
 
@@ -77,7 +78,7 @@ namespace PNB_Lib
             m_SimSpaceYLen = simSpaceY;
             m_ParticleMap = new bool[m_SimSpaceXLen, m_SimSpaceYLen];
             OnSimulationComplete += QuadTree_OnSimulationComplete;
-            m_Sw = new Stopwatch();
+
         }
 
         private void QuadTree_OnSimulationComplete(object sender, EventArgs e)
@@ -299,28 +300,32 @@ namespace PNB_Lib
 
         public void StartAutoTest()
         {
-            Stopwatch frameSw = new Stopwatch();
+            int prevMilis;
+            int currentMilis;
+            Stopwatch frameSw = Stopwatch.StartNew();
+            //Stopwatch totalSw = new Stopwatch();
             m_IsParallel = true;
             int repeatFactor = 10;
             double execTimeSum = 0;
             double avgExecTime;
             List<double> execTimes = new List<double>();
+            //totalSw.Start();
             for (int i = 0; i < m_AutoConfigMaxThreads; i++)
             {
                 for (int j = 0; j < repeatFactor; j++)
                 {
-                    frameSw.Reset();
-                    frameSw.Start();
-                    PrepareStepExecution(m_ThreadConfigThreadMode, i+1, SimulationStep.first);
-                    PairwiseForceCalculation(m_IsParallel, i+1);
-                    PrepareStepExecution(m_ThreadConfigThreadMode, i+1, SimulationStep.second);
-                    frameSw.Stop();
+                    frameSw = Stopwatch.StartNew();
+                    PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.first);
+                    PairwiseForceCalculation(m_IsParallel, i + 1);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.second);
                     execTimeSum += frameSw.Elapsed.Milliseconds;
                 }
 
                 avgExecTime = execTimeSum / repeatFactor;
                 execTimes.Add(avgExecTime);
+                // AutoTestStepCompleteArgs args = new AutoTestStepCompleteArgs(i, m_AutoConfigMaxThreads, totalSw.Elapsed, avgExecTime);
                 execTimeSum = 0;
+                //OnAutoTestStepComplete?.Invoke(this, args);
             }
 
             GenerateChartSeriesData(execTimes);
@@ -366,19 +371,15 @@ namespace PNB_Lib
 
         public void PWISimulation()
         {
-            Stopwatch frameSw = new Stopwatch();
 
             int imageNum = 0;
 
             for (int i = 0; i < m_SimConfigNumberOfFrames; i++)
             {
 
-                frameSw.Start();
                 PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
                 PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
                 PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
-                frameSw.Stop();
-                frameSw.Reset();
 
                 TimeSpan defaultTS = new TimeSpan();
                 Debug.WriteLine($"On Frame {i}");
@@ -595,7 +596,7 @@ namespace PNB_Lib
         }
 
 
-        public TimeSpan PairwiseForceCalculation(bool isParalell, int threadCount = 1)
+        public void PairwiseForceCalculation(bool isParalell, int threadCount = 1)
         {
 
             foreach (Particle currentParticle in m_Particles)
@@ -607,8 +608,6 @@ namespace PNB_Lib
             switch (isParalell)
             {
                 case true:
-                    m_Sw.Reset();
-                    m_Sw.Start();
                     Parallel.ForEach(m_Particles, new ParallelOptions { MaxDegreeOfParallelism = threadCount },
                         currentParticle =>
                         {
@@ -620,11 +619,8 @@ namespace PNB_Lib
                                 }
                             }
                         });
-                    m_Sw.Stop();
                     break;
                 case false:
-                    m_Sw.Reset();
-                    m_Sw.Start();
                     foreach (Particle currentParticle in m_Particles)
                     {
                         currentParticle.AccelerationComponents.X = 0;
@@ -639,11 +635,8 @@ namespace PNB_Lib
 
                         }
                     }
-                    m_Sw.Stop();
                     break;
             }
-
-            return m_Sw.Elapsed;
         }
 
         public void BarnesHutForceCalculation()

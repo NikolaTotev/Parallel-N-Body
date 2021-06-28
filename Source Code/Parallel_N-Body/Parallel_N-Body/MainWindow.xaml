@@ -135,7 +135,7 @@
                             <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
 
-                        <RadioButton x:Name="Rb_PairwiseSelector" FontSize="15" Grid.Row="0"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  Content="Pairwise (Default)" VerticalContentAlignment="Center" Checked="Rb_PairwiseSelector_OnChecked">
+                        <RadioButton x:Name="Rb_PairwiseSelector" IsChecked="True" FontSize="15" Grid.Row="0"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  Content="Pairwise (Default)" VerticalContentAlignment="Center" Checked="Rb_PairwiseSelector_OnChecked">
                             <RadioButton.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="3"></Setter>
@@ -287,7 +287,7 @@
                         </CheckBox.Resources>
                     </CheckBox>
 
-                    <CheckBox x:Name="Cb_EnableMultiColorParticles"  Content="Use multicolor particles" FontSize="15" Grid.Row="5"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_EnableMultiColorParticles_OnChecked">
+                    <CheckBox x:Name="Cb_EnableMultiColorParticles" IsChecked="True" Content="Use multicolor particles" FontSize="15" Grid.Row="5"  FontFamily="{StaticResource Montserrat}" BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" HorizontalAlignment="Left" Checked="Cb_EnableMultiColorParticles_OnChecked">
                         <CheckBox.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -324,7 +324,7 @@
                         </StackPanel>
                     </Border>
 
-                    <RadioButton x:Name="Rb_AutoTestCustomThreads" FontSize="15" Grid.Row="2" Content="Auto test custom threads"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_AutoTestCustomThreads_OnChecked">
+                    <RadioButton x:Name="Rb_AutoTestCustomThreads" IsChecked="True" FontSize="15" Grid.Row="2" Content="Auto test custom threads"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_AutoTestCustomThreads_OnChecked">
                         <RadioButton.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
@@ -419,7 +419,7 @@
                         </StackPanel>
                     </Border>
 
-                    <RadioButton x:Name="Rb_UserCustomThreads" FontSize="15" Grid.Row="2" Content="Use custom threads"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_UserCustomThreads_OnChecked">
+                    <RadioButton x:Name="Rb_UserCustomThreads" IsChecked="True" FontSize="15" Grid.Row="2" Content="Use custom threads"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_UserCustomThreads_OnChecked">
                         <RadioButton.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="3"></Setter>
