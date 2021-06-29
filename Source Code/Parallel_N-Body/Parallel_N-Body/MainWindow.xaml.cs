@@ -82,7 +82,16 @@ namespace Parallel_N_Body
             m_ProgramManager.QuadTree.SetDrawFlagUseDifferentColors(true);
             m_ProgramManager.QuadTree.SetAutoConfigThreadMode(ThreadMode.customThreads);
             m_ProgramManager.QuadTree.SetThreadConfigThreadMode(ThreadMode.customThreads);
+            m_ProgramManager.QuadTree.OnPartitionComplete += QuadTree_OnPartitionComplete;
             FFmpegDownloader.GetLatestVersion(FFmpegVersion.Full);
+        }
+
+        private void QuadTree_OnPartitionComplete(object sender, EventArgs e)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    m_ProgramManager.QuadTree.CleanUpPartitionThread();
+                }), DispatcherPriority.Normal);
         }
 
         private void QuadTree_OnAutoTestStepComplete(object source, AutoTestStepCompleteArgs e)
@@ -107,7 +116,13 @@ namespace Parallel_N_Body
 
         private void QuadTree_OnSimulationComplete(object sender, EventArgs e)
         {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Btn_StartSimulation.IsEnabled = true;
+                Btn_StopSimulation.IsEnabled = false;
+            }), DispatcherPriority.Normal);
 
+           
         }
 
         private void QuadTree_OnFrameComplete(object source, SimFrameCompleteArgs e)
@@ -124,43 +139,10 @@ namespace Parallel_N_Body
 
         private void MainWindow_OnVideoGenerationComplete(object sender, EventArgs e)
         {
-            if (m_VideoGenerationThread != null && Thread.CurrentThread != m_VideoGenerationThread)
-            {
-                if (m_VideoGenerationThread.IsAlive)
-                {
-                    if (m_VideoGenerationThread.Join(3000))
-                    {
-                        Debug.WriteLine("Video generation thread joined!");
-                    }
-                    else
-                    {
-                        m_VideoGenerationThread.Abort();
-                    }
-                }
-            }
-
             Btn_GenerateVideo.IsEnabled = true;
             Btn_SelectSimSaveLocation.IsEnabled = true;
         }
-
-        private void MainWindow_OnSimulationComplete(object sender, EventArgs e)
-        {
-            if (m_SimulationThread != null)
-            {
-                if (m_SimulationThread.IsAlive)
-                {
-                    if (m_SimulationThread.Join(3000))
-                    {
-                        Debug.WriteLine("Simulation thread joined");
-                    }
-                    else
-                    {
-                        m_SimulationThread.Abort();
-                    }
-                }
-            }
-        }
-
+        
         private void MainWindow_OnFrameDraw(object sender, SimFrameCompleteArgs e)
         {
             string currentFrame = e.GetFrameNumber().ToString();
@@ -252,7 +234,7 @@ namespace Parallel_N_Body
 
         private void Btn_Partition_Click(object sender, RoutedEventArgs e)
         {
-            m_ProgramManager.QuadTree.Partition();
+            m_ProgramManager.QuadTree.StartParition();
         }
 
         private void Btn_Reset_Click(object sender, RoutedEventArgs e)
@@ -396,7 +378,7 @@ namespace Parallel_N_Body
 
         private void Btn_StartAutoTest_OnClick(object sender, RoutedEventArgs e)
         {
-            
+
             if (m_ProgramManager.QuadTree.GetParticleCount() > 250)
             {
                 Btn_StartAutoTest.IsEnabled = false;
@@ -408,7 +390,7 @@ namespace Parallel_N_Body
             {
                 Lb_ErrorMsg.Content = "Use more than 250 particles \n for Auto Test";
             }
-            
+
         }
 
         private void Btn_StopAutoTest_OnClick(object sender, RoutedEventArgs e)
@@ -569,72 +551,16 @@ namespace Parallel_N_Body
 
         private void Btn_StartSimulation_OnClick(object sender, RoutedEventArgs e)
         {
+            Btn_StartSimulation.IsEnabled = false;
+            Btn_StopSimulation.IsEnabled = true;
             m_ProgramManager.QuadTree.SetSimConfigShouldStopSim(false);
-            m_SimulationThread = new Thread(StartSimulation);
-            m_SimulationThread.Name = "SimulationThread";
-            m_SimulationThread.Start();
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                m_ProgramManager.QuadTree.StartSimulation();
+            }), DispatcherPriority.Normal);
+
         }
-
-        public void StartSimulation()
-        {
-
-            m_ProgramManager.QuadTree.StartSimulation();
-            //int imageNum = 0;
-
-            //for (int i = 0; i < m_SimFrameCount; i++)
-            //{
-            //    m_ProgramManager.QuadTree.StartSimulation();
-
-            //    TimeSpan defaultTS = new TimeSpan();
-            //    Debug.WriteLine($"On Frame {i}");
-
-            //    SKImageInfo info = new SKImageInfo(737, 979);
-            //    SKBitmap newBitm = new SKBitmap(info);
-            //    SKCanvas canvas = new SKCanvas(newBitm);
-            //    canvas.Clear(SKColors.White);
-
-            //    foreach (Particle particle in m_ProgramManager.QuadTree.GetParticles())
-            //    {
-
-            //        var paint = new SKPaint
-            //        {
-            //            Color = particle.particleColor.ToSKColor(),
-            //            IsAntialias = true,
-            //            Style = SKPaintStyle.Fill,
-            //        };
-            //        canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
-            //    }
-
-
-            //    SKImage image = SKImage.FromBitmap(newBitm);
-            //    var data = image.Encode();
-
-
-            //    using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/{imageNum}.png"))
-            //    {
-            //        // save the data to a stream
-            //        data.SaveTo(stream);
-            //        stream.Close();
-            //        stream.Dispose();
-            //        imageNum++;
-            //    }
-
-            //    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            //    {
-            //        SimFrameCompleteArgs args = new SimFrameCompleteArgs(defaultTS, i);
-            //        RaiseEventOnUIThread(OnFrameDraw, new object[] { null, args });
-            //    }), DispatcherPriority.Normal);
-
-
-
-            //}
-
-            //Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            //{
-            //    RaiseEventOnUIThread(OnSimulationComplete, new object[] { null, new EventArgs() });
-            //}), DispatcherPriority.Normal);
-        }
-
+        
         void VideoGenerationParentFunction()
         {
             string dir = "D:/Documents/Project Files/N-Body/SimImages/";

@@ -69,7 +69,9 @@ namespace PNB_Lib
         public event AutoTestCompleteHandler OnAutoTestComplete;
         public event AutoTestStepComplete OnAutoTestStepComplete;
         public event EventHandler OnSimulationComplete;
+        public event EventHandler OnPartitionComplete;
         private Thread m_SimulationThread;
+        private Thread m_PartitionThread;
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {
@@ -77,24 +79,28 @@ namespace PNB_Lib
             m_SimSpaceXLen = simSpaceX;
             m_SimSpaceYLen = simSpaceY;
             m_ParticleMap = new bool[m_SimSpaceXLen, m_SimSpaceYLen];
-            OnSimulationComplete += QuadTree_OnSimulationComplete;
 
+            ResetRootNode();
         }
 
-        private void QuadTree_OnSimulationComplete(object sender, EventArgs e)
+        public void CleanUpPartitionThread()
         {
-            if (m_SimulationThread != null)
+            if (m_PartitionThread != null && Thread.CurrentThread != m_PartitionThread)
             {
-                if (m_SimulationThread.IsAlive)
+                if (m_PartitionThread.IsAlive)
                 {
-                    if (m_SimulationThread.Join(3000))
+                    if (m_PartitionThread.Join(1000))
                     {
-                        Debug.WriteLine("Simulation thread joined");
+                        Debug.WriteLine("Partition thread joined!");
                     }
                     else
                     {
-                        m_SimulationThread.Abort();
+                        m_PartitionThread.Abort();
                     }
+                }
+                else
+                {
+                    m_PartitionThread = null;
                 }
             }
         }
@@ -298,10 +304,6 @@ namespace PNB_Lib
             }
         }
 
-        public void Partition()
-        {
-
-        }
 
         public void StartAutoTest()
         {
@@ -320,9 +322,9 @@ namespace PNB_Lib
                 for (int j = 0; j < repeatFactor; j++)
                 {
                     frameSw = Stopwatch.StartNew();
-                    PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.first);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.first, false);
                     PairwiseForceCalculation(m_IsParallel, i + 1);
-                    PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.second);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.second, false);
                     execTimeSum += frameSw.Elapsed.Milliseconds;
                 }
 
@@ -357,7 +359,7 @@ namespace PNB_Lib
             {
                 double parallelismLevel = CalculateParallelismLevel(execTimes[0], execTimes[i]);
                 parallelismLevels.Add(parallelismLevel);
-                effectivenessLevels.Add(CalculateEffectivenessLevels(parallelismLevel, i+1));
+                effectivenessLevels.Add(CalculateEffectivenessLevels(parallelismLevel, i + 1));
 
             }
 
@@ -365,36 +367,73 @@ namespace PNB_Lib
             OnAutoTestComplete?.Invoke(this, args);
         }
 
+        public void StartParition()
+        {
+            m_PartitionThread = new Thread(Partition);
+            m_PartitionThread.Name = "PartitionThread";
+            Debug.WriteLine($"Preparing to start partition thread on {Thread.CurrentThread.Name}");
+            m_PartitionThread.Start();
+        }
 
+
+
+        private void Partition()
+        {
+            Debug.WriteLine($"Starting partition thread on thread {Thread.CurrentThread.Name}");
+            for (int q = 0; q < m_Particles.Count; q++)
+            {
+                //Debug.WriteLine($"Adding particle {q}...");
+                m_RootNode.AddParticle(m_Particles[q]);
+
+                if (q % 5 == 0)
+                {
+                    //TODO Add events for partition status.
+                }
+            }
+
+            OnPartitionComplete?.Invoke(null, new EventArgs());
+        }
 
         public void StartSimulation()
         {
             switch (m_AlgToUse)
             {
                 case InteractionAlgorithm.PWI:
-                    m_SimulationThread = new Thread(PWISimulation);
+                    m_SimulationThread = new Thread((() => ExecuteSimulation(false)));
                     m_SimulationThread.Name = "SimulationThread";
                     m_SimulationThread.Start();
                     break;
                 case InteractionAlgorithm.BH:
-                    //TODO Implement BH alg.
+                    m_SimulationThread = new Thread((() => ExecuteSimulation(true)));
+                    m_SimulationThread.Name = "SimulationThread";
+                    m_SimulationThread.Start();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        public void PWISimulation()
+        private void ExecuteSimulation(bool isBH)
         {
 
             int imageNum = 0;
 
             for (int i = 0; i < m_SimConfigNumberOfFrames; i++)
             {
-
-                PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first);
-                PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
-                PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second);
+                if (!isBH)
+                {
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, false);
+                    PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second, false);
+                }
+                else
+                {
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, false);
+                    Partition();
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, isBH);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second, false);
+                    ResetRootNode();
+                }
 
                 TimeSpan defaultTS = new TimeSpan();
                 Debug.WriteLine($"On Frame {i}");
@@ -437,8 +476,7 @@ namespace PNB_Lib
             OnSimulationComplete?.Invoke(this, EventArgs.Empty);
         }
 
-
-        public void PrepareStepExecution(ThreadMode threadMode, int threadCount, SimulationStep simulationStep)
+        public void PrepareStepExecution(ThreadMode threadMode, int threadCount, SimulationStep simulationStep, bool isBH)
         {
             if (m_IsParallel)
             {
@@ -447,8 +485,8 @@ namespace PNB_Lib
                 switch (threadMode)
                 {
                     case ThreadMode.customThreads:
-                        List<Thread> workerThreads = new List<Thread>();
 
+                        List<Thread> workerThreads = new List<Thread>();
                         List<int> threadStartIndecencies = new List<int>(threadCount);
                         List<int> threadEndIndecencies = new List<int>();
 
@@ -477,19 +515,26 @@ namespace PNB_Lib
                             int startIndex = threadStartIndecencies[i];
                             int endIndex = threadEndIndecencies[i];
                             Thread worker;
-
-                            switch (simulationStep)
+                            if (!isBH)
                             {
-                                case SimulationStep.first:
-                                    worker = new Thread((() => PartitionMultithreadExecution(startIndex, endIndex, simulationStep)));
-                                    break;
-                                case SimulationStep.second:
-                                    worker = new Thread((() => PartitionMultithreadExecution(startIndex, endIndex, simulationStep)));
-                                    break;
-                                default:
-                                    worker = new Thread((ErrorInSimPart));
-                                    break;
+                                switch (simulationStep)
+                                {
+                                    case SimulationStep.first:
+                                        worker = new Thread((() => PartitionMultithreadExecution(startIndex, endIndex, simulationStep)));
+                                        break;
+                                    case SimulationStep.second:
+                                        worker = new Thread((() => PartitionMultithreadExecution(startIndex, endIndex, simulationStep)));
+                                        break;
+                                    default:
+                                        worker = new Thread((ErrorInSimPart));
+                                        break;
+                                }
                             }
+                            else
+                            {
+                                worker = new Thread((() => PartitionBHExecution(startIndex, endIndex)));
+                            }
+
 
                             worker.Priority = ThreadPriority.Highest;
                             worker.Name = $"Thread_{i}";
@@ -520,14 +565,26 @@ namespace PNB_Lib
 
                                 Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
-                                switch (simulationStep)
+                                if (!isBH)
                                 {
-                                    case SimulationStep.first:
-                                        ExecuteFirstSimulationStepCalculations(currentParticle);
-                                        break;
-                                    case SimulationStep.second:
-                                        ExecuteSecondSimulationStepCalculations(currentParticle);
-                                        break;
+                                    switch (simulationStep)
+                                    {
+                                        case SimulationStep.first:
+                                            ExecuteFirstSimulationStepCalculations(currentParticle);
+                                            break;
+                                        case SimulationStep.second:
+                                            ExecuteSecondSimulationStepCalculations(currentParticle);
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    currentParticle.AccelerationComponents.X = 0;
+                                    currentParticle.AccelerationComponents.Y = 0;
+                                    BarnesHutForceCalculation(currentParticle, m_RootNode.SeChild);
+                                    BarnesHutForceCalculation(currentParticle, m_RootNode.NeChild);
+                                    BarnesHutForceCalculation(currentParticle, m_RootNode.NwChild);
+                                    BarnesHutForceCalculation(currentParticle, m_RootNode.SwChild);
                                 }
 
                             });
@@ -654,9 +711,86 @@ namespace PNB_Lib
             }
         }
 
-        public void BarnesHutForceCalculation()
+        /// <summary>
+        /// Calculate the forces on the particles in the AllParticles array starting from index <startIndex> to <endIndex> (inclusive)
+        /// using the BH algorithm for traversing the tree.
+        /// For calculating forces using 1 thread, start index is set to 0 and end index the last index of the array.
+        /// For calculating forces using multiple threads, partitioning must be done by the calling function
+        /// </summary>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        private void PartitionBHExecution(int startIndex, int endIndex)
         {
-            //TODO Implement BH Force Calculation Function
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                Particle currentParticle = m_Particles[i];
+                currentParticle.AccelerationComponents.X = 0;
+                currentParticle.AccelerationComponents.Y = 0;
+                BarnesHutForceCalculation(currentParticle, m_RootNode.SeChild);
+                BarnesHutForceCalculation(currentParticle, m_RootNode.NeChild);
+                BarnesHutForceCalculation(currentParticle, m_RootNode.NwChild);
+                BarnesHutForceCalculation(currentParticle, m_RootNode.SwChild);
+
+            }
+        }
+
+        public void BarnesHutForceCalculation(Particle currentParticle, Node startNode)
+        {
+
+            List<float> distanceToNodeInfo = new List<float>();
+            float currentAccelerationX;
+            float currentAccelerationY;
+            float inv_r2 = 0;
+
+
+            if (startNode.nodeParticles.Count == 0)
+            {
+                return;
+            }
+
+            if (startNode.nodeParticles.Count == 1)
+            {
+                distanceToNodeInfo = CalculateDistanceBetweenPoints(currentParticle.CenterPoint, startNode.nodeParticles[0].CenterPoint);
+            }
+            else
+            {
+                distanceToNodeInfo = CalculateDistanceBetweenPoints(currentParticle.CenterPoint, startNode.centerOfMass);
+            }
+
+            if (IsDistanceOverDoubleSideLenght(startNode.SideLength, distanceToNodeInfo[0]) || startNode.nodeParticles.Count == 1)
+            {
+
+                float force = GravitationalForceCalculation(distanceToNodeInfo[0], currentParticle.Mass, startNode.totalWeight);
+
+
+
+                inv_r2 = (float)Pow((Pow(distanceToNodeInfo[3], 2) + Pow(distanceToNodeInfo[4], 2) + Pow(m_Softening, 2)), -1.5);
+
+                if (startNode.nodeParticles.Count == 1)
+                {
+                    currentAccelerationX = m_G * (distanceToNodeInfo[3] * inv_r2) * startNode.nodeParticles[0].Mass;
+                    currentAccelerationY = m_G * (distanceToNodeInfo[4] * inv_r2) * startNode.nodeParticles[0].Mass;
+                }
+                else
+                {
+                    currentAccelerationX = m_G * (distanceToNodeInfo[3] * inv_r2) * startNode.totalWeight;
+                    currentAccelerationY = m_G * (distanceToNodeInfo[4] * inv_r2) * startNode.totalWeight;
+                }
+
+                if (startNode.nodeParticles[0] != currentParticle)
+                {
+                    currentParticle.AccelerationComponents.X += currentAccelerationX;
+                    currentParticle.AccelerationComponents.Y += currentAccelerationY;
+                }
+
+            }
+            else
+            {
+                BarnesHutForceCalculation(currentParticle, startNode.SeChild);
+                BarnesHutForceCalculation(currentParticle, startNode.NeChild);
+                BarnesHutForceCalculation(currentParticle, startNode.NwChild);
+                BarnesHutForceCalculation(currentParticle, startNode.SwChild);
+            }
         }
 
         public void ParticleToParticleForceCalculation(Particle targetParticle, Particle effector)
@@ -718,8 +852,8 @@ namespace PNB_Lib
         public void ResetRootNode()
         {
             m_RootNode = null;
-            PointF bottomLeft = new Point(0, 737);
-            PointF topRight = new Point(737, 0);
+            PointF bottomLeft = new Point(0, m_SimSpaceYLen);
+            PointF topRight = new Point(m_SimSpaceXLen, 0);
             m_RootNode = new Node(topRight, bottomLeft);
             m_RootNode.IsRoot = true;
         }
