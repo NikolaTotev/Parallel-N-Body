@@ -342,16 +342,26 @@ namespace PNB_Lib
 
         }
 
+        public double CalculateEffectivenessLevels(double parallelismLevel, double numberOfThreads)
+        {
+            return parallelismLevel / numberOfThreads;
+
+        }
+
         public void GenerateChartSeriesData(List<double> execTimes)
         {
             List<double> parallelismLevels = new List<double>();
+            List<double> effectivenessLevels = new List<double>();
 
             for (int i = 0; i < execTimes.Count; i++)
             {
-                parallelismLevels.Add(CalculateParallelismLevel(execTimes[0], execTimes[i]));
+                double parallelismLevel = CalculateParallelismLevel(execTimes[0], execTimes[i]);
+                parallelismLevels.Add(parallelismLevel);
+                effectivenessLevels.Add(CalculateEffectivenessLevels(parallelismLevel, i+1));
+
             }
 
-            AutoTestCompleteArgs args = new AutoTestCompleteArgs(parallelismLevels, execTimes);
+            AutoTestCompleteArgs args = new AutoTestCompleteArgs(parallelismLevels, execTimes, effectivenessLevels);
             OnAutoTestComplete?.Invoke(this, args);
         }
 

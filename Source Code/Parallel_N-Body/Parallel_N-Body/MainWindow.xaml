@@ -573,11 +573,13 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
 
-                <lvc:CartesianChart x:Name="Lc_LevelOfParallelism" Grid.Column="0" MouseDoubleClick="Lc_LevelOfParallelism_OnMouseDoubleClick"></lvc:CartesianChart>
-                <lvc:CartesianChart x:Name="Lc_ExecutionTime" Grid.Column="1" MouseDoubleClick="Lc_ExecutionTime_OnMouseDoubleClick"></lvc:CartesianChart>
+                <lvc:CartesianChart x:Name="Lc_ExecutionTime" Grid.Column="0" MouseDoubleClick="Lc_ExecutionTime_OnMouseDoubleClick"></lvc:CartesianChart>
+                <lvc:CartesianChart x:Name="Lc_LevelOfParallelism" Grid.Column="1" MouseDoubleClick="Lc_LevelOfParallelism_OnMouseDoubleClick"></lvc:CartesianChart>
+                <lvc:CartesianChart x:Name="Lc_Effectiveness" Grid.Column="2" MouseDoubleClick="Lc_Effectiveness_OnMouseDoubleClick"></lvc:CartesianChart>
             </Grid>
 
 
