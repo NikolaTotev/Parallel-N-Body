@@ -42,13 +42,19 @@ namespace PNB_Lib
 
     public class AutoTestCompleteArgs : EventArgs
     {
-        private List<double> m_ParallelismLevels;
         private List<double> m_ExecTimes;
+        private List<double> m_ParallelismLevels;
+        private List<double> m_EffectivenessLevels;
 
-        public AutoTestCompleteArgs(List<double> parallelismLevels, List<double> execTimes)
+        public AutoTestCompleteArgs(List<double> parallelismLevels, List<double> execTimes, List<double> effectivenessLevels)
         {
             m_ParallelismLevels = parallelismLevels;
+            m_EffectivenessLevels = effectivenessLevels;
             m_ExecTimes = execTimes;
+        }
+        public List<double> GetExecTimes()
+        {
+            return m_ExecTimes;
         }
 
         public List<double> GetParlLevels()
@@ -56,9 +62,11 @@ namespace PNB_Lib
             return m_ParallelismLevels;
         }
 
-        public List<double> GetExecTimes()
+        public List<double> GetEffectivenessLevels()
         {
-            return m_ExecTimes;
+            return m_EffectivenessLevels;
         }
+
+       
     }
 }

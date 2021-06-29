@@ -101,7 +101,7 @@ namespace Parallel_N_Body
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 Btn_StartAutoTest.IsEnabled = true;
-                GenerateChartSeries(e.GetParlLevels(), e.GetExecTimes());
+                GenerateChartSeries(e.GetParlLevels(), e.GetExecTimes(), e.GetEffectivenessLevels());
             }), DispatcherPriority.Normal);
         }
 
@@ -416,10 +416,11 @@ namespace Parallel_N_Body
             m_ProgramManager.QuadTree.SetAutoConfigShouldStopTest(true);
         }
 
-        private void GenerateChartSeries(List<double> parlLevels, List<double> execTimes)
+        private void GenerateChartSeries(List<double> parlLevels, List<double> execTimes, List<double> effectivenessLevels)
         {
-            SeriesCollection parlLevelsSeries = new SeriesCollection();
             SeriesCollection execTimeSeries = new SeriesCollection();
+            SeriesCollection parlLevelsSeries = new SeriesCollection();
+            SeriesCollection effectivenessLevelsSeries = new SeriesCollection();
 
             List<string> threadCounts = new List<string>();
 
@@ -428,6 +429,26 @@ namespace Parallel_N_Body
                 threadCounts.Add($"{i + 1}");
             }
 
+            //Exec times chart setup
+            Lc_ExecutionTime.AxisX.RemoveAt(0);
+            Lc_ExecutionTime.AxisX.Add(new Axis() { Title = "Thread Count", Labels = threadCounts });
+
+            Lc_ExecutionTime.AxisY.RemoveAt(0);
+            Lc_ExecutionTime.AxisY.Add(new Axis() { Title = "Execution times" });
+
+            Lc_ExecutionTime.LegendLocation = LegendLocation.Bottom;
+            Lc_ExecutionTime.Series.Clear();
+
+            execTimeSeries.Add(new LineSeries()
+            {
+                Title = "Execution times",
+                Values = new ChartValues<double>(execTimes),
+                PointGeometry = DefaultGeometries.Circle
+            });
+
+            Lc_ExecutionTime.Series = execTimeSeries;
+
+            //Levels of parallelism chart setup
             Lc_LevelOfParallelism.AxisX.RemoveAt(0);
             Lc_LevelOfParallelism.AxisX.Add(new Axis() { Title = "Thread Count", Labels = threadCounts });
 
@@ -446,25 +467,28 @@ namespace Parallel_N_Body
 
             Lc_LevelOfParallelism.Series = parlLevelsSeries;
 
+            //Levels of effectiveness chart setup
+            Lc_Effectiveness.AxisX.RemoveAt(0);
+            Lc_Effectiveness.AxisX.Add(new Axis() { Title = "Thread Count", Labels = threadCounts });
 
+            Lc_Effectiveness.AxisY.RemoveAt(0);
+            Lc_Effectiveness.AxisY.Add(new Axis() { Title = "Level of Effectiveness" });
 
-            Lc_ExecutionTime.AxisX.RemoveAt(0);
-            Lc_ExecutionTime.AxisX.Add(new Axis() { Title = "Thread Count", Labels = threadCounts });
+            Lc_Effectiveness.LegendLocation = LegendLocation.Bottom;
+            Lc_Effectiveness.Series.Clear();
 
-            Lc_ExecutionTime.AxisY.RemoveAt(0);
-            Lc_ExecutionTime.AxisY.Add(new Axis() { Title = "Execution times" });
-
-            Lc_ExecutionTime.LegendLocation = LegendLocation.Bottom;
-            Lc_ExecutionTime.Series.Clear();
-
-            execTimeSeries.Add(new LineSeries()
+            effectivenessLevelsSeries.Add(new LineSeries()
             {
-                Title = "Execution times",
-                Values = new ChartValues<double>(execTimes),
+                Title = "Level of Effectiveness",
+                Values = new ChartValues<double>(effectivenessLevels),
                 PointGeometry = DefaultGeometries.Circle
             });
 
-            Lc_ExecutionTime.Series = execTimeSeries;
+            Lc_Effectiveness.Series = effectivenessLevelsSeries;
+
+
+
+
         }
 
         #endregion
@@ -769,5 +793,10 @@ namespace Parallel_N_Body
             }
         }
         #endregion
+
+        private void Lc_Effectiveness_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
