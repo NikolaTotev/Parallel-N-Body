@@ -317,12 +317,28 @@
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="Auto Test Settings" FontFamily="{StaticResource Lilita}" Foreground="{StaticResource NormalPurpleBrush}" FontSize="16"></TextBlock>
-                    <Border Grid.Row="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
-                        <StackPanel Margin="5"
-                                    Orientation="Horizontal">
-                            <TextBox  x:Name="Tb_MaxThreadsForAuto" Text="6" TextChanged="Tb_MaxThreadsForAuto_OnTextChanged" GotFocus="Tb_MaxThreadsForAuto_OnGotFocus" LostFocus="Tb_MaxThreadsForAuto_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
-                        </StackPanel>
-                    </Border>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
+                            <StackPanel Margin="5"
+                                        Orientation="Horizontal">
+                                <TextBox  x:Name="Tb_MaxThreadsForAuto" Text="6" TextChanged="Tb_MaxThreadsForAuto_OnTextChanged" GotFocus="Tb_MaxThreadsForAuto_OnGotFocus" LostFocus="Tb_MaxThreadsForAuto_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1"  BorderBrush="Transparent" Background="White" BorderThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center" Effect="{StaticResource DropShadow}" CornerRadius="10" Padding="3"  >
+                            <StackPanel Margin="5"
+                                        Orientation="Horizontal">
+                                <TextBox  x:Name="Tb_RepeatFactor" Text="2" TextChanged="Tb_RepeatFactor_OnTextChanged" GotFocus="Tb_RepeatFactor_OnGotFocus" LostFocus="Tb_RepeatFactor_OnLostFocus" BorderBrush="Transparent"  Margin="3 0 0 0" FontFamily="{StaticResource Montserrat}" FontStyle="Normal" FontWeight="Medium" FontSize="15" Foreground="{StaticResource TextboxPrompt}" Width="200" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                   
 
                     <RadioButton x:Name="Rb_AutoTestCustomThreads" IsChecked="True" FontSize="15" Grid.Row="2" Content="Auto test custom threads"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_AutoTestCustomThreads_OnChecked">
                         <RadioButton.Resources>

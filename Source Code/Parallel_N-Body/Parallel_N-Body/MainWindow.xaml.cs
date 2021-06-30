@@ -55,6 +55,7 @@ namespace Parallel_N_Body
         private string m_PrevAutoConfigMaxThreads;
         private string m_PrevThreadConfigMaxThreads;
         private string m_PrevSimConfigNumberOfFrames;
+        private string m_PrevRepeatFactor;
         private int m_SimFrameCount;
 
         private SKCanvas m_SimCanvas;
@@ -63,6 +64,8 @@ namespace Parallel_N_Body
         //public event SimFrameCompleteEventHandler OnFrameDraw;
         //public event EventHandler OnSimulationComplete;
         public event EventHandler OnVideoGenerationComplete;
+
+        private bool m_DrawPartition;
         public MainWindow()
         {
             InitializeComponent();
@@ -91,6 +94,8 @@ namespace Parallel_N_Body
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     m_ProgramManager.QuadTree.CleanUpPartitionThread();
+                    m_DrawPartition = true;
+                    skg_SimGraphics.InvalidateVisual();
                 }), DispatcherPriority.Normal);
         }
 
@@ -98,10 +103,10 @@ namespace Parallel_N_Body
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                Lb_AutoTestStatCurrentThreadCount.Content = $"{e.GetCurrentThreadCount()}/{e.GetTotalThreadCount()}";
+                Lb_AutoTestStatCurrentThreadCount.Content = $"Executing test: {e.GetCurrentThreadCount()}/{e.GetTotalThreadCount()}";
                 TimeSpan elapsedTime = e.GetElapsedTime();
-                Lb_AutoTestStatElapsedTime.Content = $"{elapsedTime.Minutes} min, {elapsedTime.Seconds} sec, {elapsedTime.Milliseconds}";
-                Lb_AutoTestStatTimeForLastTest.Content = e.GetLastThreadExecTime();
+                Lb_AutoTestStatElapsedTime.Content = $"Elapsed time: {elapsedTime.Minutes} min, {elapsedTime.Seconds} sec, {elapsedTime.Milliseconds}";
+                Lb_AutoTestStatTimeForLastTest.Content = $"Time for last test: {e.GetLastThreadExecTime()}";
             }), DispatcherPriority.Normal);
         }
 
@@ -122,7 +127,7 @@ namespace Parallel_N_Body
                 Btn_StopSimulation.IsEnabled = false;
             }), DispatcherPriority.Normal);
 
-           
+
         }
 
         private void QuadTree_OnFrameComplete(object source, SimFrameCompleteArgs e)
@@ -142,7 +147,7 @@ namespace Parallel_N_Body
             Btn_GenerateVideo.IsEnabled = true;
             Btn_SelectSimSaveLocation.IsEnabled = true;
         }
-        
+
         private void MainWindow_OnFrameDraw(object sender, SimFrameCompleteArgs e)
         {
             string currentFrame = e.GetFrameNumber().ToString();
@@ -222,6 +227,7 @@ namespace Parallel_N_Body
         private void Btn_Generate_Click(object sender, RoutedEventArgs e)
         {
             m_IsStartUp = false;
+            m_DrawPartition = false;
             if (m_ProgramManager.QuadTree.GetParticleCount() > 250)
             {
                 Lb_ErrorMsg.Content = "";
@@ -366,6 +372,37 @@ namespace Parallel_N_Body
             }
         }
 
+        private void Tb_RepeatFactor_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(Tb_RepeatFactor.Text))
+            {
+                try
+                {
+                    m_ProgramManager.QuadTree.SetAutoConfigRepeatFactor(int.Parse(Tb_RepeatFactor.Text));
+                }
+                catch (Exception exception)
+                {
+                    Debug.Print($"INPUT EXCEPTION: Tb_NumberOfParticles OnTextChanged threw an exception. Text was: {Tb_RepeatFactor.Text}");
+                }
+
+            }
+        }
+
+        private void Tb_RepeatFactor_OnGotFocus(object sender, RoutedEventArgs e)
+        {
+
+            m_PrevRepeatFactor = Tb_RepeatFactor.Text;
+            Tb_RepeatFactor.Text = "";
+        }
+
+        private void Tb_RepeatFactor_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            if (Tb_RepeatFactor.Text == "")
+            {
+                Tb_RepeatFactor.Text = m_PrevRepeatFactor;
+            }
+        }
+
         private void Rb_AutoTestCustomThreads_OnChecked(object sender, RoutedEventArgs e)
         {
             m_ProgramManager.QuadTree.SetAutoConfigThreadMode(ThreadMode.customThreads);
@@ -384,7 +421,7 @@ namespace Parallel_N_Body
                 Btn_StartAutoTest.IsEnabled = false;
                 Lb_ErrorMsg.Content = "";
                 m_ProgramManager.QuadTree.SetAutoConfigShouldStopTest(false);
-                m_ProgramManager.QuadTree.StartAutoTest();
+                m_ProgramManager.QuadTree.AutoTest();
             }
             else
             {
@@ -560,7 +597,7 @@ namespace Parallel_N_Body
             }), DispatcherPriority.Normal);
 
         }
-        
+
         void VideoGenerationParentFunction()
         {
             string dir = "D:/Documents/Project Files/N-Body/SimImages/";
@@ -575,19 +612,6 @@ namespace Parallel_N_Body
             Conversion conv = new Conversion();
             conv.SetInputFrameRate(60).BuildVideoFromImages(files).SetFrameRate(60).SetOutputFormat(Format.mp4).SetOutput("D:/Documents/Project Files/N-Body/SimImages/output.mp4").Start();
 
-            //var generationTask = GenerateVideo(files);
-
-            //generationTask.Wait();
-
-            //if (generationTask.Status == TaskStatus.Faulted)
-            //{
-            //    Debug.WriteLine("TASK FAILURE: Failed to generate video.");
-            //}
-
-            //if (generationTask.IsCompleted)
-            //{
-
-            //}
 
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -699,11 +723,23 @@ namespace Parallel_N_Body
                         IsAntialias = true,
                         Style = SKPaintStyle.Fill,
                     };
+
                     canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
                     Debug.WriteLine($"Drawing particle {particleNumber} at X: {particle.CenterPoint.X} Y: {particle.CenterPoint.Y}");
                     particleNumber++;
                 }
 
+                if (m_DrawPartition)
+                {
+                    var treePaint = new SKPaint
+                    {
+                        Color = new SKColor(255, 106,0),
+                        IsAntialias = true,
+                        Style = SKPaintStyle.Stroke,
+                    };
+
+                    VisualizeTreeNodes(m_ProgramManager.QuadTree.GetRootNode(), canvas, treePaint);
+                }
                 //SKImage image = e.Surface.Snapshot();
                 //var data = image.Encode();
 
@@ -717,6 +753,40 @@ namespace Parallel_N_Body
                 //    imageNum++;
                 //}
             }
+        }
+
+
+        public void VisualizeTreeNodes(Node nextNode, SKCanvas canvas, SKPaint paint)
+        {
+            if (nextNode == null)
+            {
+                return;
+            }
+
+            if (nextNode.nodeParticles.Count == 1)
+            {
+                canvas.DrawRect(nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.YSideLength, nextNode.YSideLength, paint);
+                return;
+            }
+
+            if (nextNode.nodeParticles.Count == 0 && false)
+            {
+                // currentGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.YSideLength, nextNode.YSideLength);
+                //currentGraphics.FillRectangle(Brushes.IndianRed, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.YSideLength - 10, nextNode.YSideLength - 10);
+            }
+
+            else
+            {
+                canvas.DrawRect(nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.YSideLength, nextNode.YSideLength, paint);
+            }
+
+
+
+            VisualizeTreeNodes(nextNode.SeChild, canvas, paint);
+            VisualizeTreeNodes(nextNode.NeChild, canvas, paint);
+            VisualizeTreeNodes(nextNode.NwChild, canvas, paint);
+            VisualizeTreeNodes(nextNode.SwChild, canvas, paint);
+
         }
         #endregion
 

@@ -15,7 +15,8 @@ namespace PNB_Lib
         public PointF BottomLeftCorner { get; set; }
         public PointF TopRightCorner { get; set; }
 
-        public float SideLength { get; }
+        public float YSideLength { get; }
+        public float XSideLength { get; }
 
         public Node SeChild { get; set; }
         public Node NeChild { get; set; }
@@ -39,7 +40,8 @@ namespace PNB_Lib
         {
             TopRightCorner = trc;
             BottomLeftCorner = blc;
-            SideLength = TopRightCorner.X - BottomLeftCorner.X;
+            YSideLength = BottomLeftCorner.Y - TopRightCorner.Y;
+            XSideLength = TopRightCorner.X - BottomLeftCorner.X;
             nodeParticles = new List<Particle>();
             IsInternal = false;
             IsLeaf = true;
@@ -50,29 +52,30 @@ namespace PNB_Lib
         //Function is called if there is more than 1 child in the node;
         void partitionNode()
         {
-            float halfOfSideLength = SideLength / 2;
-            PointF SETopRight = new PointF(TopRightCorner.X, halfOfSideLength + TopRightCorner.Y);
-            PointF SEBottomLeft = new PointF(halfOfSideLength + BottomLeftCorner.X, BottomLeftCorner.Y);
+            float halfOfSideLengthY= YSideLength / 2;
+            float halfOfSideLengthX= XSideLength / 2;
+            PointF SETopRight = new PointF(TopRightCorner.X, halfOfSideLengthY + TopRightCorner.Y);
+            PointF SEBottomLeft = new PointF(halfOfSideLengthX + BottomLeftCorner.X, BottomLeftCorner.Y);
             SeChild = new Node(SETopRight, SEBottomLeft);
-            //  Debug.WriteLine($"SE Child is {SeChild.TopRightCorner.ToString()} and {SeChild.BottomLeftCorner} side length = {SeChild.SideLength}\n");
+            //  Debug.WriteLine($"SE Child is {SeChild.TopRightCorner.ToString()} and {SeChild.BottomLeftCorner} side length = {SeChild.YSideLength}\n");
 
 
             PointF NETopRight = new PointF(TopRightCorner.X, TopRightCorner.Y);
-            PointF NEBottomLeft = new PointF(halfOfSideLength + BottomLeftCorner.X, halfOfSideLength + TopRightCorner.Y);
+            PointF NEBottomLeft = new PointF(halfOfSideLengthX + BottomLeftCorner.X, halfOfSideLengthY + TopRightCorner.Y);
             NeChild = new Node(NETopRight, NEBottomLeft);
-            // Debug.WriteLine($"NE Child is {NeChild.TopRightCorner.ToString()} and {NeChild.BottomLeftCorner}side length = {NeChild.SideLength}\n");
+            // Debug.WriteLine($"NE Child is {NeChild.TopRightCorner.ToString()} and {NeChild.BottomLeftCorner}side length = {NeChild.YSideLength}\n");
 
-            PointF NWTopRight = new PointF(halfOfSideLength + BottomLeftCorner.X, TopRightCorner.Y);
-            PointF NWBottomLeft = new PointF(BottomLeftCorner.X, halfOfSideLength + TopRightCorner.Y);
+            PointF NWTopRight = new PointF(halfOfSideLengthX + BottomLeftCorner.X, TopRightCorner.Y);
+            PointF NWBottomLeft = new PointF(BottomLeftCorner.X, halfOfSideLengthY + TopRightCorner.Y);
             NwChild = new Node(NWTopRight, NWBottomLeft);
-            // Debug.WriteLine($"NW Child is {NwChild.TopRightCorner.ToString()} and {NwChild.BottomLeftCorner}side length = {NwChild.SideLength}\n");
+            // Debug.WriteLine($"NW Child is {NwChild.TopRightCorner.ToString()} and {NwChild.BottomLeftCorner}side length = {NwChild.YSideLength}\n");
 
 
-            PointF SWTopRight = new PointF(halfOfSideLength + BottomLeftCorner.X, halfOfSideLength + TopRightCorner.Y);
+            PointF SWTopRight = new PointF(halfOfSideLengthX + BottomLeftCorner.X, halfOfSideLengthY + TopRightCorner.Y);
             PointF SWBottomLeft = new PointF(BottomLeftCorner.X, BottomLeftCorner.Y);
             SwChild = new Node(SWTopRight, SWBottomLeft);
-            // Debug.WriteLine($"SW Child is {SwChild.TopRightCorner.ToString()} and {SwChild.BottomLeftCorner}side length = {SwChild.SideLength}\n");
-            Debug.WriteLine($"Child side length = {SeChild.SideLength}\n");
+            // Debug.WriteLine($"SW Child is {SwChild.TopRightCorner.ToString()} and {SwChild.BottomLeftCorner}side length = {SwChild.YSideLength}\n");
+            Debug.WriteLine($"Child side length = {SeChild.YSideLength}\n");
             Debug.WriteLine($"\n");
 
 
@@ -110,7 +113,7 @@ namespace PNB_Lib
             if (nodeParticles.Count > 1 && !IsPartitioned)
             {
                 Debug.WriteLine($"Adding {nodeParticles[0].CenterPoint.ToString()} and {particleToAdd.CenterPoint.ToString()}");
-                Debug.WriteLine($"Parent side length = {SideLength}\n");
+                Debug.WriteLine($"Parent side length = {YSideLength}\n");
                 partitionNode();
                 IsInternal = true;
                 IsLeaf = false;
@@ -141,9 +144,10 @@ namespace PNB_Lib
         {
             parentQuadrant quadrant = parentQuadrant.SE;
 
-            float halfOfSide = SideLength / 2;
-            float xMiddle = BottomLeftCorner.X + halfOfSide;
-            float yMiddle = TopRightCorner.Y + halfOfSide;
+            float halfOfSideY = YSideLength / 2;
+            float halfOfSideX = XSideLength / 2;
+            float xMiddle = BottomLeftCorner.X + halfOfSideX;
+            float yMiddle = TopRightCorner.Y + halfOfSideY;
 
             if (particle.CenterPoint.X >= xMiddle)
             {

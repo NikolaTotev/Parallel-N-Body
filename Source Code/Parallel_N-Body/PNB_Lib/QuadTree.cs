@@ -58,6 +58,8 @@ namespace PNB_Lib
         private ThreadMode m_AutoConfigThreadMode = ThreadMode.customThreads;
         private bool m_AutoConfigShouldStopTest = false;
         private int m_AutoConfigCurrentThreadCount = 1;
+        private bool m_IsAutoTesting = false;
+        private int m_AutoConfigRepeatFactor;
 
         private int m_SimConfigNumberOfFrames = 200;
         private bool m_SimConfigShouldStopSim = false;
@@ -72,6 +74,7 @@ namespace PNB_Lib
         public event EventHandler OnPartitionComplete;
         private Thread m_SimulationThread;
         private Thread m_PartitionThread;
+        private Thread m_AutoTestThread;
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {
@@ -79,7 +82,9 @@ namespace PNB_Lib
             m_SimSpaceXLen = simSpaceX;
             m_SimSpaceYLen = simSpaceY;
             m_ParticleMap = new bool[m_SimSpaceXLen, m_SimSpaceYLen];
-
+            m_AutoConfigRepeatFactor = 2;
+            m_AutoConfigMaxThreads = 6;
+            m_ThreadConfigMaxThreads = 2;
             ResetRootNode();
         }
 
@@ -108,6 +113,11 @@ namespace PNB_Lib
         public List<Particle> GetParticles()
         {
             return m_Particles;
+        }
+
+        public Node GetRootNode()
+        {
+            return m_RootNode;
         }
 
         public int GetParticleCount()
@@ -191,6 +201,10 @@ namespace PNB_Lib
             m_AutoConfigShouldStopTest = shouldStop;
         }
 
+        public void SetAutoConfigRepeatFactor(int newFactor)
+        {
+            m_AutoConfigRepeatFactor = newFactor;
+        }
 
         public void SetThreadConfigMaxThreads(int newMaxCount)
         {
@@ -217,11 +231,12 @@ namespace PNB_Lib
             Random rand = new Random();
             List<Point> testPoints = new List<Point>()
             {
-                new Point(91, 395),
-                new Point(500, 10),
-                new Point(110, 605),
-                new Point(414, 695),
-                new Point(705, 295)
+                new Point(150, 729),
+                new Point(153, 729),
+                new Point(94, 823),
+                new Point(94, 880),
+                
+                //new Point(705, 295)
             };
 
             List<Point> testPoints2 = new List<Point>()
@@ -252,7 +267,7 @@ namespace PNB_Lib
                         Point particleCenter = new Point(x, y);
                         if (false)
                         {
-                            newParticle.CenterPoint = testPoints2[i];
+                            newParticle.CenterPoint = testPoints[i];
                         }
                         else
                         {
@@ -304,6 +319,13 @@ namespace PNB_Lib
             }
         }
 
+        public void AutoTest()
+        {
+            m_IsAutoTesting = true;
+            m_AutoTestThread = new Thread(StartAutoTest);
+            m_AutoTestThread.Name = "AutoTest";
+            m_AutoTestThread.Start();
+        }
 
         public void StartAutoTest()
         {
@@ -312,23 +334,41 @@ namespace PNB_Lib
             Stopwatch frameSw = Stopwatch.StartNew();
             Stopwatch totalSw = new Stopwatch();
             m_IsParallel = true;
-            int repeatFactor = 10;
+            
             double execTimeSum = 0;
             double avgExecTime;
             List<double> execTimes = new List<double>();
             totalSw.Start();
             for (int i = 0; i < m_AutoConfigMaxThreads; i++)
             {
-                for (int j = 0; j < repeatFactor; j++)
+                for (int j = 0; j < m_AutoConfigRepeatFactor; j++)
                 {
-                    frameSw = Stopwatch.StartNew();
-                    PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.first, false);
-                    PairwiseForceCalculation(m_IsParallel, i + 1);
-                    PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.second, false);
-                    execTimeSum += frameSw.Elapsed.Milliseconds;
+
+                    switch (m_AlgToUse)
+                    {
+                        case InteractionAlgorithm.PWI:
+                            frameSw = Stopwatch.StartNew();
+                            PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.first, false);
+                            PairwiseForceCalculation(m_IsParallel, i + 1);
+                            PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.second, false);
+                            execTimeSum += frameSw.Elapsed.Milliseconds;
+                            break;
+                        case InteractionAlgorithm.BH:
+                            frameSw = Stopwatch.StartNew();
+                            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, false);
+                            Partition();
+                            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, true);
+                            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second, false);
+                            ResetRootNode();
+                            execTimeSum += frameSw.Elapsed.Milliseconds;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
                 }
 
-                avgExecTime = execTimeSum / repeatFactor;
+                avgExecTime = execTimeSum / m_AutoConfigRepeatFactor;
                 execTimes.Add(avgExecTime);
                 AutoTestStepCompleteArgs args = new AutoTestStepCompleteArgs(i, m_AutoConfigMaxThreads, totalSw.Elapsed, avgExecTime);
                 execTimeSum = 0;
@@ -336,6 +376,7 @@ namespace PNB_Lib
             }
 
             GenerateChartSeriesData(execTimes);
+            m_IsAutoTesting = false;
         }
 
         public double CalculateParallelismLevel(double singleThreadExecTime, double multithreadExecTime)
@@ -391,7 +432,11 @@ namespace PNB_Lib
                 }
             }
 
-            OnPartitionComplete?.Invoke(null, new EventArgs());
+            if (!m_IsAutoTesting)
+            {
+                OnPartitionComplete?.Invoke(null, new EventArgs());
+            }
+            
         }
 
         public void StartSimulation()
@@ -757,13 +802,8 @@ namespace PNB_Lib
                 distanceToNodeInfo = CalculateDistanceBetweenPoints(currentParticle.CenterPoint, startNode.centerOfMass);
             }
 
-            if (IsDistanceOverDoubleSideLenght(startNode.SideLength, distanceToNodeInfo[0]) || startNode.nodeParticles.Count == 1)
+            if (IsDistanceOverDoubleSideLenght(startNode.YSideLength, distanceToNodeInfo[0]) || startNode.nodeParticles.Count == 1)
             {
-
-                float force = GravitationalForceCalculation(distanceToNodeInfo[0], currentParticle.Mass, startNode.totalWeight);
-
-
-
                 inv_r2 = (float)Pow((Pow(distanceToNodeInfo[3], 2) + Pow(distanceToNodeInfo[4], 2) + Pow(m_Softening, 2)), -1.5);
 
                 if (startNode.nodeParticles.Count == 1)
