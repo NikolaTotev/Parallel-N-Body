@@ -6,6 +6,7 @@ using System.Diagnostics;
 using static System.Math;
 using System.Drawing;
 using System.Drawing.Text;
+using System.Globalization;
 using System.IO;
 using System.Net.Mime;
 using System.Security.Cryptography.X509Certificates;
@@ -60,6 +61,7 @@ namespace PNB_Lib
         private int m_AutoConfigCurrentThreadCount = 1;
         private bool m_IsAutoTesting = false;
         private int m_AutoConfigRepeatFactor;
+        private int m_AutoTestTestNumber = 0;
 
         private int m_SimConfigNumberOfFrames = 200;
         private bool m_SimConfigShouldStopSim = false;
@@ -75,6 +77,7 @@ namespace PNB_Lib
         private Thread m_SimulationThread;
         private Thread m_PartitionThread;
         private Thread m_AutoTestThread;
+        private List<TestResult> results = new List<TestResult>();
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {
@@ -327,18 +330,37 @@ namespace PNB_Lib
             m_AutoTestThread.Start();
         }
 
+        private int numberOfTests = 4;
+        List<int> particleCounts = new List<int>(){1500, 2500, 3500, 5000};
+
+        public void SuperAutoTest()
+        {
+            m_AutoTestTestNumber = 0;
+            for (int i = 0; i < numberOfTests; i++)
+            {
+                m_ParticleCount = particleCounts[i];
+                GenerateParticles();
+                m_IsAutoTesting = true;
+                m_AutoTestThread = new Thread(StartAutoTest);
+                m_AutoTestThread.Name = "AutoTest";
+                m_AutoTestThread.Start();
+                ResetTree();
+            }
+        }
+
         public void StartAutoTest()
         {
-            int prevMilis;
-            int currentMilis;
+          
+            double prevMilis;
+            double currentMilis;
             Stopwatch frameSw = Stopwatch.StartNew();
-            Stopwatch totalSw = new Stopwatch();
+            //Stopwatch totalSw = new Stopwatch();
             m_IsParallel = true;
-            
+
             double execTimeSum = 0;
             double avgExecTime;
             List<double> execTimes = new List<double>();
-            totalSw.Start();
+            //totalSw.Start();
             for (int i = 0; i < m_AutoConfigMaxThreads; i++)
             {
                 for (int j = 0; j < m_AutoConfigRepeatFactor; j++)
@@ -347,20 +369,32 @@ namespace PNB_Lib
                     switch (m_AlgToUse)
                     {
                         case InteractionAlgorithm.PWI:
-                            frameSw = Stopwatch.StartNew();
-                            PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.first, false);
-                            PairwiseForceCalculation(m_IsParallel, i + 1);
-                            PrepareStepExecution(m_ThreadConfigThreadMode, i + 1, SimulationStep.second, false);
-                            execTimeSum += frameSw.Elapsed.Milliseconds;
+
+                            prevMilis = frameSw.Elapsed.TotalMilliseconds;
+                            PrepareStepExecution(m_AutoConfigThreadMode, i + 1, SimulationStep.first, false, false);
+                            //PairwiseForceCalculation(true, i + 1);
+                            PrepareStepExecution(m_AutoConfigThreadMode, i + 1, SimulationStep.first, false, true);
+                            PrepareStepExecution(m_AutoConfigThreadMode, i + 1, SimulationStep.second, false, false);
+                            currentMilis = frameSw.Elapsed.TotalMilliseconds;
+                            execTimeSum += currentMilis - prevMilis;
+
+
+
                             break;
                         case InteractionAlgorithm.BH:
                             frameSw = Stopwatch.StartNew();
-                            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, false);
+                            PrepareStepExecution(m_AutoConfigThreadMode, i + 1, SimulationStep.first, false, false);
                             Partition();
-                            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, true);
-                            PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second, false);
+                            PrepareStepExecution(m_AutoConfigThreadMode, i + 1, SimulationStep.first, true, false);
+                            PrepareStepExecution(m_AutoConfigThreadMode, i + 1, SimulationStep.second, false, false);
                             ResetRootNode();
-                            execTimeSum += frameSw.Elapsed.Milliseconds;
+                            int lastSwValBH = frameSw.Elapsed.Milliseconds;
+                            execTimeSum += lastSwValBH;
+                            if (lastSwValBH == 0)
+                            {
+                                m_AutoConfigRepeatFactor++;
+                            }
+
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -370,13 +404,15 @@ namespace PNB_Lib
 
                 avgExecTime = execTimeSum / m_AutoConfigRepeatFactor;
                 execTimes.Add(avgExecTime);
-                AutoTestStepCompleteArgs args = new AutoTestStepCompleteArgs(i, m_AutoConfigMaxThreads, totalSw.Elapsed, avgExecTime);
+                AutoTestStepCompleteArgs args = new AutoTestStepCompleteArgs(i, m_AutoConfigMaxThreads, new TimeSpan(), avgExecTime);
                 execTimeSum = 0;
                 OnAutoTestStepComplete?.Invoke(this, args);
+                m_AutoTestTestNumber++;
             }
 
             GenerateChartSeriesData(execTimes);
             m_IsAutoTesting = false;
+            avgExecTime = 0;
         }
 
         public double CalculateParallelismLevel(double singleThreadExecTime, double multithreadExecTime)
@@ -404,7 +440,7 @@ namespace PNB_Lib
 
             }
 
-            AutoTestCompleteArgs args = new AutoTestCompleteArgs(parallelismLevels, execTimes, effectivenessLevels);
+            AutoTestCompleteArgs args = new AutoTestCompleteArgs(parallelismLevels, execTimes, effectivenessLevels, m_ParticleCount, m_AutoTestTestNumber);
             OnAutoTestComplete?.Invoke(this, args);
         }
 
@@ -436,7 +472,7 @@ namespace PNB_Lib
             {
                 OnPartitionComplete?.Invoke(null, new EventArgs());
             }
-            
+
         }
 
         public void StartSimulation()
@@ -467,16 +503,16 @@ namespace PNB_Lib
             {
                 if (!isBH)
                 {
-                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, false);
-                    PairwiseForceCalculation(m_IsParallel, m_ThreadConfigMaxThreads);
-                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second, false);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, false, false);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, false, true);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second, false, false);
                 }
                 else
                 {
-                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, false);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, false, false);
                     Partition();
-                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, isBH);
-                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second, false);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, isBH, false);
+                    PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second, false, false);
                     ResetRootNode();
                 }
 
@@ -521,7 +557,7 @@ namespace PNB_Lib
             OnSimulationComplete?.Invoke(this, EventArgs.Empty);
         }
 
-        public void PrepareStepExecution(ThreadMode threadMode, int threadCount, SimulationStep simulationStep, bool isBH)
+        public void PrepareStepExecution(ThreadMode threadMode, int threadCount, SimulationStep simulationStep, bool isBH, bool isPWI)
         {
             if (m_IsParallel)
             {
@@ -560,7 +596,7 @@ namespace PNB_Lib
                             int startIndex = threadStartIndecencies[i];
                             int endIndex = threadEndIndecencies[i];
                             Thread worker;
-                            if (!isBH)
+                            if (!isBH && !isPWI)
                             {
                                 switch (simulationStep)
                                 {
@@ -574,6 +610,11 @@ namespace PNB_Lib
                                         worker = new Thread((ErrorInSimPart));
                                         break;
                                 }
+                            }
+                            else if (isPWI)
+                            {
+                                worker = new Thread((() => PartitionPWIExecution(startIndex, endIndex)));
+
                             }
                             else
                             {
@@ -610,7 +651,7 @@ namespace PNB_Lib
 
                                 Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
-                                if (!isBH)
+                                if (!isBH && !isPWI)
                                 {
                                     switch (simulationStep)
                                     {
@@ -621,6 +662,21 @@ namespace PNB_Lib
                                             ExecuteSecondSimulationStepCalculations(currentParticle);
                                             break;
                                     }
+                                }
+                                else if (isPWI)
+                                {
+
+                                    currentParticle.AccelerationComponents.X = 0;
+                                    currentParticle.AccelerationComponents.Y = 0;
+
+                                    for (int j = 0; j < m_Particles.Count; j++)
+                                    {
+                                        if (m_Particles[j] != currentParticle)
+                                        {
+                                            ParticleToParticleForceCalculation(currentParticle, m_Particles[j]);
+                                        }
+                                    }
+
                                 }
                                 else
                                 {
@@ -753,6 +809,25 @@ namespace PNB_Lib
                         }
                     }
                     break;
+            }
+        }
+
+        private void PartitionPWIExecution(int startIndex, int endIndex)
+        {
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                Particle currentParticle = m_Particles[i];
+                currentParticle.AccelerationComponents.X = 0;
+                currentParticle.AccelerationComponents.Y = 0;
+
+                for (int j = 0; j < m_Particles.Count; j++)
+                {
+                    if (m_Particles[j] != currentParticle)
+                    {
+                        ParticleToParticleForceCalculation(currentParticle, m_Particles[j]);
+                    }
+
+                }
             }
         }
 

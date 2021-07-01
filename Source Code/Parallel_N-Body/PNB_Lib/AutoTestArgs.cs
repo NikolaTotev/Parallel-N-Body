@@ -45,12 +45,17 @@ namespace PNB_Lib
         private List<double> m_ExecTimes;
         private List<double> m_ParallelismLevels;
         private List<double> m_EffectivenessLevels;
+        private int m_ParticleCount;
+        private int m_TestNumber;
+        
 
-        public AutoTestCompleteArgs(List<double> parallelismLevels, List<double> execTimes, List<double> effectivenessLevels)
+        public AutoTestCompleteArgs(List<double> parallelismLevels, List<double> execTimes, List<double> effectivenessLevels, int particleCount, int testNum)
         {
             m_ParallelismLevels = parallelismLevels;
             m_EffectivenessLevels = effectivenessLevels;
             m_ExecTimes = execTimes;
+            m_ParticleCount = particleCount;
+            m_TestNumber = testNum;
         }
         public List<double> GetExecTimes()
         {
@@ -67,6 +72,14 @@ namespace PNB_Lib
             return m_EffectivenessLevels;
         }
 
-       
+        public int GetPartCount()
+        {
+            return m_ParticleCount;
+        }
+
+        public int GetTestNumber()
+        {
+            return m_TestNumber;
+        }
     }
 }

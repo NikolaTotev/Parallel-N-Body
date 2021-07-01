@@ -338,7 +338,7 @@
                             </StackPanel>
                         </Border>
                     </Grid>
-                   
+
 
                     <RadioButton x:Name="Rb_AutoTestCustomThreads" IsChecked="True" FontSize="15" Grid.Row="2" Content="Auto test custom threads"  FontFamily="{StaticResource Montserrat}"  BorderBrush="{StaticResource OrangeAccent}" BorderThickness="3"  VerticalContentAlignment="Center" Checked="Rb_AutoTestCustomThreads_OnChecked">
                         <RadioButton.Resources>
@@ -592,13 +592,24 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
+                <!--<Viewbox Grid.Column="0"  x:Name="vb_Exec">
+                    <lvc:CartesianChart x:Name="Lc_ExecutionTime" MouseDoubleClick="Lc_ExecutionTime_OnMouseDoubleClick" Margin="0,-3,0,3"></lvc:CartesianChart>
+                </Viewbox>
 
-                <lvc:CartesianChart x:Name="Lc_ExecutionTime" Grid.Column="0" MouseDoubleClick="Lc_ExecutionTime_OnMouseDoubleClick"></lvc:CartesianChart>
-                <lvc:CartesianChart x:Name="Lc_LevelOfParallelism" Grid.Column="1" MouseDoubleClick="Lc_LevelOfParallelism_OnMouseDoubleClick"></lvc:CartesianChart>
-                <lvc:CartesianChart x:Name="Lc_Effectiveness" Grid.Column="2" MouseDoubleClick="Lc_Effectiveness_OnMouseDoubleClick"></lvc:CartesianChart>
+                <Viewbox Grid.Column="1" x:Name="vb_Parl">
+                    <lvc:CartesianChart x:Name="Lc_LevelOfParallelism" MouseDoubleClick="Lc_LevelOfParallelism_OnMouseDoubleClick"></lvc:CartesianChart>
+                </Viewbox>
+
+                <Viewbox  Grid.Column="2" x:Name="vb_Eff">
+                    <lvc:CartesianChart x:Name="Lc_Effectiveness" MouseDoubleClick="Lc_Effectiveness_OnMouseDoubleClick"></lvc:CartesianChart>
+                </Viewbox>-->
+
+
+                <lvc:CartesianChart Grid.Column="0" x:Name="Lc_ExecutionTime" MouseDoubleClick="Lc_ExecutionTime_OnMouseDoubleClick" Margin="0,-3,0,3"></lvc:CartesianChart>
+                <lvc:CartesianChart Grid.Column="1" x:Name="Lc_LevelOfParallelism" MouseDoubleClick="Lc_LevelOfParallelism_OnMouseDoubleClick"></lvc:CartesianChart>
+                <lvc:CartesianChart  Grid.Column="2" x:Name="Lc_Effectiveness" MouseDoubleClick="Lc_Effectiveness_OnMouseDoubleClick"></lvc:CartesianChart>
+                
             </Grid>
-
-
         </Grid>
     </Grid>
 </Window>

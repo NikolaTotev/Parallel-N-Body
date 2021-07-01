@@ -116,6 +116,7 @@ namespace Parallel_N_Body
             {
                 Btn_StartAutoTest.IsEnabled = true;
                 GenerateChartSeries(e.GetParlLevels(), e.GetExecTimes(), e.GetEffectivenessLevels());
+                TakeTheChart(e.GetPartCount(), e.GetTestNumber());
             }), DispatcherPriority.Normal);
         }
 
@@ -448,6 +449,13 @@ namespace Parallel_N_Body
                 threadCounts.Add($"{i + 1}");
             }
 
+            ColorsCollection cols = new ColorsCollection();
+            cols.Add(Colors.MediumPurple);
+
+            Lc_LevelOfParallelism.SeriesColors = cols;
+            Lc_Effectiveness.SeriesColors = cols;
+            Lc_ExecutionTime.SeriesColors = cols;
+
             //Exec times chart setup
             Lc_ExecutionTime.AxisX.RemoveAt(0);
             Lc_ExecutionTime.AxisX.Add(new Axis() { Title = "Thread Count", Labels = threadCounts });
@@ -462,7 +470,7 @@ namespace Parallel_N_Body
             {
                 Title = "Execution times",
                 Values = new ChartValues<double>(execTimes),
-                PointGeometry = DefaultGeometries.Circle
+                PointGeometry = DefaultGeometries.Circle,
             });
 
             Lc_ExecutionTime.Series = execTimeSeries;
@@ -504,7 +512,6 @@ namespace Parallel_N_Body
             });
 
             Lc_Effectiveness.Series = effectivenessLevelsSeries;
-
 
 
 
@@ -733,7 +740,7 @@ namespace Parallel_N_Body
                 {
                     var treePaint = new SKPaint
                     {
-                        Color = new SKColor(255, 106,0),
+                        Color = new SKColor(255, 106, 0),
                         IsAntialias = true,
                         Style = SKPaintStyle.Stroke,
                     };
@@ -793,6 +800,82 @@ namespace Parallel_N_Body
         private void Lc_Effectiveness_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        public void TakeTheChart(int particleCount, int testNumber)
+        {
+            //Lc_LevelOfParallelism.Measure(Lc_LevelOfParallelism.RenderSize);
+            //Lc_LevelOfParallelism.Arrange();
+            //vb_Parl.Measure(Lc_LevelOfParallelism.RenderSize);
+            //vb_Parl.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_LevelOfParallelism.RenderSize));
+            //Lc_LevelOfParallelism.Update(true, true); //force chart redraw
+            //vb_Parl.UpdateLayout();
+
+            SaveToPng(Lc_LevelOfParallelism, $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcParl_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png");
+
+            //vb_Exec.Measure(Lc_ExecutionTime.RenderSize);
+            //vb_Exec.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_ExecutionTime.RenderSize));
+            //Lc_ExecutionTime.Update(true, true); //force chart redraw
+            //vb_Exec.UpdateLayout();
+            SaveToPng(Lc_LevelOfParallelism, $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcExec_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png");
+
+            //vb_Eff.Measure(Lc_Effectiveness.RenderSize);
+            //vb_Eff.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_Effectiveness.RenderSize));
+            //Lc_Effectiveness.Update(true, true); //force chart redraw
+            //vb_Eff.UpdateLayout();
+            SaveToPng(Lc_LevelOfParallelism, $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcEff_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png");
+
+            string lcEffPath =
+                $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcEff_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png";
+            string lcParlPath =
+                $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcParl_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png";
+            string lcExecPath =
+                $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcExec_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png";
+
+            RenderTargetBitmap rtb = new RenderTargetBitmap((int)Lc_LevelOfParallelism.ActualWidth, (int)Lc_LevelOfParallelism.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            rtb.Render(Lc_LevelOfParallelism);
+
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            png.Frames.Add(BitmapFrame.Create(rtb));
+            MemoryStream stream = new MemoryStream();
+            png.Save(stream);
+            
+            
+
+            //var encoder = new PngBitmapEncoder();
+            //var bitmap = new RenderTargetBitmap((int)Lc_LevelOfParallelism.ActualWidth, (int)Lc_LevelOfParallelism.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            //bitmap.Render(Lc_LevelOfParallelism);
+            //var frame = BitmapFrame.Create(bitmap);
+            //encoder.Frames.Add(frame);
+            //using (var stream = File.OpenWrite(lcEffPath))
+            //{
+            //    encoder.Save(stream);
+            //    stream.Close();
+            //    stream.Dispose();
+            //}
+        }
+
+        public void SaveToPng(FrameworkElement visual, string fileName)
+        {
+            var encoder = new PngBitmapEncoder();
+            EncodeVisual(visual, fileName, encoder);
+        }
+
+        private static void EncodeVisual(FrameworkElement visual, string fileName, BitmapEncoder encoder)
+        {
+            var bitmap = new RenderTargetBitmap((int)visual.ActualWidth, (int)visual.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(visual);
+            var frame = BitmapFrame.Create(bitmap);
+            encoder.Frames.Add(frame);
+            using (var stream = File.OpenWrite(fileName))
+            {
+                encoder.Save(stream);
+                stream.Close();
+                stream.Dispose();
+            }
+
+
+
         }
     }
 }
