@@ -25,7 +25,6 @@ namespace PNB_Lib
 
         public Particle()
         {
-
             Mass = 1000;
         }
 
