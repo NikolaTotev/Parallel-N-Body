@@ -332,12 +332,12 @@ namespace PNB_Lib
         }
 
         private int numberOfTests = 4;
-        List<int> particleCounts = new List<int>() { 1500, 2500, 3500, 5000 };
+        List<int> particleCounts = new List<int>() {1000, 1500, 3500};
 
         public void SuperAutoTest()
         {
             m_AutoTestTestNumber = 0;
-            for (int i = 0; i < numberOfTests; i++)
+            for (int i = 0; i < particleCounts.Count; i++)
             {
                 m_ParticleCount = particleCounts[i];
                 GenerateParticles();
@@ -388,18 +388,15 @@ namespace PNB_Lib
 
                             break;
                         case InteractionAlgorithm.BH:
-                            frameSw = Stopwatch.StartNew();
+                            GenerateParticles();
+                            prevMilis = frameSw.Elapsed.TotalMilliseconds;
                             PrepareStepExecution(m_AutoConfigThreadMode, i + 1, SimulationStep.first, false, false);
                             Partition();
                             PrepareStepExecution(m_AutoConfigThreadMode, i + 1, SimulationStep.first, true, false);
                             PrepareStepExecution(m_AutoConfigThreadMode, i + 1, SimulationStep.second, false, false);
-                            ResetRootNode();
-                            int lastSwValBH = frameSw.Elapsed.Milliseconds;
-                            execTimeSum += lastSwValBH;
-                            if (lastSwValBH == 0)
-                            {
-                                m_AutoConfigRepeatFactor++;
-                            }
+                            ResetTree();
+                            currentMilis = frameSw.Elapsed.TotalMilliseconds;
+                            execTimeSum += currentMilis - prevMilis;
 
                             break;
                         default:
@@ -702,12 +699,6 @@ namespace PNB_Lib
                         break;
                 }
             }
-
-
-            foreach (Particle particle in m_Particles)
-            {
-                ExecuteFirstSimulationStepCalculations(particle);
-            }
         }
 
         public void PartitionMultithreadExecution(int startIndex, int endIndex, SimulationStep simulationStep)
@@ -742,8 +733,8 @@ namespace PNB_Lib
 
             PointF newCenter = currentParticle.CenterPoint;
 
-            newCenter.X += currentParticle.VelocityComponents.X * m_Dt;
-            newCenter.Y += currentParticle.VelocityComponents.Y * m_Dt;
+            //newCenter.X += currentParticle.VelocityComponents.X * m_Dt;
+           // newCenter.Y += currentParticle.VelocityComponents.Y * m_Dt;
 
             currentParticle.CenterPoint = newCenter;
 
