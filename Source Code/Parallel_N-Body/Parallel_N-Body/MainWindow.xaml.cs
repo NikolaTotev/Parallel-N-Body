@@ -116,7 +116,7 @@ namespace Parallel_N_Body
             {
                 Btn_StartAutoTest.IsEnabled = true;
                 GenerateChartSeries(e.GetParlLevels(), e.GetExecTimes(), e.GetEffectivenessLevels());
-                TakeTheChart(e.GetPartCount(), e.GetTestNumber());
+                TakeTheChart(e.GetPartCount(), e.GetTestNumber(), e.GetRepeatCount(), e.GetThreadMode(), e.GetInteractionAlgorithm());
             }), DispatcherPriority.Normal);
         }
 
@@ -802,57 +802,53 @@ namespace Parallel_N_Body
             throw new NotImplementedException();
         }
 
-        public void TakeTheChart(int particleCount, int testNumber)
+        public void TakeTheChart(int particleCount, int testNumber, int repeatFactor, ThreadMode mode, InteractionAlgorithm alg)
         {
-            //Lc_LevelOfParallelism.Measure(Lc_LevelOfParallelism.RenderSize);
-            //Lc_LevelOfParallelism.Arrange();
-            //vb_Parl.Measure(Lc_LevelOfParallelism.RenderSize);
-            //vb_Parl.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_LevelOfParallelism.RenderSize));
-            //Lc_LevelOfParallelism.Update(true, true); //force chart redraw
-            //vb_Parl.UpdateLayout();
+            string dirPath = $"ChartsDir_mT{testNumber}_p{particleCount}_rF{repeatFactor}_tM{mode}_alg{alg}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}";
 
-            SaveToPng(Lc_LevelOfParallelism, $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcParl_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png");
-
-            //vb_Exec.Measure(Lc_ExecutionTime.RenderSize);
-            //vb_Exec.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_ExecutionTime.RenderSize));
-            //Lc_ExecutionTime.Update(true, true); //force chart redraw
-            //vb_Exec.UpdateLayout();
-            SaveToPng(Lc_LevelOfParallelism, $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcExec_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png");
-
-            //vb_Eff.Measure(Lc_Effectiveness.RenderSize);
-            //vb_Eff.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_Effectiveness.RenderSize));
-            //Lc_Effectiveness.Update(true, true); //force chart redraw
-            //vb_Eff.UpdateLayout();
-            SaveToPng(Lc_LevelOfParallelism, $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcEff_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png");
+            if (!Directory.Exists($"D:/Documents/Project Files/N-Body/Charts/{dirPath}"))
+            {
+                Directory.CreateDirectory($"D:/Documents/Project Files/N-Body/Charts/{dirPath}");
+            }
 
             string lcEffPath =
-                $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcEff_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png";
+                $"D:/Documents/Project Files/N-Body/Charts/{dirPath}/TestChart_LcEff_mT{testNumber}_p{particleCount}_rF{repeatFactor}_tM{mode}_alg{alg}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png";
             string lcParlPath =
-                $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcParl_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png";
+                $"D:/Documents/Project Files/N-Body/Charts/{dirPath}/TestChart_LcParl_mT{testNumber}_p{particleCount}_rF{repeatFactor}_tM{mode}_alg{alg}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png";
             string lcExecPath =
-                $"D:/Documents/Project Files/N-Body/Charts/TestChart_LcExec_{testNumber}_{particleCount}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png";
+                $"D:/Documents/Project Files/N-Body/Charts/{dirPath}/TestChart_LcExec_mT{testNumber}_p{particleCount}_rF{repeatFactor}_tM{mode}_alg{alg}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png";
 
-            RenderTargetBitmap rtb = new RenderTargetBitmap((int)Lc_LevelOfParallelism.ActualWidth, (int)Lc_LevelOfParallelism.ActualHeight, 96, 96, PixelFormats.Pbgra32);
-            rtb.Render(Lc_LevelOfParallelism);
+           
+            vb_Parl.Measure(Lc_LevelOfParallelism.RenderSize);
+            vb_Parl.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_LevelOfParallelism.RenderSize));
+            Lc_LevelOfParallelism.DisableAnimations = true;
+            Lc_LevelOfParallelism.Update(true, true); //force chart redraw
+            vb_Parl.UpdateLayout();
 
-            PngBitmapEncoder png = new PngBitmapEncoder();
-            png.Frames.Add(BitmapFrame.Create(rtb));
-            MemoryStream stream = new MemoryStream();
-            png.Save(stream);
-            
-            
+            SaveToPng(Lc_LevelOfParallelism, lcParlPath);
 
-            //var encoder = new PngBitmapEncoder();
-            //var bitmap = new RenderTargetBitmap((int)Lc_LevelOfParallelism.ActualWidth, (int)Lc_LevelOfParallelism.ActualHeight, 96, 96, PixelFormats.Pbgra32);
-            //bitmap.Render(Lc_LevelOfParallelism);
-            //var frame = BitmapFrame.Create(bitmap);
-            //encoder.Frames.Add(frame);
-            //using (var stream = File.OpenWrite(lcEffPath))
-            //{
-            //    encoder.Save(stream);
-            //    stream.Close();
-            //    stream.Dispose();
-            //}
+         
+            vb_Exec.Measure(Lc_ExecutionTime.RenderSize);
+            vb_Exec.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_ExecutionTime.RenderSize));
+            Lc_ExecutionTime.DisableAnimations = true;
+            Lc_ExecutionTime.Update(true, true); //force chart redraw
+            vb_Exec.UpdateLayout();
+
+            SaveToPng(Lc_ExecutionTime, lcExecPath);
+
+         
+            vb_Eff.Measure(Lc_Effectiveness.RenderSize);
+            vb_Eff.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_Effectiveness.RenderSize));
+            Lc_Effectiveness.DisableAnimations = true;
+            Lc_Effectiveness.Update(true, true); //force chart redraw
+            vb_Eff.UpdateLayout();
+
+            SaveToPng(Lc_Effectiveness, lcEffPath);
+
+            Lc_LevelOfParallelism.DisableAnimations = false;
+            Lc_ExecutionTime.DisableAnimations = false;
+            Lc_Effectiveness.DisableAnimations = false;
+
         }
 
         public void SaveToPng(FrameworkElement visual, string fileName)

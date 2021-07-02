@@ -13,6 +13,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using CsvHelper;
 using LiveCharts;
 using LiveCharts.Wpf;
 using SkiaSharp;
@@ -77,7 +78,7 @@ namespace PNB_Lib
         private Thread m_SimulationThread;
         private Thread m_PartitionThread;
         private Thread m_AutoTestThread;
-        private List<TestResult> results = new List<TestResult>();
+        private List<TestResult> m_TestResults = new List<TestResult>();
 
         public QuadTree(int simSpaceX, int simSpaceY)
         {
@@ -325,13 +326,13 @@ namespace PNB_Lib
         public void AutoTest()
         {
             m_IsAutoTesting = true;
-            m_AutoTestThread = new Thread(StartAutoTest);
+            m_AutoTestThread = new Thread(SuperAutoTest);
             m_AutoTestThread.Name = "AutoTest";
             m_AutoTestThread.Start();
         }
 
         private int numberOfTests = 4;
-        List<int> particleCounts = new List<int>(){1500, 2500, 3500, 5000};
+        List<int> particleCounts = new List<int>() { 1500, 2500, 3500, 5000 };
 
         public void SuperAutoTest()
         {
@@ -340,17 +341,22 @@ namespace PNB_Lib
             {
                 m_ParticleCount = particleCounts[i];
                 GenerateParticles();
-                m_IsAutoTesting = true;
-                m_AutoTestThread = new Thread(StartAutoTest);
-                m_AutoTestThread.Name = "AutoTest";
-                m_AutoTestThread.Start();
+                StartAutoTest();
                 ResetTree();
+            }
+
+            string testSave =
+                $"D:/Documents/Project Files/N-Body/TestResults/TestResult_mT{m_AutoConfigMaxThreads}_p{m_ParticleCount}_rF{m_AutoConfigRepeatFactor}_tM{m_AutoConfigThreadMode}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.csv";
+            using (var writer = new StreamWriter(testSave))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteRecords(m_TestResults);
             }
         }
 
         public void StartAutoTest()
         {
-          
+
             double prevMilis;
             double currentMilis;
             Stopwatch frameSw = Stopwatch.StartNew();
@@ -439,9 +445,12 @@ namespace PNB_Lib
                 effectivenessLevels.Add(CalculateEffectivenessLevels(parallelismLevel, i + 1));
 
             }
-
-            AutoTestCompleteArgs args = new AutoTestCompleteArgs(parallelismLevels, execTimes, effectivenessLevels, m_ParticleCount, m_AutoTestTestNumber);
+            TestResult newResult = new TestResult(m_AutoTestTestNumber, m_AutoConfigMaxThreads, m_AutoConfigThreadMode, m_ParticleCount, m_AutoConfigRepeatFactor, execTimes, parallelismLevels, effectivenessLevels, m_AlgToUse, m_Theta);
+            m_TestResults.Add(newResult);
+            m_AutoTestTestNumber++;
+            AutoTestCompleteArgs args = new AutoTestCompleteArgs(m_AlgToUse, parallelismLevels, execTimes, effectivenessLevels, m_ParticleCount, m_AutoConfigMaxThreads, m_AutoConfigRepeatFactor, m_AutoConfigThreadMode);
             OnAutoTestComplete?.Invoke(this, args);
+
         }
 
         public void StartParition()

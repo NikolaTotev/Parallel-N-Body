@@ -46,16 +46,22 @@ namespace PNB_Lib
         private List<double> m_ParallelismLevels;
         private List<double> m_EffectivenessLevels;
         private int m_ParticleCount;
-        private int m_TestNumber;
+        private int m_MaxThreadsForTest;
+        private ThreadMode m_ThreadMode;
+        private InteractionAlgorithm m_Alg;
+        private int m_RepeatFactor;
         
 
-        public AutoTestCompleteArgs(List<double> parallelismLevels, List<double> execTimes, List<double> effectivenessLevels, int particleCount, int testNum)
+        public AutoTestCompleteArgs(InteractionAlgorithm ialg, List<double> parallelismLevels, List<double> execTimes, List<double> effectivenessLevels, int particleCount, int maxThreadsForTestNum, int repeatFactor, ThreadMode mode)
         {
             m_ParallelismLevels = parallelismLevels;
             m_EffectivenessLevels = effectivenessLevels;
             m_ExecTimes = execTimes;
             m_ParticleCount = particleCount;
-            m_TestNumber = testNum;
+            m_MaxThreadsForTest = maxThreadsForTestNum;
+            m_RepeatFactor = repeatFactor;
+            m_ThreadMode = mode;
+            m_Alg = ialg;
         }
         public List<double> GetExecTimes()
         {
@@ -79,7 +85,22 @@ namespace PNB_Lib
 
         public int GetTestNumber()
         {
-            return m_TestNumber;
+            return m_MaxThreadsForTest;
+        }
+
+        public int GetRepeatCount()
+        {
+            return m_RepeatFactor;
+        }
+
+        public ThreadMode GetThreadMode()
+        {
+            return m_ThreadMode;
+        }
+
+        public InteractionAlgorithm GetInteractionAlgorithm()
+        {
+            return m_Alg;
         }
     }
 }

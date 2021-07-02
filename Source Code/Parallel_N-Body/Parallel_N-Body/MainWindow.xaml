@@ -592,22 +592,22 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <!--<Viewbox Grid.Column="0"  x:Name="vb_Exec">
-                    <lvc:CartesianChart x:Name="Lc_ExecutionTime" MouseDoubleClick="Lc_ExecutionTime_OnMouseDoubleClick" Margin="0,-3,0,3"></lvc:CartesianChart>
+                <Viewbox Height="244" Grid.Column="0"  x:Name="vb_Exec">
+                    <lvc:CartesianChart Height="244" Width="313" x:Name="Lc_ExecutionTime" MouseDoubleClick="Lc_ExecutionTime_OnMouseDoubleClick" Margin="0"></lvc:CartesianChart>
                 </Viewbox>
 
                 <Viewbox Grid.Column="1" x:Name="vb_Parl">
-                    <lvc:CartesianChart x:Name="Lc_LevelOfParallelism" MouseDoubleClick="Lc_LevelOfParallelism_OnMouseDoubleClick"></lvc:CartesianChart>
+                    <lvc:CartesianChart  Height="244" Width="313" x:Name="Lc_LevelOfParallelism" MouseDoubleClick="Lc_LevelOfParallelism_OnMouseDoubleClick"></lvc:CartesianChart>
                 </Viewbox>
 
                 <Viewbox  Grid.Column="2" x:Name="vb_Eff">
-                    <lvc:CartesianChart x:Name="Lc_Effectiveness" MouseDoubleClick="Lc_Effectiveness_OnMouseDoubleClick"></lvc:CartesianChart>
-                </Viewbox>-->
+                    <lvc:CartesianChart  Height="244" Width="313" x:Name="Lc_Effectiveness" MouseDoubleClick="Lc_Effectiveness_OnMouseDoubleClick"></lvc:CartesianChart>
+                </Viewbox>
 
 
-                <lvc:CartesianChart Grid.Column="0" x:Name="Lc_ExecutionTime" MouseDoubleClick="Lc_ExecutionTime_OnMouseDoubleClick" Margin="0,-3,0,3"></lvc:CartesianChart>
+                <!--<lvc:CartesianChart Grid.Column="0" x:Name="Lc_ExecutionTime" MouseDoubleClick="Lc_ExecutionTime_OnMouseDoubleClick" Margin="0,-3,0,3"></lvc:CartesianChart>
                 <lvc:CartesianChart Grid.Column="1" x:Name="Lc_LevelOfParallelism" MouseDoubleClick="Lc_LevelOfParallelism_OnMouseDoubleClick"></lvc:CartesianChart>
-                <lvc:CartesianChart  Grid.Column="2" x:Name="Lc_Effectiveness" MouseDoubleClick="Lc_Effectiveness_OnMouseDoubleClick"></lvc:CartesianChart>
+                <lvc:CartesianChart  Grid.Column="2" x:Name="Lc_Effectiveness" MouseDoubleClick="Lc_Effectiveness_OnMouseDoubleClick"></lvc:CartesianChart>-->
                 
             </Grid>
         </Grid>
