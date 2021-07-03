@@ -65,7 +65,6 @@ namespace Parallel_N_Body
         //public event EventHandler OnSimulationComplete;
         public event EventHandler OnVideoGenerationComplete;
 
-        private bool m_DrawPartition;
         public MainWindow()
         {
             InitializeComponent();
@@ -94,7 +93,6 @@ namespace Parallel_N_Body
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     m_ProgramManager.QuadTree.CleanUpPartitionThread();
-                    m_DrawPartition = true;
                     skg_SimGraphics.InvalidateVisual();
                 }), DispatcherPriority.Normal);
         }
@@ -228,7 +226,6 @@ namespace Parallel_N_Body
         private void Btn_Generate_Click(object sender, RoutedEventArgs e)
         {
             m_IsStartUp = false;
-            m_DrawPartition = false;
             if (m_ProgramManager.QuadTree.GetParticleCount() > 250)
             {
                 Lb_ErrorMsg.Content = "";
@@ -736,7 +733,7 @@ namespace Parallel_N_Body
                     particleNumber++;
                 }
 
-                if (m_DrawPartition)
+                if ((bool) Cb_ShowTree.IsChecked)
                 {
                     var treePaint = new SKPaint
                     {
@@ -746,19 +743,20 @@ namespace Parallel_N_Body
                     };
 
                     VisualizeTreeNodes(m_ProgramManager.QuadTree.GetRootNode(), canvas, treePaint);
+                    
+                    
+                    SKImage image = e.Surface.Snapshot();
+                    var data = image.Encode();
+
+
+                    using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/PartitionedImage_p{m_ProgramManager.QuadTree.GetParticleCount()}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png"))
+                    {
+                        data.SaveTo(stream);
+                        stream.Close();
+                        stream.Dispose();
+                    }
                 }
-                //SKImage image = e.Surface.Snapshot();
-                //var data = image.Encode();
 
-
-                //using (var stream = File.OpenWrite($"D:/Documents/Project Files/N-Body/SimImages/Image_{imageNum}.png"))
-                //{
-                //    // save the data to a stream
-                //    data.SaveTo(stream);
-                //    stream.Close();
-                //    stream.Dispose();
-                //    imageNum++;
-                //}
             }
         }
 

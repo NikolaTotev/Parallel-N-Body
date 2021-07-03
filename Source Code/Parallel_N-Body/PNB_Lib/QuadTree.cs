@@ -733,8 +733,8 @@ namespace PNB_Lib
 
             PointF newCenter = currentParticle.CenterPoint;
 
-            //newCenter.X += currentParticle.VelocityComponents.X * m_Dt;
-           // newCenter.Y += currentParticle.VelocityComponents.Y * m_Dt;
+            newCenter.X += currentParticle.VelocityComponents.X * m_Dt;
+            newCenter.Y += currentParticle.VelocityComponents.Y * m_Dt;
 
             currentParticle.CenterPoint = newCenter;
 
