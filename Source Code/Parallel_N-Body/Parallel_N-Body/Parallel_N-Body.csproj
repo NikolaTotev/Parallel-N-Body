@@ -167,6 +167,10 @@
     <Resource Include="Grouping.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Icons\AppIcon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="AppIcon.ico" />
     <Content Include="Resources\Images\default_sim_image.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

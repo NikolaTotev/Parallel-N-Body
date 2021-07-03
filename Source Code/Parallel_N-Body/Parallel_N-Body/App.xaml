@@ -37,12 +37,13 @@
 
         <!--Tool tip texts-->
         <system:String x:Key="ToolTip_Default">Default tool tip</system:String>
+        <system:String x:Key="ToolTip_BtnGenerate">Generates the number of particles entered by the user.</system:String>
 
         <!--Tool tip settings -->
         <FontStyle x:Key="StandardToolTipFontStyle">Italic</FontStyle>
         <FontWeight x:Key="StandardToolTipFontWeight">SemiBold</FontWeight>
         <system:Int32 x:Key="StandardToolTipShowDuration">1500</system:Int32>
-        <system:Int32 x:Key="StandardToolTipInitialDelayDuration">500</system:Int32>
+        <system:Int32 x:Key="StandardToolTipInitialDelayDuration">100</system:Int32>
 
 
         <!--Button templates-->

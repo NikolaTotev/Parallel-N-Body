@@ -7,7 +7,7 @@
         xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
         xmlns:local="clr-namespace:Parallel_N_Body"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1010" Width="1700" WindowStartupLocation="CenterScreen">
+        Title="MainWindow" Height="1010" Width="1700" WindowStartupLocation="CenterScreen" Icon="Resources/Icons/AppIcon.ico">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="737"></ColumnDefinition>
@@ -87,7 +87,7 @@
                                             <Setter Property="CornerRadius" Value="10"></Setter>
                                         </Style>
                                     </ToolTip.Resources>
-                                    <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_Default}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
+                                    <TextBlock FontSize="10" FontFamily="{StaticResource Montserrat}" Text="{StaticResource ToolTip_BtnGenerate}" FontWeight="{StaticResource StandardToolTipFontWeight}" FontStyle="{StaticResource StandardToolTipFontStyle}" Foreground="{StaticResource NavyBlueBase}" />
                                 </ToolTip>
                             </Button.ToolTip>
 
