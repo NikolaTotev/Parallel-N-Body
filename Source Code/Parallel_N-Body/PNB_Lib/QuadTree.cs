@@ -519,7 +519,6 @@ namespace PNB_Lib
                     Partition();
                     PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.first, isBH, false);
                     PrepareStepExecution(m_ThreadConfigThreadMode, m_ThreadConfigMaxThreads, SimulationStep.second, false, false);
-                    ResetRootNode();
                 }
 
                 TimeSpan defaultTS = new TimeSpan();
@@ -529,6 +528,18 @@ namespace PNB_Lib
                 SKBitmap newBitm = new SKBitmap(info);
                 SKCanvas canvas = new SKCanvas(newBitm);
                 canvas.Clear(SKColors.White);
+
+                if (m_DrawFlagShowTree)
+                {
+                    var treePaint = new SKPaint
+                    {
+                        Color = new SKColor(255, 217, 156),
+                        IsAntialias = true,
+                        Style = SKPaintStyle.Stroke,
+                    };
+
+                    VisualizeTreeNodes(m_RootNode, canvas, treePaint);
+                }
 
                 foreach (Particle particle in m_Particles)
                 {
@@ -541,6 +552,8 @@ namespace PNB_Lib
                     };
                     canvas.DrawCircle(particle.CenterPoint.X, particle.CenterPoint.Y, 3, paint);
                 }
+
+               
 
 
                 SKImage image = SKImage.FromBitmap(newBitm);
@@ -555,12 +568,45 @@ namespace PNB_Lib
                     stream.Dispose();
                     imageNum++;
                 }
-
+                ResetRootNode();
                 SimFrameCompleteArgs args = new SimFrameCompleteArgs(defaultTS, i);
                 OnFrameComplete.Invoke(this, args);
             }
 
             OnSimulationComplete?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void VisualizeTreeNodes(Node nextNode, SKCanvas canvas, SKPaint paint)
+        {
+            if (nextNode == null)
+            {
+                return;
+            }
+
+            if (nextNode.nodeParticles.Count == 1)
+            {
+                canvas.DrawRect(nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.YSideLength, nextNode.YSideLength, paint);
+                return;
+            }
+
+            if (nextNode.nodeParticles.Count == 0 && false)
+            {
+                // currentGraphics.DrawRectangle(rectPen, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.YSideLength, nextNode.YSideLength);
+                //currentGraphics.FillRectangle(Brushes.IndianRed, nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.YSideLength - 10, nextNode.YSideLength - 10);
+            }
+
+            else
+            {
+                canvas.DrawRect(nextNode.BottomLeftCorner.X, nextNode.TopRightCorner.Y, nextNode.YSideLength, nextNode.YSideLength, paint);
+            }
+
+
+
+            VisualizeTreeNodes(nextNode.SeChild, canvas, paint);
+            VisualizeTreeNodes(nextNode.NeChild, canvas, paint);
+            VisualizeTreeNodes(nextNode.NwChild, canvas, paint);
+            VisualizeTreeNodes(nextNode.SwChild, canvas, paint);
+
         }
 
         public void PrepareStepExecution(ThreadMode threadMode, int threadCount, SimulationStep simulationStep, bool isBH, bool isPWI)

@@ -733,7 +733,8 @@ namespace Parallel_N_Body
                     particleNumber++;
                 }
 
-                if ((bool) Cb_ShowTree.IsChecked)
+                //if ((bool) Cb_ShowTree.IsChecked)
+                if (false)
                 {
                     var treePaint = new SKPaint
                     {
@@ -743,8 +744,8 @@ namespace Parallel_N_Body
                     };
 
                     VisualizeTreeNodes(m_ProgramManager.QuadTree.GetRootNode(), canvas, treePaint);
-                    
-                    
+
+
                     SKImage image = e.Surface.Snapshot();
                     var data = image.Encode();
 
@@ -816,7 +817,7 @@ namespace Parallel_N_Body
             string lcExecPath =
                 $"D:/Documents/Project Files/N-Body/Charts/{dirPath}/TestChart_LcExec_mT{testNumber}_p{particleCount}_rF{repeatFactor}_tM{mode}_alg{alg}_{DateTime.Now.Hour}_{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}.png";
 
-           
+
             vb_Parl.Measure(Lc_LevelOfParallelism.RenderSize);
             vb_Parl.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_LevelOfParallelism.RenderSize));
             Lc_LevelOfParallelism.DisableAnimations = true;
@@ -825,7 +826,7 @@ namespace Parallel_N_Body
 
             SaveToPng(Lc_LevelOfParallelism, lcParlPath);
 
-         
+
             vb_Exec.Measure(Lc_ExecutionTime.RenderSize);
             vb_Exec.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_ExecutionTime.RenderSize));
             Lc_ExecutionTime.DisableAnimations = true;
@@ -834,7 +835,7 @@ namespace Parallel_N_Body
 
             SaveToPng(Lc_ExecutionTime, lcExecPath);
 
-         
+
             vb_Eff.Measure(Lc_Effectiveness.RenderSize);
             vb_Eff.Arrange(new Rect(new System.Windows.Point(0, 0), Lc_Effectiveness.RenderSize));
             Lc_Effectiveness.DisableAnimations = true;
